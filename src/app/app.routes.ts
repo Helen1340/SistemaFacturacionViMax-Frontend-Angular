@@ -10,6 +10,10 @@ import { RecepcionDocumentos } from './module-document-reception/recepcion-docum
 import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
 import { Configuracion } from './module-settings/configuracion/configuracion';
 import { FacturasNotas } from './module-invoices-notes/facturas-notas/facturas-notas';
+import { NuevaFactura } from './module-invoices-notes/nueva-factura/nueva-factura';
+import { EditarFactura } from './module-invoices-notes/editar-facturas/editar-facturas';
+import { NuevaNotaComponent } from './module-invoices-notes/nueva-nota/nueva-nota';
+import { DetalleFacturas } from './module-invoices-notes/detalle-facturas/detalle-facturas';
 
 
 
@@ -64,7 +68,11 @@ export const routes: Routes = [
 
   //ESPACIO PARA LAS RUTAS DE DAVID (MODULE FACTURAS, CLIENTES)
   { path: '', redirectTo: 'facturas-notas', pathMatch: 'full' }, // redirige al inicio
-  { path: 'facturas-notas', component: FacturasNotas} ,  
+  { path: 'facturas-notas', component: FacturasNotas} ,
+  { path: 'nueva-factura', component: NuevaFactura },
+  { path: 'nueva-nota', component: NuevaNotaComponent },
+  { path: 'editar-facturas/:id', component: EditarFactura },
+  { path: 'detalle-facturas/:id', component: DetalleFacturas },
   {path: `clientes`, component: Clientes},
   // ... otras rutas
      
