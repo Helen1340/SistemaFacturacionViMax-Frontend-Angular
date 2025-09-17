@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { ProductosServicios } from './module-product-service/productos-servicios/productos-servicios';
-import { RegistrarProducto } from './module-product-service/registrar-producto/registrar-producto';
+
 import { RegitrarServicio } from './module-product-service/regitrar-servicio/regitrar-servicio';
 import { Clientes } from './module-clients/clientes/clientes';
 import { Reportes } from './module-reports/reportes/reportes';
@@ -10,6 +10,8 @@ import { RecepcionDocumentos } from './module-document-reception/recepcion-docum
 import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
 import { Configuracion } from './module-settings/configuracion/configuracion';
 import { FacturasNotas } from './module-invoices-notes/facturas-notas/facturas-notas';
+import { RegistrarProductoComponent } from './module-product-service/registrar-producto/registrar-producto';
+
 import { NuevoUsuario } from './module-users/nuevo-usuario/nuevo-usuario';
 import { EditUsuario } from './module-users/edit-usuario/edit-usuario';
 import { VerUsuario } from './module-users/ver-usuario/ver-usuario';
@@ -22,6 +24,8 @@ import { CertificadoDigital } from './module-settings/certificado-digital/certif
 import { NotificacionesEmails } from './module-settings/notificaciones-emails/notificaciones-emails';
 import { Acceder } from './module-home/acceder/acceder';
 import { Registro } from './module-home/registro/registro';
+
+
 
 
 
@@ -105,7 +109,7 @@ export const routes: Routes = [
 
   //ESPACIO PARA LAS RUTAS DE HELEN (MODULE PRODUCTOS)
   { path: 'productos-servicios', component: ProductosServicios},
-  {path: 'registrar-producto', component: RegistrarProducto},
+  {path: 'registrar-producto', component: RegistrarProductoComponent},
   {path: 'registrar-servicio',component: RegitrarServicio},
   
   // ... otras rutas
@@ -218,6 +222,20 @@ export const routes: Routes = [
   {path: 'configuración',component:Configuracion},
   {path: 'certiifcacido-digital', component: CertificadoDigital},
   {path: 'notificaciones-email',component: NotificacionesEmails},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ];
