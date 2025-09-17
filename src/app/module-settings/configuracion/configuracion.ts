@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-configuracion',
@@ -8,4 +9,38 @@ import { Component } from '@angular/core';
 })
 export class Configuracion {
 
+  constructor( private router: Router ) {}
+
+  // Navegación y utilidades
+  navigateParametrosGenerales() {
+    this.router.navigate(['/parametros-generales']);
+  }
+
+  navigateResolucionFact() {
+    this.router.navigate(['/resoluciones']);
+  }
+  
+  navigateRetencionRespaldo() {
+    this.router.navigate(['/retenciones']);
+  }
+  
+  navigateNotificaciones() {
+    this.router.navigate(['/notificaciones-email']);
+  }
+
+  navigateCambios(){
+    this.router.navigate(['/cambios-normativos']);
+  }
+  
+  navigateCertificados() {
+    this.router.navigate(['/certiifcacido-digital']);
+  }
+
+  navigateImpuestos() {
+    this.router.navigate(['/impuestos']);
+  }
+
+  navigateVideos() {
+    this.router.navigate(['/videos']);
+  }
 }

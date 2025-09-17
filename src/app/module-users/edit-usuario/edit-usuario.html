@@ -1,0 +1,272 @@
+<main class="w-full p-4 flex-1">
+
+    <div class="sticky top-0 bg-white z-10 pb-4 mt-6">
+        <h2 class="text-4xl font-semibold mb-4 mt-2">Editar Usuario</h2>
+        <div class="border-b-2 border-gray-300 w-full"></div>
+    </div>
+
+    <!-- CONTENEDOR DEL FORMULARIO -->
+    <div class="max-w-10xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-xl p-4 sm:p-6 lg:p-8 
+                    max-h-[75vh] overflow-y-auto">
+
+            <!-- Loading state -->
+            <div *ngIf="isLoadingUser" class="flex justify-center items-center py-12">
+                <div class="flex items-center space-x-3">
+                    <svg class="animate-spin h-8 w-8 text-cyan-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    <span class="text-lg text-gray-600">Cargando datos del usuario...</span>
+                </div>
+            </div>
+
+            <form *ngIf="!isLoadingUser" [formGroup]="usuarioForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+                <!-- Primera fila: Nombre completo y Rol -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="nombre" class="block text-sm font-medium text-black mb-2">
+                            Nombre completo <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="nombre" formControlName="nombre"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            [class.border-red-500]="usuarioForm.get('nombre')?.invalid && usuarioForm.get('nombre')?.touched">
+                        <div *ngIf="usuarioForm.get('nombre')?.invalid && usuarioForm.get('nombre')?.touched"
+                            class="text-red-500 text-xs mt-1">
+                            El nombre es requerido (máx. 100 caracteres)
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="role_id" class="block text-sm font-medium text-black mb-2">
+                            Rol <span class="text-red-500">*</span>
+                        </label>
+                        <select id="role_id" formControlName="role_id"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            [class.border-red-500]="usuarioForm.get('role_id')?.invalid && usuarioForm.get('role_id')?.touched">
+                            <option value="">Seleccionar rol</option>
+                            <option *ngFor="let rol of roles" [value]="rol.id">{{ rol.nombre }}</option>
+                        </select>
+                        <div *ngIf="usuarioForm.get('role_id')?.invalid && usuarioForm.get('role_id')?.touched"
+                            class="text-red-500 text-xs mt-1">
+                            El rol es requerido
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Segunda fila: Tipo documento y Número documento -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="tipo_documento" class="block text-sm font-medium text-black mb-2">
+                            Tipo de Documento <span class="text-red-500">*</span>
+                        </label>
+                        <select id="tipo_documento" formControlName="tipo_documento"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            [class.border-red-500]="usuarioForm.get('tipo_documento')?.invalid && usuarioForm.get('tipo_documento')?.touched">
+                            <option value="">Seleccionar tipo</option>
+                            <option value="NIT">NIT</option>
+                            <option value="CC">Cédula de Ciudadanía</option>
+                            <option value="CE">Cédula de Extranjería</option>
+                        </select>
+                        <div *ngIf="usuarioForm.get('tipo_documento')?.invalid && usuarioForm.get('tipo_documento')?.touched"
+                            class="text-red-500 text-xs mt-1">
+                            Seleccione un tipo de documento
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="numero_documento" class="block text-sm font-medium text-black mb-2">
+                            Número de Documento <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="numero_documento" formControlName="numero_documento" maxlength="15"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            [class.border-red-500]="usuarioForm.get('numero_documento')?.invalid && usuarioForm.get('numero_documento')?.touched">
+                        <div *ngIf="usuarioForm.get('numero_documento')?.invalid && usuarioForm.get('numero_documento')?.touched"
+                            class="text-red-500 text-xs mt-1">
+                            El número de documento es requerido (máx. 15 caracteres)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tercera fila: Correo electrónico y Teléfono -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="correo_electronico" class="block text-sm font-medium text-black mb-2">
+                            Correo electrónico <span class="text-red-500">*</span>
+                        </label>
+                        <input type="email" id="correo_electronico" formControlName="correo_electronico" maxlength="100"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            [class.border-red-500]="usuarioForm.get('correo_electronico')?.invalid && usuarioForm.get('correo_electronico')?.touched">
+                        <div *ngIf="usuarioForm.get('correo_electronico')?.invalid && usuarioForm.get('correo_electronico')?.touched"
+                            class="text-red-500 text-xs mt-1">
+                            <span *ngIf="usuarioForm.get('correo_electronico')?.errors?.['required']">El correo es
+                                requerido</span>
+                            <span *ngIf="usuarioForm.get('correo_electronico')?.errors?.['email']">Formato de correo
+                                inválido</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="telefono" class="block text-sm font-medium text-black mb-2">
+                            Teléfono <span class="text-red-500">*</span>
+                        </label>
+                        <input type="tel" id="telefono" formControlName="telefono" maxlength="20"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            [class.border-red-500]="usuarioForm.get('telefono')?.invalid && usuarioForm.get('telefono')?.touched">
+                        <div *ngIf="usuarioForm.get('telefono')?.invalid && usuarioForm.get('telefono')?.touched"
+                            class="text-red-500 text-xs mt-1">
+                            El teléfono es requerido (máx. 20 caracteres)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cuarta fila: Dirección y País -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="direccion" class="block text-sm font-medium text-black mb-2">
+                            Dirección <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="direccion" formControlName="direccion" maxlength="150"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            [class.border-red-500]="usuarioForm.get('direccion')?.invalid && usuarioForm.get('direccion')?.touched">
+                        <div *ngIf="usuarioForm.get('direccion')?.invalid && usuarioForm.get('direccion')?.touched"
+                            class="text-red-500 text-xs mt-1">
+                            La dirección es requerida (máx. 150 caracteres)
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="pais" class="block text-sm font-medium text-black mb-2">
+                            País <span class="text-red-500">*</span>
+                        </label>
+                        <select id="pais" formControlName="pais"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            [class.border-red-500]="usuarioForm.get('pais')?.invalid && usuarioForm.get('pais')?.touched">
+                            <option value="">Seleccionar país</option>
+                            <option value="Colombia">Colombia</option>
+                            <option value="Perú">Perú</option>
+                            <option value="Ecuador">Ecuador</option>
+                            <option value="Venezuela">Venezuela</option>
+                            <option value="Bolivia">Bolivia</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                        <div *ngIf="usuarioForm.get('pais')?.invalid && usuarioForm.get('pais')?.touched"
+                            class="text-red-500 text-xs mt-1">
+                            Seleccione un país
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quinta fila: Contraseña y Confirmar (OPCIONAL EN EDICIÓN) -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="contrasena" class="block text-sm font-medium text-black mb-2">
+                            Nueva Contraseña <span class="text-gray-500">(Opcional)</span>
+                        </label>
+                        <input type="password" id="contrasena" formControlName="contrasena"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            [class.border-red-500]="usuarioForm.get('contrasena')?.invalid && usuarioForm.get('contrasena')?.touched">
+                        <p class="mt-1 text-xs text-gray-600">Deja en blanco para mantener la actual</p>
+                        <div *ngIf="usuarioForm.get('contrasena')?.invalid && usuarioForm.get('contrasena')?.touched"
+                            class="text-red-500 text-xs mt-1">
+                            <span *ngIf="usuarioForm.get('contrasena')?.errors?.['minlength']">Mínimo 8
+                                caracteres</span>
+                            <span *ngIf="usuarioForm.get('contrasena')?.errors?.['pattern']">Debe contener mayúsculas y
+                                números</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="confirmar_contrasena" class="block text-sm font-medium text-black mb-2">
+                            Confirmar nueva contraseña
+                        </label>
+                        <input type="password" id="confirmar_contrasena" formControlName="confirmar_contrasena"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            [class.border-red-500]="usuarioForm.get('confirmar_contrasena')?.invalid && usuarioForm.get('confirmar_contrasena')?.touched">
+                        <div *ngIf="usuarioForm.get('confirmar_contrasena')?.invalid && usuarioForm.get('confirmar_contrasena')?.touched"
+                            class="text-red-500 text-xs mt-1">
+                            <span *ngIf="usuarioForm.get('confirmar_contrasena')?.errors?.['passwordMismatch']">Las
+                                contraseñas no coinciden</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sexta fila: Descripción -->
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
+                        <label for="descripcion" class="block text-sm font-medium text-black mb-2">
+                            Descripción
+                        </label>
+                        <textarea id="descripcion" formControlName="descripcion" maxlength="250" rows="3"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 resize-none"
+                            placeholder="Descripción opcional del usuario...">
+                </textarea>
+                        <p class="mt-1 text-xs text-gray-500">Máximo 250 caracteres</p>
+                    </div>
+                </div>
+
+                <!-- Sección Estado -->
+                <div class="pt-4">
+                    <h3 class="text-sm font-medium text-black mb-4">Estado</h3>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="usuario-activo" formControlName="estado_activo"
+                            class="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded">
+                        <label for="usuario-activo" class="ml-2 text-sm text-black">
+                            Usuario activo
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="pt-6 flex justify-between">
+                    <button type="button" (click)="onCancel()"
+                        class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-8 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-200">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" [disabled]="usuarioForm.invalid || isLoading"
+                        class="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-400 text-white font-medium py-2 px-16 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition duration-200">
+                        <span *ngIf="!isLoading">Actualizar</span>
+                        <span *ngIf="isLoading" class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            Actualizando...
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Notificaciones -->
+                <div *ngIf="showNotification"
+                    class="fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300"
+                    [class.bg-green-500]="notificationType === 'success'"
+                    [class.bg-red-500]="notificationType === 'error'" [class.text-white]="true">
+                    <div class="flex items-center space-x-2">
+                        <svg *ngIf="notificationType === 'success'" class="w-5 h-5" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        <svg *ngIf="notificationType === 'error'" class="w-5 h-5" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>{{ notificationMessage }}</span>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</main>

@@ -1,11 +1,280 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { UserService, Role } from '../services/user.service';
+
+export interface User {
+  id: number;
+  company_id: number;
+  role_id: number;
+  nombre: string;
+  tipo_documento: 'NIT' | 'CC' | 'CE';
+  numero_documento: string;
+  direccion: string;
+  pais: string;
+  descripcion?: string;
+  contrasena?: string;
+  correo_electronico: string;
+  telefono: string;
+  estado: 'Activo' | 'Inactivo';
+  ultimo_acceso?: string;
+  remember_token?: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 @Component({
   selector: 'app-usuarios',
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './usuarios.html',
   styleUrl: './usuarios.css'
 })
-export class Usuarios {
+export class Usuarios implements OnInit {
+  users: User[] = [];
+  filteredUsers: User[] = [];
+  roles: Role[] = [];
+  searchTerm: string = '';
+  filterValue: string = '';
+  openDropdownId: number | null = null;
+  isLoading: boolean = false;
+  
+  // Paginación
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  totalUsers: number = 0;
+  totalPages: number = 0;
 
+  constructor(
+    private router: Router,
+    private userService: UserService
+  ) {}
+
+  ngOnInit() {
+    this.loadRoles();
+    document.addEventListener('click', () => this.openDropdownId = null);
+  }
+
+  loadUsers() {
+    this.isLoading = true;
+    this.userService.getUsers().subscribe({
+      next: (users) => {
+        // Filtrar usuarios que NO sean clientes usando los roles cargados
+        this.users = (users || []).filter(user => {
+          const userRole = this.roles.find(role => role.id === user.role_id);
+          return userRole && !userRole.nombre.toLowerCase().includes('cliente');
+        });
+        this.filteredUsers = [...this.users];
+        this.totalUsers = this.users.length;
+        this.calculatePagination();
+        this.isLoading = false;
+      },
+      error: () => {
+        this.users = [];
+        this.filteredUsers = [];
+        this.totalUsers = 0;
+        this.isLoading = false;
+        alert('Error al cargar los usuarios. Verifica que la API esté funcionando.');
+      }
+    });
+  }
+
+  loadRoles() {
+    this.userService.getRoles().subscribe({
+      next: (roles) => {
+        // Filtrar roles de cliente/clientes para el módulo de usuarios
+        this.roles = (roles || []).filter(role => 
+          !role.nombre.toLowerCase().includes('cliente')
+        );
+        // Cargar usuarios después de que los roles estén listos
+        this.loadUsers();
+      },
+      error: () => {
+        console.log('Fallo la carga de roles');
+        // Cargar usuarios después de que los roles estén listos
+        this.loadUsers();
+      }
+    });
+  }
+
+  viewUser(user: User) {
+    this.openDropdownId = null;
+    this.router.navigate(['/ver-usuario', user.id]);
+  }
+
+  editUser(user: User) {
+    this.openDropdownId = null;
+    this.router.navigate(['/editar-usuario', user.id]);
+  }
+
+  deleteUser(user: User) {
+    if (!confirm(`¿Estás seguro de que deseas ${user.estado === 'Activo' ? 'desactivar' : 'activar'} este usuario?`)) {
+      return;
+    }
+    
+    this.openDropdownId = null;
+    this.userService.deleteUser(user.id).subscribe({
+      next: () => {
+        alert(`Usuario ${user.estado === 'Activo' ? 'desactivado' : 'activado'} correctamente`);
+        this.loadUsers();
+      },
+      error: () => {
+        alert('Error al cambiar el estado del usuario');
+      }
+    });
+  }
+
+  onSearch() {
+    this.applyFilters();
+  }
+
+  onFilter() {
+    this.applyFilters();
+  }
+
+  private applyFilters() {
+    let filtered = this.users;
+
+    // Búsqueda por texto
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(user => 
+        user.nombre.toLowerCase().includes(term) ||
+        user.correo_electronico.toLowerCase().includes(term) ||
+        user.numero_documento.toLowerCase().includes(term)
+      );
+    }
+
+    // Filtro por estado o rol
+    if (this.filterValue) {
+      if (this.filterValue === 'activo') {
+        filtered = filtered.filter(user => user.estado === 'Activo');
+      } else if (this.filterValue === 'inactivo') {
+        filtered = filtered.filter(user => user.estado === 'Inactivo');
+      } else if (this.filterValue.startsWith('rol_')) {
+        const roleId = parseInt(this.filterValue.split('_')[1]);
+        filtered = filtered.filter(user => user.role_id === roleId);
+      }
+    }
+
+    this.filteredUsers = filtered;
+    this.totalUsers = filtered.length;
+    this.currentPage = 1;
+    this.calculatePagination();
+  }
+
+  getDocumentTypeClass(tipo: string): string {
+    const classes: { [key: string]: string } = {
+      'CC': 'bg-blue-100 text-blue-800',
+      'CE': 'bg-purple-100 text-purple-800',
+      'NIT': 'bg-orange-100 text-orange-800'
+    };
+    return classes[tipo] || 'bg-gray-100 text-gray-800';
+  }
+
+  getRoleName(roleId: number): string {
+    if (!roleId) {
+      return 'Sin rol';
+    }
+    const role = this.roles.find(r => r.id === roleId);
+    return role ? role.nombre : 'Cargando...';
+  }
+
+  getRoleClass(role: string): string {
+    const classes: { [key: string]: string } = {
+      'administrador': 'bg-green-100 text-green-800',
+      'facturador': 'bg-blue-100 text-blue-800',
+      'editor': 'bg-purple-100 text-purple-800',
+      'visualizador': 'bg-yellow-100 text-yellow-800',
+      'usuario': 'bg-gray-100 text-gray-800',
+      'sin rol': 'bg-red-100 text-red-800',
+      'cargando...': 'bg-gray-200 text-gray-600'
+    };
+    return classes[role.toLowerCase()] || 'bg-gray-100 text-gray-800';
+  }
+
+  getStatusClass(status: string): string {
+    return status === 'Activo' 
+      ? 'bg-green-100 text-green-800' 
+      : 'bg-red-100 text-red-800';
+  }
+
+  toggleDropdown(event: Event, userId: number) {
+    event.stopPropagation();
+    this.openDropdownId = this.openDropdownId === userId ? null : userId;
+  }
+
+  shouldShowDropdownUp(index: number): boolean {
+    // Si es uno de los últimos 2 elementos, mostrar el dropdown hacia arriba
+    return index >= this.paginatedUsers.length - 2;
+  }
+
+  shouldShowDropdownUpAdvanced(index: number): boolean {
+    const tableContainer = document.querySelector('.overflow-y-auto.max-h-\\[400px\\]');
+    if (!tableContainer) return false;
+    
+    const containerHeight = tableContainer.clientHeight;
+    const scrollTop = tableContainer.scrollTop;
+    const rowHeight = 60; // Altura aproximada de cada fila
+    const dropdownHeight = 120; // Altura aproximada del dropdown
+    
+    const rowPosition = index * rowHeight - scrollTop;
+    
+    // Si no hay suficiente espacio abajo, mostrar arriba
+    return (containerHeight - rowPosition) < dropdownHeight;
+  }
+
+  testApiConnection() {
+    this.userService.testApiConnection().subscribe({
+      next: () => {
+        alert('API conectada correctamente. Recargando datos...');
+        this.loadUsers();
+      },
+      error: () => {
+        alert('Error de conectividad. Verifica que XAMPP esté ejecutándose.');
+      }
+    });
+  }
+
+  get paginatedUsers(): User[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.filteredUsers.slice(startIndex, endIndex);
+  }
+  
+  calculatePagination() {
+    this.totalPages = Math.ceil(this.totalUsers / this.itemsPerPage);
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = this.totalPages;
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  get startItem(): number {
+    if (this.totalUsers === 0) return 0;
+    return (this.currentPage - 1) * this.itemsPerPage + 1;
+  }
+
+  get endItem(): number {
+    return Math.min(this.currentPage * this.itemsPerPage, this.totalUsers);
+  }
+
+  navigateToNewUser() {
+    this.router.navigate(['/nuevo-usuario']);
+  }
+  
+  trackByFn(index: number, user: User): number {
+    return user.id;
+  }
 }

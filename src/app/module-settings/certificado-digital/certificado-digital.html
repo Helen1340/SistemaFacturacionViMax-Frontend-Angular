@@ -1,0 +1,342 @@
+<main class="w-full p-4 flex-1 overflow-auto">
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <div class="-mt-2 mb-2">
+            <h2 class="text-2xl md:text-4xl font-semibold mb-5 mt-5">
+                Firma Electrónica y Certificado Digital
+            </h2>
+        </div>
+
+        <div class="border-b-2 border-gray-300 w-full mb-6"></div>
+
+        <!-- Loading Spinner -->
+        <div *ngIf="loading" class="flex justify-center items-center py-8">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="w-full max-w-none mx-auto" *ngIf="!loading">
+            <div class="bg-white rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 border border-gray-200 mx-2 lg:mx-4">
+
+                <!-- Editing Banner -->
+                <div *ngIf="editingCertificate" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-edit text-yellow-600"></i>
+                        <span class="text-yellow-800 font-medium">
+                            Editando certificado: {{editingCertificate.nombre_certificado}}
+                        </span>
+                        <button (click)="resetForm()" class="ml-auto text-yellow-600 hover:text-yellow-800">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <form [formGroup]="certificateForm" (ngSubmit)="cargarCertificado()" class="space-y-6">
+
+                    <!-- Tipo de firma -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Tipo de firma <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <select formControlName="tipo_firma"
+                                class="w-full px-4 py-3 pr-10 border rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                [class.border-red-500]="isFieldInvalid('tipo_firma')">
+                                <option value="">Seleccione una opción...</option>
+                                <option *ngFor="let tipo of tiposFirma" [value]="tipo.value">
+                                    {{tipo.label}}
+                                </option>
+                            </select>
+                            <!-- Chevron personalizado (SVG) -->
+                            <div
+                                class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div *ngIf="isFieldInvalid('tipo_firma')" class="text-red-500 text-sm">
+                            {{getFieldError('tipo_firma')}}
+                        </div>
+                    </div>
+
+                    <!-- Nombre del titular -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Nombre del titular del certificado <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" formControlName="nombre_titular"
+                            class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
+                            [class.border-red-500]="isFieldInvalid('nombre_titular')"
+                            placeholder="Ingrese el nombre completo del titular" />
+                        <div *ngIf="isFieldInvalid('nombre_titular')" class="text-red-500 text-sm">
+                            {{getFieldError('nombre_titular')}}
+                        </div>
+                    </div>
+
+                    <!-- NIT asociado -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                NIT asociado <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" formControlName="nit_asociado"
+                                class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                [class.border-red-500]="isFieldInvalid('nit_asociado')" placeholder="000000000-0" />
+                            <div *ngIf="isFieldInvalid('nit_asociado')" class="text-red-500 text-sm">
+                                {{getFieldError('nit_asociado')}}
+                            </div>
+                        </div>
+                        <div></div>
+                    </div>
+
+                    <!-- Fechas -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                Fecha de emisión del certificado <span class="text-red-500">*</span>
+                            </label>
+                            <input type="date" formControlName="fecha_emision"
+                                class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                [class.border-red-500]="isFieldInvalid('fecha_emision')" />
+                            <div *ngIf="isFieldInvalid('fecha_emision')" class="text-red-500 text-sm">
+                                {{getFieldError('fecha_emision')}}
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                Fecha de vencimiento <span class="text-red-500">*</span>
+                            </label>
+                            <input type="date" formControlName="fecha_vencimiento"
+                                class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                [class.border-red-500]="isFieldInvalid('fecha_vencimiento')" />
+                            <div *ngIf="isFieldInvalid('fecha_vencimiento')" class="text-red-500 text-sm">
+                                {{getFieldError('fecha_vencimiento')}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notificación -->
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start space-x-3">
+                        <i class="fas fa-exclamation-triangle text-amber-500 text-lg mt-0.5"></i>
+                        <span class="text-amber-700 text-sm">Recibirá notificación si faltan menos de 30 días para el
+                            vencimiento.</span>
+                    </div>
+
+                    <!-- Archivo certificado -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Archivo de certificado digital (.pfx) <span class="text-red-500">*</span>
+                        </label>
+                        <div
+                            class="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center cursor-pointer hover:border-gray-400 transition-colors">
+                            <input type="file" #fileInput (change)="onFileSelected($event)" class="hidden"
+                                accept=".pfx" />
+
+                            <div id="uploadContent" [class.hidden]="selectedFile">
+                                <button type="button" (click)="fileInput.click()"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors mb-2">
+                                    <i class="fas fa-upload mr-2"></i>
+                                    Adjuntar Archivo
+                                </button>
+                                <p class="text-sm text-gray-500">Máximo 5MB. Solo archivos .pfx</p>
+                            </div>
+
+                            <div id="fileInfo" [class.hidden]="!selectedFile" class="space-y-2">
+                                <i class="fas fa-file-alt text-blue-500 text-2xl"></i>
+                                <p class="text-sm text-gray-700 font-medium">{{fileName}}</p>
+                                <p class="text-xs text-gray-500">{{fileSize}}</p>
+                                <button type="button" (click)="resetFile()"
+                                    class="text-red-600 hover:text-red-800 text-sm">
+                                    <i class="fas fa-times mr-1"></i>
+                                    Quitar archivo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                Contraseña del archivo <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input [type]="showPassword ? 'text' : 'password'" formControlName="contrasena"
+                                    class="w-full px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    [class.border-red-500]="isFieldInvalid('contrasena')"
+                                    placeholder="Ingrese contraseña del certificado" />
+                                <button type="button" (click)="togglePassword()"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                    <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                                </button>
+                            </div>
+                            <div *ngIf="isFieldInvalid('contrasena')" class="text-red-500 text-sm">
+                                {{getFieldError('contrasena')}}
+                            </div>
+                        </div>
+                        <div></div>
+                    </div>
+
+                    <!-- Estado actual -->
+                    <div class="space-y-3">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Estado actual del certificado <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex flex-wrap gap-6">
+                            <label *ngFor="let estado of estadosCertificado"
+                                class="inline-flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" formControlName="estado_actual" [value]="estado.value"
+                                    class="text-blue-600 focus:ring-blue-500 h-4 w-4" />
+                                <span class="text-sm text-gray-700">{{estado.label}}</span>
+                            </label>
+                        </div>
+                        <div *ngIf="isFieldInvalid('estado_actual')" class="text-red-500 text-sm">
+                            {{getFieldError('estado_actual')}}
+                        </div>
+                    </div>
+
+                    <!-- Activar notificación -->
+                    <div class="space-y-2">
+                        <label class="inline-flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" formControlName="activar_notificacion"
+                                class="text-blue-600 focus:ring-blue-500 h-4 w-4 rounded" />
+                            <span class="text-sm text-gray-700">¿Desea activar notificación por vencimiento?</span>
+                        </label>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-6 border-t border-gray-200">
+                        <button type="submit" [disabled]="loading"
+                            class="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center space-x-2 text-sm lg:text-base transition-colors">
+                            <i class="fas fa-upload"></i>
+                            <span>{{editingCertificate ? 'Actualizar' : 'Cargar'}} Certificado</span>
+                        </button>
+
+                        <button type="button" (click)="eliminarCertificado()"
+                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center space-x-2 text-sm lg:text-base transition-colors">
+                            <i class="fas fa-trash"></i>
+                            <span>Eliminar</span>
+                        </button>
+
+                        <button type="button" (click)="verificarValidez()"
+                            class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center space-x-2 text-sm lg:text-base transition-colors">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Verificar</span>
+                        </button>
+
+                        <button type="button" (click)="bloquearFirma()"
+                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center space-x-2 text-sm lg:text-base transition-colors">
+                            <i class="fas fa-ban"></i>
+                            <span>Bloquear</span>
+                        </button>
+                    </div>
+
+                    <!-- Reset Form Button -->
+                    <div class="flex justify-center pt-4" *ngIf="editingCertificate">
+                        <button type="button" (click)="resetForm()"
+                            class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-times mr-2"></i>
+                            Cancelar Edición
+                        </button>
+                    </div>
+
+                </form>
+
+                <!-- Lista de Certificados -->
+                <div class="mt-8 pt-8 border-t border-gray-200">
+                    <h3 class="text-xl font-semibold mb-4">Certificados Registrados</h3>
+
+                    <div *ngIf="certificates.length === 0" class="text-center py-8 text-gray-500">
+                        <i class="fas fa-certificate text-4xl mb-4"></i>
+                        <p>No hay certificados registrados</p>
+                    </div>
+
+                    <div *ngIf="certificates.length > 0" class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Certificado
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Estado
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Fechas
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Emisor
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Acciones
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr *ngFor="let certificate of certificates" class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-certificate text-blue-500 mr-3"></i>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{certificate.nombre_certificado}}
+                                                </div>
+                                                <div class="text-sm text-gray-500">
+                                                    Serial: {{certificate.numero_serial}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                            [ngClass]="{
+                              'bg-green-100 text-green-800': certificate.estado === 'valido',
+                              'bg-red-100 text-red-800': certificate.estado === 'invalido' || certificate.estado === 'revocado',
+                              'bg-yellow-100 text-yellow-800': certificate.estado === 'bloqueado'
+                            }">
+                                            {{certificate.estado | titlecase}}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <div>Inicio: {{certificate.fecha_inicio | date:'dd/MM/yyyy'}}</div>
+                                        <div>Fin: {{certificate.fecha_fin | date:'dd/MM/yyyy'}}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{certificate.entidad_emisora || 'N/A'}}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                        <button (click)="editarCertificado(certificate)"
+                                            class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded">
+                                            <i class="fas fa-edit mr-1"></i>
+                                            Editar
+                                        </button>
+                                        <button (click)="verificarValidez(certificate.id)"
+                                            class="text-orange-600 hover:text-orange-900 bg-orange-50 hover:bg-orange-100 px-2 py-1 rounded">
+                                            <i class="fas fa-check-circle mr-1"></i>
+                                            Verificar
+                                        </button>
+                                        <button (click)="eliminarCertificado(certificate.id)"
+                                            class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-2 py-1 rounded">
+                                            <i class="fas fa-trash mr-1"></i>
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</main>
