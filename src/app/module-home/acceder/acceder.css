@@ -1,0 +1,157 @@
+/* Estilos adicionales personalizados */
+body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  
+  /* Animaciones personalizadas */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+  
+  .animate-fadeInUp {
+    animation: fadeInUp 0.6s ease-out;
+  }
+  
+  .animate-pulse-custom {
+    animation: pulse 2s infinite;
+  }
+  
+  /* Efectos hover para el logo */
+  .logo-container:hover img {
+    transform: scale(1.05) rotate(2deg);
+    transition: transform 0.3s ease;
+  }
+  
+  /* Sombra sutil para el logo */
+  .logo-container img {
+    filter: drop-shadow(0 4px 8px rgba(20, 184, 166, 0.1));
+    transition: all 0.3s ease;
+  }
+  
+  .logo-container:hover img {
+    filter: drop-shadow(0 8px 16px rgba(20, 184, 166, 0.2));
+  }
+  
+  /* Estilos para inputs con mejor UX */
+  input:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(20, 184, 166, 0.15);
+  }
+  
+  /* Botón con efecto ripple */
+  .btn-ripple {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-ripple::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+  
+  .btn-ripple:active::before {
+    width: 300px;
+    height: 300px;
+  }
+  
+  /* Responsive mejoras */
+  @media (max-width: 640px) {
+    .container-main {
+      margin: 1rem;
+      padding: 1.5rem;
+    }
+  
+    h1 {
+      font-size: 2rem !important;
+    }
+  
+    h2 {
+      font-size: 1.5rem !important;
+    }
+  }
+  
+  /* Efectos de carga */
+  .loading {
+    position: relative;
+  }
+  
+  .loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Estilos para notificaciones */
+  .notification-show {
+    opacity: 1 !important;
+    transform: translateX(-50%) translateY(0) !important;
+  }
+  
+  .notification-error {
+    background-color: #ef4444 !important;
+  }
+  
+  .notification-success {
+    background-color: #10b981 !important;
+  }
+  
+  /* Mejoras de accesibilidad */
+  button:focus,
+  input:focus {
+    outline: 2px solid #14b8a6;
+    outline-offset: 2px;
+  }
+  
+  /* Transiciones suaves */
+  * {
+    transition: all 0.2s ease;
+  }
+  
+  
+  
+  .google-btn:hover {
+    background-color: #f9fafb;
+    transform: scale(1.05);
+}

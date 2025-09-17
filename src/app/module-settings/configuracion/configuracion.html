@@ -1,1 +1,243 @@
-<p>configuracion works!</p>
+<div id="overlay" class="hidden fixed inset-0 bg-black/50 z-40 md:hidden"></div>
+<!-- Contenido principal -->
+<main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <div class="-mt-2 mb-2">
+            <h2 class="text-4xl font-semibold mb-5 mt-4">
+                Configuraciones
+            </h2>
+        </div>
+
+        <div class="border-b-2 border-gray-300 w-full "></div>
+
+        <!-- Content Area -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <div class="max-w-7xl mx-auto">
+                <!-- Grid de Configuraciones -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Parámetros Generales -->
+                    <div
+                        class="config-card bg-white rounded-xl shadow-md p-6 border-t border-t-gray-200 hover:shadow-lg">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M9.67106 4.136C9.72616 3.55634 9.99539 3.01804 10.4262 2.62628C10.8569 2.23451 11.4183 2.01743 12.0006 2.01743C12.5828 2.01743 13.1442 2.23451 13.575 2.62628C14.0057 3.01804 14.275 3.55634 14.3301 4.136C14.3632 4.51045 14.486 4.87142 14.6882 5.18834C14.8904 5.50526 15.1659 5.76881 15.4915 5.95668C15.8171 6.14454 16.1832 6.2512 16.5588 6.26762C16.9343 6.28404 17.3083 6.20973 17.6491 6.051C18.1782 5.81078 18.7777 5.77602 19.3311 5.95348C19.8844 6.13095 20.3519 6.50795 20.6426 7.0111C20.9333 7.51426 21.0263 8.10757 20.9037 8.67557C20.7811 9.24357 20.4515 9.74561 19.9791 10.084C19.6714 10.2998 19.4203 10.5866 19.247 10.92C19.0736 11.2534 18.9831 11.6237 18.9831 11.9995C18.9831 12.3753 19.0736 12.7456 19.247 13.079C19.4203 13.4124 19.6714 13.6992 19.9791 13.915C20.4515 14.2534 20.7811 14.7554 20.9037 15.3234C21.0263 15.8914 20.9333 16.4847 20.6426 16.9879C20.3519 17.491 19.8844 17.868 19.3311 18.0455C18.7777 18.223 18.1782 18.1882 17.6491 17.948C17.3083 17.7893 16.9343 17.715 16.5588 17.7314C16.1832 17.7478 15.8171 17.8545 15.4915 18.0423C15.1659 18.2302 14.8904 18.4937 14.6882 18.8107C14.486 19.1276 14.3632 19.4885 14.3301 19.863C14.275 20.4427 14.0057 20.981 13.575 21.3727C13.1442 21.7645 12.5828 21.9816 12.0006 21.9816C11.4183 21.9816 10.8569 21.7645 10.4262 21.3727C9.99539 20.981 9.72616 20.4427 9.67106 19.863C9.638 19.4884 9.51516 19.1273 9.31293 18.8103C9.11069 18.4932 8.83503 18.2296 8.50929 18.0417C8.18355 17.8538 7.81733 17.7472 7.44164 17.7309C7.06595 17.7146 6.69186 17.7891 6.35106 17.948C5.82195 18.1882 5.22239 18.223 4.66906 18.0455C4.11573 17.868 3.64823 17.491 3.35754 16.9879C3.06685 16.4847 2.97377 15.8914 3.09642 15.3234C3.21907 14.7554 3.54866 14.2534 4.02106 13.915C4.32868 13.6992 4.57979 13.4124 4.75315 13.079C4.92651 12.7456 5.01701 12.3753 5.01701 11.9995C5.01701 11.6237 4.92651 11.2534 4.75315 10.92C4.57979 10.5866 4.32868 10.2998 4.02106 10.084C3.54932 9.74544 3.22031 9.24359 3.09796 8.67598C2.97561 8.10837 3.06867 7.51554 3.35904 7.01271C3.64942 6.50988 4.11637 6.13298 4.66915 5.95524C5.22193 5.7775 5.82104 5.81163 6.35006 6.051C6.69082 6.20973 7.0648 6.28404 7.44036 6.26762C7.81592 6.2512 8.18199 6.14454 8.5076 5.95668C8.8332 5.76881 9.10875 5.50526 9.31093 5.18834C9.5131 4.87142 9.63594 4.51045 9.66906 4.136M15.0001 12C15.0001 13.6569 13.6569 15 12.0001 15C10.3432 15 9.00006 13.6569 9.00006 12C9.00006 10.3431 10.3432 9 12.0001 9C13.6569 9 15.0001 10.3431 15.0001 12Z"
+                                        stroke="black" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Parámetros Generales</h3>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Datos básicos de la empresa: nombre, NIT, dirección, moneda, etc.
+                        </p>
+                        <button (click)="navigateParametrosGenerales()"
+                            class="text-cyan-600 hover:text-cyan-800 font-medium flex items-center space-x-2 group">
+                            <span>Configurar</span>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+
+                    <!-- Resoluciones de Facturación -->
+                    <div
+                        class="config-card bg-white rounded-xl shadow-md p-6 border-t border-t-gray-200 hover:shadow-lg">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M14 2V6C14 6.53043 14.2107 7.03914 14.5858 7.41421C14.9609 7.78929 15.4696 8 16 8H20M10 9H8M16 13H8M16 17H8M15 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V7L15 2Z"
+                                        stroke="black" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Resoluciones de Facturación</h3>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Gestión de prefijos, rangos, vigencias y numeración de facturas.
+                        </p>
+                        <button (click)="navigateResolucionFact()"
+                            class="text-cyan-600 hover:text-cyan-800 font-medium flex items-center space-x-2 group">
+                            <span>Administrar</span>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+
+                    <!-- Retención y Respaldo -->
+                    <div
+                        class="config-card bg-white rounded-xl shadow-md p-6 border-t border-t-gray-200 hover:shadow-lg">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M21 5C21 6.65685 16.9706 8 12 8C7.02944 8 3 6.65685 3 5M21 5C21 3.34315 16.9706 2 12 2C7.02944 2 3 3.34315 3 5M21 5V9.3M3 5L3 19C2.99937 19.6487 3.62953 20.28 4.796 20.7992C5.96248 21.3184 7.60243 21.6976 9.47 21.88M3 12C2.99856 12.5592 3.46595 13.1073 4.34943 13.5826C5.23292 14.0579 6.49733 14.4415 8 14.69M12 12V16M12 16H16M12 16L14.09 13.91C14.96 13.04 16.17 12.5 17.5 12.5C18.6935 12.5 19.8381 12.9741 20.682 13.818C21.5259 14.6619 22 15.8065 22 17C22 18.0494 21.6698 19.0722 21.0562 19.9236C20.4426 20.7749 19.5767 21.4116 18.5811 21.7434C17.5856 22.0753 16.5108 22.0855 15.5092 21.7726C14.5075 21.4597 13.6297 20.8395 13 20"
+                                        stroke="black" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Retención y Respaldo</h3>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Configura políticas de almacenamiento y copias de seguridad.
+                        </p>
+                        <button (click)="navigateRetencionRespaldo()"
+                            class="text-cyan-600 hover:text-cyan-800 font-medium flex items-center space-x-2 group">
+                            <span>Definir</span>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+
+                    <!-- Notificaciones y Correos -->
+                    <div
+                        class="config-card bg-white rounded-xl shadow-md p-6 border-t border-t-gray-200 hover:shadow-lg">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M22 13V6C22 5.46957 21.7893 4.96086 21.4142 4.58579C21.0391 4.21071 20.5304 4 20 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V18C2 19.1 2.9 20 4 20H12M22 7L13.03 12.7C12.7213 12.8934 12.3643 12.996 12 12.996C11.6357 12.996 11.2787 12.8934 10.97 12.7L2 7M16 19L18 21L22 17"
+                                        stroke="black" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Notificaciones y Correos</h3>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Personaliza correos electrónicos para facturas, notas y alertas.
+                        </p>
+                        <button (click)="navigateNotificaciones()"
+                            class="text-cyan-600 hover:text-cyan-800 font-medium flex items-center space-x-2 group">
+                            <span>Personalizar</span>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+
+                    <!-- Cambios Normativos -->
+                    <div
+                        class="config-card bg-white rounded-xl shadow-md p-6 border-t border-t-gray-200 hover:shadow-lg">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M21 12C21 9.61305 20.0518 7.32387 18.364 5.63604C16.6761 3.94821 14.3869 3 12 3C9.48395 3.00947 7.06897 3.99122 5.26 5.74L3 8M3 8V3M3 8H8M3 12C3 14.3869 3.94821 16.6761 5.63604 18.364C7.32387 20.0518 9.61305 21 12 21C14.516 20.9905 16.931 20.0088 18.74 18.26L21 16M21 16H16M21 16V21"
+                                        stroke="black" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Cambios Normativos</h3>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Información sobre actualizaciones automáticas y versiones.
+                        </p>
+                        <button (click)="navigateCambios()"
+                            class="text-cyan-600 hover:text-cyan-800 font-medium flex items-center space-x-2 group">
+                            <span>Ver Estado</span>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+
+                    <!-- Certificado Digital -->
+                    <div
+                        class="config-card bg-white rounded-xl shadow-md p-6 border-t border-t-gray-200 hover:shadow-lg">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M9 12L11 14L15 10M20 13C20 18 16.5 20.5 12.34 21.95C12.1222 22.0238 11.8855 22.0203 11.67 21.94C7.5 20.5 4 18 4 13V6C4 5.73478 4.10536 5.48043 4.29289 5.29289C4.48043 5.10536 4.73478 5 5 5C7 5 9.5 3.8 11.24 2.28C11.4519 2.099 11.7214 1.99955 12 1.99955C12.2786 1.99955 12.5481 2.099 12.76 2.28C14.51 3.81 17 5 19 5C19.2652 5 19.5196 5.10536 19.7071 5.29289C19.8946 5.48043 20 5.73478 20 6V13Z"
+                                        stroke="black" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Certificado Digital</h3>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Subida, vigencia y gestión de la firma electrónica del sistema.
+                        </p>
+                        <button (click)="navigateCertificados()"
+                            class="text-cyan-600 hover:text-cyan-800 font-medium flex items-center space-x-2 group">
+                            <span>Gestionar</span>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+
+                    <!-- Impuestos y Retenciones -->
+                    <div
+                        class="config-card bg-white rounded-xl shadow-md p-6 border-t border-t-gray-200 hover:shadow-lg">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M19 5L5 19M9 6.5C9 7.88071 7.88071 9 6.5 9C5.11929 9 4 7.88071 4 6.5C4 5.11929 5.11929 4 6.5 4C7.88071 4 9 5.11929 9 6.5ZM20 17.5C20 18.8807 18.8807 20 17.5 20C16.1193 20 15 18.8807 15 17.5C15 16.1193 16.1193 15 17.5 15C18.8807 15 20 16.1193 20 17.5Z"
+                                        stroke="black" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Impuestos y Retenciones</h3>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Configuración de IVA, ReteFuente, ReteICA, Impoconsumo y otros.
+                        </p>
+                        <button (click)="navigateImpuestos()"
+                            class="text-cyan-600 hover:text-cyan-800 font-medium flex items-center space-x-2 group">
+                            <span>Ver</span>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+
+                    <!-- video manual de usuario -->
+                    <div
+                        class="config-card bg-white rounded-xl shadow-md p-6 border-t border-t-gray-200 hover:shadow-lg">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M7 21H17M15.033 9.44C15.1312 9.49683 15.2127 9.57849 15.2694 9.67678C15.3261 9.77507 15.3559 9.88654 15.3559 10C15.3559 10.1135 15.3261 10.2249 15.2694 10.3232C15.2127 10.4215 15.1312 10.5032 15.033 10.56L10.968 12.912C10.8698 12.9688 10.7584 12.9987 10.645 12.9987C10.5316 12.9987 10.4202 12.9688 10.322 12.912C10.2238 12.8552 10.1424 12.7735 10.0858 12.6752C10.0293 12.5769 9.9997 12.4654 10 12.352V7.648C9.9998 7.53473 10.0294 7.42341 10.0859 7.32523C10.1424 7.22705 10.2237 7.14548 10.3218 7.08871C10.4198 7.03195 10.531 7.002 10.6443 7.00187C10.7576 7.00175 10.8689 7.03145 10.967 7.088L15.033 9.44ZM4 3H20C21.1046 3 22 3.89543 22 5V15C22 16.1046 21.1046 17 20 17H4C2.89543 17 2 16.1046 2 15V5C2 3.89543 2.89543 3 4 3Z"
+                                        stroke="black" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Link VIdeo</h3>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Conexiones con sistemas externos: ERP, CRM o pasarelas de pago.
+                        </p>
+                        <button (click)="navigateVideos()"
+                            class="text-cyan-600 hover:text-cyan-800 font-medium flex items-center space-x-2 group">
+                            <span>Conectar</span>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</main>
