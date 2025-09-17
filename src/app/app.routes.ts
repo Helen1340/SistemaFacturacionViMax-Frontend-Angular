@@ -5,7 +5,8 @@ import { RegitrarServicio } from './module-product-service/regitrar-servicio/reg
 import { Clientes } from './module-clients/clientes/clientes';
 import { Reportes } from './module-reports/reportes/reportes';
 import { Usuarios } from './module-users/usuarios/usuarios';
-import { Contingencia } from './module-contingency/contingencia/contingencia';
+import { Contingencia } from './module-contingency/contingencia/Contingency/contingencia';
+import { FacturaContingencia } from './module-contingency/contingencia/Contingency/Contingency invoices/factura-contingencia';
 import { RecepcionDocumentos } from './module-document-reception/recepcion-documentos/recepcion-documentos';
 import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
 import { Configuracion } from './module-settings/configuracion/configuracion';
@@ -64,10 +65,10 @@ export const routes: Routes = [
 
   //ESPACIO PARA LAS RUTAS DE DAVID (MODULE FACTURAS, CLIENTES)
   { path: '', redirectTo: 'facturas-notas', pathMatch: 'full' }, // redirige al inicio
-  { path: 'facturas-notas', component: FacturasNotas} ,  
+  { path: 'facturas-notas', component: FacturasNotas} ,
   {path: `clientes`, component: Clientes},
   // ... otras rutas
-     
+
 
 
 
@@ -95,10 +96,10 @@ export const routes: Routes = [
   { path: 'productos-servicios', component: ProductosServicios},
   {path: 'registrar-producto', component: RegistrarProducto},
   {path: 'registrar-servicio',component: RegitrarServicio},
-  
+
   // ... otras rutas
-     
-  
+
+
 
 
 
@@ -154,6 +155,7 @@ export const routes: Routes = [
 
   //ESPACIO PARA LAS RUTAS DE CARLOS (MODULE CONTINGENCIA, RECEPCION_DOCUMENTOS, NOTIFICACIONES)
 {path: 'contingencia',component: Contingencia},
+{path: 'facturas-contingencia',component: FacturaContingencia},
 {path: 'recepción-documentos',component: RecepcionDocumentos},
 {path: 'notificaciones',component: Notificaciones},
 

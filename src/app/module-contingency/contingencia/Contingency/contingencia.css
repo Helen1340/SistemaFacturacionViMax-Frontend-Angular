@@ -1,0 +1,189 @@
+/* Estilos para el componente de Contingencia */
+/* Estos estilos están diseñados para no interferir con las clases de Tailwind existentes */
+
+/* Título principal - mismo estilo que factura-contingencia */
+.contingency-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #374151;
+  margin: 0;
+  font-family: inherit;
+}
+
+/* Contenedor principal - mantiene la estructura actual */
+.contingencia-container {
+  /* Estilos base que no afectan la apariencia actual */
+}
+
+/* Estilos para las tarjetas - compatibles con Tailwind */
+.card {
+  /* Estilos base que no interfieren con las clases de Tailwind */
+}
+
+/* Estilos para botones - compatibles con las clases existentes */
+.btn-activate,
+.btn-view {
+  /* Estilos base que no alteran la apariencia actual */
+}
+
+/* Estilos para la tabla - compatibles con Tailwind */
+.contingencia-table {
+  /* Estilos base que no interfieren con las clases de Tailwind */
+}
+
+/* Estilos para badges de estado - compatibles con las clases existentes */
+.status-badge {
+  /* Estilos base que no alteran la apariencia actual */
+}
+
+/* Estilos para hover effects - solo se aplican si no hay conflictos */
+.card:hover {
+  /* Efectos hover que no interfieren con Tailwind */
+}
+
+/* Estilos para transiciones - compatibles con las existentes */
+.transition-smooth {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Estilos para responsive design - solo se aplican si es necesario */
+@media (max-width: 768px) {
+  .contingencia-container {
+    /* Estilos móviles que no interfieren con Tailwind */
+  }
+}
+
+/* Estilos para accesibilidad - no afectan la apariencia visual */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Estilos para estados de focus - compatibles con Tailwind */
+button:focus,
+input:focus {
+  /* Estilos de focus que no interfieren con Tailwind */
+}
+
+/* Estilos para animaciones - solo se aplican si no hay conflictos */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Estilos para utilidades - no afectan la apariencia actual */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Estilos para espaciado - compatibles con Tailwind */
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-5 { margin-bottom: 1.25rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 0.75rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-5 { margin-top: 1.25rem; }
+.mt-6 { margin-top: 1.5rem; }
+
+/* Estilos para padding - compatibles con Tailwind */
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 0.75rem; }
+.p-4 { padding: 1rem; }
+.p-5 { padding: 1.25rem; }
+.p-6 { padding: 1.5rem; }
+
+/* Estilos para colores - solo se aplican si no hay conflictos con Tailwind */
+.text-primary {
+  color: #3b82f6;
+}
+
+.text-secondary {
+  color: #6b7280;
+}
+
+.text-success {
+  color: #10b981;
+}
+
+.text-warning {
+  color: #f59e0b;
+}
+
+.text-error {
+  color: #ef4444;
+}
+
+/* Estilos para backgrounds - compatibles con Tailwind */
+.bg-primary {
+  background-color: #3b82f6;
+}
+
+.bg-secondary {
+  background-color: #6b7280;
+}
+
+.bg-success {
+  background-color: #10b981;
+}
+
+.bg-warning {
+  background-color: #f59e0b;
+}
+
+.bg-error {
+  background-color: #ef4444;
+}
+
+/* Estilos para bordes - compatibles con Tailwind */
+.border-primary {
+  border-color: #3b82f6;
+}
+
+.border-secondary {
+  border-color: #6b7280;
+}
+
+.border-success {
+  border-color: #10b981;
+}
+
+.border-warning {
+  border-color: #f59e0b;
+}
+
+.border-error {
+  border-color: #ef4444;
+}
+
+
+
