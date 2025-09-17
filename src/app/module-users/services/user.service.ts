@@ -49,5 +49,48 @@ export class UserService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  
+  // Funciones para manejar el nombre comercial temporal en la descripción
+
+  getTempCommercialName(user: User): string | null {
+    if (user.descripcion?.startsWith('TEMP_COMMERCIAL_NAME:')) {
+      return user.descripcion.replace('TEMP_COMMERCIAL_NAME:', '');
+    }
+    return null;
+  }
+
+  clearTempCommercialName(userId: number): Observable<User> {
+    return this.http.patch<User>(`${this.apiUrl}/${userId}`, {
+      descripcion: null
+    });
+  }
+
+  // Método para verificar si un usuario existe por email
+  getUserByEmail(email: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}?email=${email}`);
+  }
+
+
+  /*
+  // En el ngOnInit o donde inicialices el formulario de empresa
+
+  ngOnInit() {
+    // Obtener el usuario actual (desde tu servicio de autenticación)
+    const currentUser = this.authService.getCurrentUser(); // o como obtengas el usuario actual
+    
+    if (currentUser) {
+      const tempCommercialName = this.userService.getTempCommercialName(currentUser);
+      
+      if (tempCommercialName) {
+        // Pre-llenar el formulario con el nombre comercial
+        this.empresaForm.patchValue({
+          nombreComercial: tempCommercialName
+        });
+        
+        // Opcional: Mostrar mensaje informativo
+        this.showNotification('Se ha cargado el nombre comercial de tu registro', 'info');
+      }
+    }
+    
+  }
+  */
 }

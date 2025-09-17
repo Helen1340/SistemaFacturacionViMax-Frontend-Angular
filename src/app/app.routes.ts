@@ -79,7 +79,7 @@ export const routes: Routes = [
 
 
   //ESPACIO PARA LAS RUTAS DE DAVID (MODULE FACTURAS, CLIENTES)
-  { path: '', redirectTo: 'registro', pathMatch: 'full' }, // redirige al inicio
+  { path: '', redirectTo: '', pathMatch: 'full' }, // redirige al inicio
   { path: 'facturas-notas', component: FacturasNotas} ,  
   {path: `clientes`, component: Clientes},
   // ... otras rutas
@@ -129,6 +129,7 @@ export const routes: Routes = [
   //ESPACIO PARA LAS RUTAS DE WILFRAN (MODULE REPORTES, USUARIOS)
 
   //rutes home
+  { path: 'login', component: Acceder },
   { path: 'acceso', component: Acceder },
   { path: 'registro', component: Registro },
 
@@ -219,7 +220,7 @@ export const routes: Routes = [
 
 
 //ESPACIO PARA LAS RUTAS DE (MODULE COFIGURACIONES)
-  {path: 'configuración',component:Configuracion},
+  {path: 'configuracion',component:Configuracion},
   {path: 'certiifcacido-digital', component: CertificadoDigital},
   {path: 'notificaciones-email',component: NotificacionesEmails},
 

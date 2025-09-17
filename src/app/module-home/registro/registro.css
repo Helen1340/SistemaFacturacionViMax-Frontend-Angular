@@ -1,0 +1,15 @@
+ .text-vimax-blue {
+      color: #00AFB9;
+    }
+    .bg-vimax-light {
+      background-color: #9CD2D3;
+    }
+    .bg-vimax-dark {
+      background-color: #0799B6;
+    }
+    .bg-vimax-darker {
+      background-color: #0689A3;
+    }
+    .focus\\:shadow-vimax:focus {
+      box-shadow: 0 0 0 2px #00AFB9;
+    }
