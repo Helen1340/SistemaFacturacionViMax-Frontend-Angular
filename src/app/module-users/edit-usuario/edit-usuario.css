@@ -1,0 +1,103 @@
+/* Estilos específicos para el componente editar-usuario */
+
+/* Estilos para el formulario */
+.form-container {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Animaciones para las notificaciones */
+.notification-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.notification-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.3s ease-out;
+}
+
+.notification-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.notification-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease-in;
+}
+
+/* Estilos para inputs con error */
+.input-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 1px #ef4444;
+}
+
+/* Estilos para el loading spinner */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Estilos responsivos adicionales */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .button-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .button-group button {
+    width: 100%;
+  }
+}
+
+/* Estilos para mejorar la accesibilidad */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  ring: 2px solid #14b8a6;
+  border-color: #14b8a6;
+}
+
+/* Estilos para los checkboxes */
+input[type="checkbox"]:checked {
+  background-color: #14b8a6;
+  border-color: #14b8a6;
+}
+
+/* Estilo para el contenedor de scroll */
+.scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

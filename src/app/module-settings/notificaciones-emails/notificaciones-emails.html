@@ -1,0 +1,121 @@
+<main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
+
+    <!-- Botón hamburguesa solo visible en móvil -->
+    <button onclick="toggleSidebar()" class="fixed top-1 right-4 z-50 p-2 rounded md:hidden">
+        <!-- Icono 3 líneas -->
+        <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+
+    <div class="-mt-4 mb-2">
+        <h2 class="text-4xl font-semibold mb-10 mt-8">
+            Preferencias de Notificaciones
+        </h2>
+    </div>
+
+    <div class="border-b-2 border-gray-300 w-full mb-8"></div>
+
+    <div class="w-full p-6">
+
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <table class="min-w-full text-sm text-left">
+                <thead class="bg-gray-100 text-gray-700">
+                    <tr>
+                        <th class="px-6 py-3">Tipo de Notificación</th>
+                        <th class="px-6 py-3">Descripción</th>
+                        <th class="px-6 py-3 text-center">Activar</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-800">
+                    <!-- 1 -->
+                    <tr class="border-t">
+                        <td class="px-6 py-4 font-medium">Factura aceptada</td>
+                        <td class="px-6 py-4">Recibir notificación cuando la DIAN acepte una factura.</td>
+                        <td class="px-6 py-4 text-center">
+                            <input type="checkbox" class="w-5 h-5 text-cyan-600 accent-cyan-600 rounded">
+                        </td>
+                    </tr>
+
+                    <!-- 2 -->
+                    <tr class="border-t">
+                        <td class="px-6 py-4 font-medium">Factura rechazada</td>
+                        <td class="px-6 py-4">Recibir aviso si la DIAN rechaza una factura emitida.</td>
+                        <td class="px-6 py-4 text-center">
+                            <input type="checkbox" class="w-5 h-5 text-cyan-600 accent-cyan-600 rounded">
+                        </td>
+                    </tr>
+
+                    <!-- 3 -->
+                    <tr class="border-t">
+                        <td class="px-6 py-4 font-medium">Recordatorio de vencimiento</td>
+                        <td class="px-6 py-4">Alertas antes del vencimiento de una factura pendiente.</td>
+                        <td class="px-6 py-4 text-center">
+                            <input type="checkbox" class="w-5 h-5 text-cyan-600 accent-cyan-600 rounded">
+                        </td>
+                    </tr>
+
+                    <!-- 4 -->
+                    <tr class="border-t">
+                        <td class="px-6 py-4 font-medium">Nota crédito / débito</td>
+                        <td class="px-6 py-4">Ser notificado cuando se emita una nota asociada a una factura.</td>
+                        <td class="px-6 py-4 text-center">
+                            <input type="checkbox" class="w-5 h-5 text-cyan-600 accent-cyan-600 rounded">
+                        </td>
+                    </tr>
+
+                    <!-- 5 -->
+                    <tr class="border-t">
+                        <td class="px-6 py-4 font-medium">Pago recibido</td>
+                        <td class="px-6 py-4">Confirmación cuando un cliente registra un pago.</td>
+                        <td class="px-6 py-4 text-center">
+                            <input type="checkbox" class="w-5 h-5 text-cyan-600 accent-cyan-600 rounded">
+                        </td>
+                    </tr>
+
+                    <!-- 6 NUEVA -->
+                    <tr class="border-t">
+                        <td class="px-6 py-4 font-medium">Usuario nuevo creado</td>
+                        <td class="px-6 py-4">Notificación al administrador cuando se cree un nuevo usuario en el
+                            sistema.</td>
+                        <td class="px-6 py-4 text-center">
+                            <input type="checkbox" class="w-5 h-5 text-cyan-600 accent-cyan-600 rounded">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- BOTONES -->
+        <div class="flex justify-end gap-4 mt-6">
+            <button onclick="guardarNotificaciones()"
+                class="bg-cyan-600 text-white px-6 py-2 rounded hover:bg-cyan-700 text-sm">Guardar</button>
+            <button class="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500 text-sm">Cancelar</button>
+        </div>
+
+        <!-- Notificación de éxito -->
+        <div id="notificacion"
+            class="hidden fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+            <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>¡Preferencias de notificaciones guardadas!</span>
+            </div>
+        </div>
+
+        <script>
+            function guardarNotificaciones() {
+                // Simular guardado
+                const notificacion = document.getElementById('notificacion');
+                notificacion.classList.remove('hidden');
+
+                // Ocultar notificación después de 3 segundos
+                setTimeout(() => {
+                    notificacion.classList.add('hidden');
+                }, 3000);
+            }
+        </script>
+    </div>
+
+</main>
