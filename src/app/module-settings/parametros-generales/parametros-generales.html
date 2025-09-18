@@ -1,1 +1,140 @@
-<p>parametros-generales works!</p>
+<main class="w-full p-4 flex-1 overflow-auto">
+    <!-- Título -->
+    <div class="pt-2">
+        <h2 class="text-3xl font-semibold text-gray-800">Parámetros Generales de la Empresa</h2>
+        <div class="border-b-2 border-gray-300 w-full pt-6"></div>
+    </div>
+
+    <!-- Logo -->
+    <div class="flex flex-col items-center mt-6 mb-6">
+        <div class="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden shadow-md mb-3">
+            <img *ngIf="logoPreview" [src]="logoPreview" alt="Logo Preview" class="object-cover w-full h-full" />
+            <span *ngIf="!logoPreview" class="text-gray-500 text-sm">Logo</span>
+        </div>
+        <label class="text-sm font-medium text-gray-700 mb-2">Logo de la empresa</label>
+        <input type="file" (change)="onLogoSelected($event)" class="text-sm border border-gray-300 rounded px-2 py-1 cursor-pointer" />
+    </div>
+
+    <!-- Formulario -->
+    <form [formGroup]="form" (ngSubmit)="guardar()"
+        class="grid grid-cols-1 lg:grid-cols-3 gap-10  mx-36 text-sm text-black  p-8 rounded-2xl shadow-lg border border-gray-100 ">
+
+        <!-- Columna 1 -->
+        <div class="space-y-2">
+            <h1 class="font-semibold text-lg text-gray-800 pb-1">Detalles de la Empresa</h1>
+            <div>
+                <label class="block font-medium mb-1">Razón social </label>
+                <input formControlName="razonSocial" type="text"
+                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+            </div>
+            <div>
+                <label class="block font-medium mb-1">Nombre Comercial</label>
+                <input formControlName="nombreComercial" type="text"
+                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+            </div>
+            <div>
+                <label class="block font-medium mb-1">NIT</label>
+                <input formControlName="nit" type="text"
+                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+            </div>
+            <div>
+                <label class="block font-medium mb-1">Régimen tributario</label>
+                <select formControlName="regimen"
+                    class="w-full border border-gray-300 rounded px-3 py-2 bg-white ">
+                    <option value="">Seleccione...</option>
+                    <option>Regimen Ordinario</option>
+                    <option>Régimen Simple de Tributación (RTS)</option>
+                    <option>Régimen Tributario Especial (RTE)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-medium mb-1">Actividad Económica</label>
+                <input formControlName="actividadEconomica" type="text"
+                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+            </div>
+            <div class="flex items-center">
+                <input formControlName="iva" type="checkbox" class="mr-2 accent-cyan-600" />
+                <label class="block font-medium mb-1">¿Es responsable del IVA?</label>
+            </div>
+        </div>
+
+        <!-- Columna 2 -->
+        <div class="space-y-2">
+            <h1 class="font-semibold text-lg text-gray-800 pb-1">Informacion basica</h1>
+            <div>
+                <label class="block font-medium mb-1">Dirección</label>
+                <input formControlName="direccion" type="text"
+                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+            </div>
+            <div>
+                <label class="block font-medium mb-1">Municipio</label>
+                <input formControlName="municipio" type="text"
+                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+            </div>
+            <div>
+                <label class="block font-medium mb-1">Departamento</label>
+                <input formControlName="departamento" type="text"
+                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+            </div>
+            <div>
+                <label class="block font-medium mb-1">País</label>
+                <input formControlName="pais" type="text"
+                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+            </div>
+            <div>
+                <label class="block font-medium mb-1">Teléfono</label>
+                <input formControlName="telefono" type="text"
+                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+            </div>
+            <div>
+                <label class="block font-medium mb-1">Correo electrónico</label>
+                <input formControlName="correo" type="email"
+                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+            </div>
+        </div>
+
+        <!-- Columna 3 -->
+        <div class="space-y-2">
+            <h1 class="font-semibold text-lg text-gray-800 pb-1">Representante Legal</h1>
+            <div formGroupName="representante" class="space-y-4">
+                <div>
+                    <label class="block font-medium mb-1">Nombre completo</label>
+                    <input formControlName="nombre" type="text"
+                        class="w-full border border-gray-300 rounded px-3 py-2 " />
+                </div>
+                <div>
+                    <label class="block font-medium mb-1">Tipo de Documento</label>
+                    <select formControlName="tipoDocumento"
+                        class="w-full border border-gray-300 rounded px-3 py-2 bg-white ">
+                        <option value="">Seleccione...</option>
+                        <option>Cédula de Ciudadanía</option>
+                        <option>Cédula de Extranjería</option>
+                        <option>Tarjeta de Identidad</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-medium mb-1">Número de Documento</label>
+                    <input formControlName="numeroDocumento" type="text"
+                        class="w-full border border-gray-300 rounded px-3 py-2 " />
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Botones -->
+    <div class="mt-10 flex justify-center gap-6">
+        <button (click)="guardar()"
+            class="bg-cyan-600 text-white px-8 py-2 rounded-lg hover:bg-cyan-700 shadow-md transition">
+            Guardar
+        </button>
+        <button type="reset" (click)="form.reset(); logoPreview = null"
+            class="bg-gray-500 text-white px-8 py-2 rounded-lg hover:bg-gray-600 shadow-md transition">
+            Cancelar
+        </button>
+    </div>
+
+    <!-- Notificación -->
+    <div *ngIf="notificacion" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        ¡Parámetros guardados exitosamente!
+    </div>
+</main>
