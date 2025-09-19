@@ -8,7 +8,6 @@ import { Usuarios } from './module-users/usuarios/usuarios';
 import { Contingencia } from './module-contingency/contingencia/Contingency/contingencia';
 import { FacturaContingencia } from './module-contingency/contingencia/Contingency/Contingency invoices/factura-contingencia';
 import { RecepcionDocumentos } from './module-document-reception/recepcion-documentos/recepcion-documentos';
-import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
 import { Configuracion } from './module-settings/configuracion/configuracion';
 import { FacturasNotas } from './module-invoices-notes/facturas-notas/facturas-notas';
 import { RegistrarProductoComponent } from './module-product-service/registrar-producto/registrar-producto';
@@ -28,7 +27,8 @@ import { ParametrosGenerales } from './module-settings/parametros-generales/para
 import { NuevaFactura } from './module-invoices-notes/nueva-factura/nueva-factura';
 import { EditarFactura } from './module-invoices-notes/editar-facturas/editar-facturas';
 import { NuevaNotaComponent } from './module-invoices-notes/nueva-nota/nueva-nota';
-import { DetalleFacturas } from './module-invoices-notes/detalle-facturas/d
+import { DetalleFacturas } from './module-invoices-notes/detalle-facturas/detalle-facturas';
+import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
 
 
 
@@ -197,6 +197,9 @@ export const routes: Routes = [
 {path: 'contingencia',component: Contingencia},
 {path: 'facturas-contingencia',component: FacturaContingencia},
 {path: 'recepción-documentos',component: RecepcionDocumentos},
+{path: 'notificaciones', component: Notificaciones},
+
+
 
 
 
