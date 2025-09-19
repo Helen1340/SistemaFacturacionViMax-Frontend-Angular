@@ -12,7 +12,6 @@ import { Notificaciones } from './module-notifications/notificaciones/notificaci
 import { Configuracion } from './module-settings/configuracion/configuracion';
 import { FacturasNotas } from './module-invoices-notes/facturas-notas/facturas-notas';
 import { RegistrarProductoComponent } from './module-product-service/registrar-producto/registrar-producto';
-
 import { NuevoUsuario } from './module-users/nuevo-usuario/nuevo-usuario';
 import { EditUsuario } from './module-users/edit-usuario/edit-usuario';
 import { VerUsuario } from './module-users/ver-usuario/ver-usuario';
@@ -26,6 +25,10 @@ import { NotificacionesEmails } from './module-settings/notificaciones-emails/no
 import { Acceder } from './module-home/acceder/acceder';
 import { Registro } from './module-home/registro/registro';
 import { ParametrosGenerales } from './module-settings/parametros-generales/parametros-generales';
+import { NuevaFactura } from './module-invoices-notes/nueva-factura/nueva-factura';
+import { EditarFactura } from './module-invoices-notes/editar-facturas/editar-facturas';
+import { NuevaNotaComponent } from './module-invoices-notes/nueva-nota/nueva-nota';
+import { DetalleFacturas } from './module-invoices-notes/detalle-facturas/d
 
 
 
@@ -87,6 +90,10 @@ export const routes: Routes = [
   { path: '', redirectTo: '', pathMatch: 'full' }, // redirige al inicio
   { path: 'facturas-notas', component: FacturasNotas} ,  
   {path: `clientes`, component: Clientes},
+  { path: 'nueva-factura', component: NuevaFactura },
+  { path: 'nueva-nota', component: NuevaNotaComponent },
+  { path: 'editar-facturas/:id', component: EditarFactura },
+  { path: 'detalle-facturas/:id', component: DetalleFacturas },
   // ... otras rutas
 
 
