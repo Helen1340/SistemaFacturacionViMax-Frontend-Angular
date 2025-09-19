@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { ProductosServicios } from './module-product-service/productos-servicios/productos-servicios';
+
 import { RegitrarServicio } from './module-product-service/regitrar-servicio/regitrar-servicio';
 import { Clientes } from './module-clients/clientes/clientes';
 import { Reportes } from './module-reports/reportes/reportes';
@@ -30,51 +31,226 @@ import { NotificacionesEmails } from './module-settings/notificaciones-emails/no
 import { Acceder } from './module-home/acceder/acceder';
 import { Registro } from './module-home/registro/registro';
 
-export const routes: Routes = [
-  // Ruta por defecto
-  { path: '', redirectTo: 'facturas-notas', pathMatch: 'full' },
+  
 
-  // ESPACIO PARA LAS RUTAS DE DAVID (MODULE FACTURAS, CLIENTES)
-  { path: 'facturas-notas', component: FacturasNotas },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export const routes: Routes = [
+
+
+
+  //ESPACIO PARA LAS RUTAS DE DAVID (MODULE FACTURAS, CLIENTES)
+
+  { path: '', redirectTo: 'facturas-notas', pathMatch: 'full' }, // redirige al inicio
+  { path: 'facturas-notas', component: FacturasNotas} ,
   { path: 'nueva-factura', component: NuevaFactura },
   { path: 'nueva-nota', component: NuevaNotaComponent },
   { path: 'editar-facturas/:id', component: EditarFactura },
   { path: 'detalle-facturas/:id', component: DetalleFacturas },
-  { path: 'clientes', component: Clientes },
+  { path: '', redirectTo: '', pathMatch: 'full' }, // redirige al inicio
+  { path: 'facturas-notas', component: FacturasNotas} ,  
+  {path: `clientes`, component: Clientes},
+  // ... otras rutas
 
-  // ESPACIO PARA LAS RUTAS DE HELEN (MODULE PRODUCTOS)
-  { path: 'productos-servicios', component: ProductosServicios },
-  { path: 'registrar-producto', component: RegistrarProductoComponent },
-  { path: 'registrar-servicio', component: RegitrarServicio },
 
-  // ESPACIO PARA LAS RUTAS DE WILFRAN (MODULE REPORTES, USUARIOS)
-  // Rutas home
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //ESPACIO PARA LAS RUTAS DE HELEN (MODULE PRODUCTOS)
+  { path: 'productos-servicios', component: ProductosServicios},
+  {path: 'registrar-producto', component: RegistrarProductoComponent},
+  {path: 'registrar-servicio',component: RegitrarServicio},
+
+  // ... otras rutas
+
+
+
+
+
+
+
+
+
+
+
+
+  //ESPACIO PARA LAS RUTAS DE WILFRAN (MODULE REPORTES, USUARIOS)
+
+  //rutes home
   { path: 'login', component: Acceder },
   { path: 'acceso', component: Acceder },
   { path: 'registro', component: Registro },
 
-  // Rutas de reportes
-  { path: 'reportes', component: Reportes },
-  { path: 'reportes-facturas', component: ReporteFacturas },
-  { path: 'reporte-pagos', component: ReportePagos },
-  { path: 'reporte-clientes', component: ReporteClientes },
-  { path: 'reporte-usuarios', component: ReporteUsuarios },
-  { path: 'reporte-impuestos', component: ReporteImpuestos },
 
-  // Rutas de usuarios
-  { path: 'usuarios', component: Usuarios },
-  { path: 'nuevo-usuario', component: NuevoUsuario },
-  { path: 'editar-usuario/:id', component: EditUsuario },
-  { path: 'ver-usuario/:id', component: VerUsuario },
+  {path: 'reportes',component: Reportes},
+  {path: 'usuarios',component: Usuarios},
+  {path: 'nuevo-usuario', component: NuevoUsuario},
+  {path: 'editar-usuario/:id', component: EditUsuario},
+  {path: 'ver-usuario/:id', component: VerUsuario},
 
-  // ESPACIO PARA LAS RUTAS DE CARLOS (MODULE CONTINGENCIA, RECEPCION_DOCUMENTOS, NOTIFICACIONES)
-  { path: 'contingencia', component: Contingencia },
-  { path: 'facturas-contingencia', component: FacturaContingencia },
-  { path: 'recepción-documentos', component: RecepcionDocumentos },
-  { path: 'notificaciones', component: Notificaciones },
+  {path: 'reportes-facturas', component: ReporteFacturas},
+  {path: 'reporte-pagos', component: ReportePagos},
+  {path: 'reporte-clientes', component: ReporteClientes },
+  {path: 'reporte-usuarios', component: ReporteUsuarios},
+  {path: 'reporte-impuestos', component: ReporteImpuestos},
 
-  // ESPACIO PARA LAS RUTAS DE CONFIGURACIONES
-  { path: 'configuracion', component: Configuracion },
-  { path: 'certificado-digital', component: CertificadoDigital },
-  { path: 'notificaciones-email', component: NotificacionesEmails },
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //ESPACIO PARA LAS RUTAS DE CARLOS (MODULE CONTINGENCIA, RECEPCION_DOCUMENTOS, NOTIFICACIONES)
+{path: 'contingencia',component: Contingencia},
+{path: 'facturas-contingencia',component: FacturaContingencia},
+{path: 'recepción-documentos',component: RecepcionDocumentos},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//ESPACIO PARA LAS RUTAS DE (MODULE COFIGURACIONES)
+  {path: 'configuracion',component:Configuracion},
+  {path: 'certiifcacido-digital', component: CertificadoDigital},
+  {path: 'notificaciones-email',component: NotificacionesEmails},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ];
+
