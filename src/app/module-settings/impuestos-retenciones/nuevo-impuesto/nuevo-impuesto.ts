@@ -15,8 +15,10 @@ interface ImpuestoDIAN {
 
 @Component({
   selector: 'app-nuevo-impuesto',
+  standalone: true,
   imports: [CommonModule],
-  templateUrl: './nuevo-impuesto.html'
+  templateUrl: './nuevo-impuesto.html',
+  styleUrl: './nuevo-impuesto.css'
 })
 export class NuevoImpuesto implements OnInit {
   
