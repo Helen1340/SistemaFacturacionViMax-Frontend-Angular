@@ -22,7 +22,7 @@ export class App {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
-        const hiddenRoutes = ['/inicio', '/login', '/registro', '/configuracion'];
+        const hiddenRoutes = ['/inicio', '/login', '/registro', '/configuracion', '/parametros-generales'];
         this.showLayout = !hiddenRoutes.includes(event.urlAfterRedirects);
       });
   }

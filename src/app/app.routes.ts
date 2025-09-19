@@ -10,7 +10,6 @@ import { Usuarios } from './module-users/usuarios/usuarios';
 import { Contingencia } from './module-contingency/contingencia/Contingency/contingencia';
 import { FacturaContingencia } from './module-contingency/contingencia/Contingency/Contingency invoices/factura-contingencia';
 import { RecepcionDocumentos } from './module-document-reception/recepcion-documentos/recepcion-documentos';
-import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
 import { Configuracion } from './module-settings/configuracion/configuracion';
 import { ImpuestosRetenciones } from './module-settings/impuestos-retenciones/impuestos-retenciones';
 import { NuevoImpuesto } from './module-settings/impuestos-retenciones/nuevo-impuesto/nuevo-impuesto';
@@ -21,7 +20,6 @@ import { EditarFactura } from './module-invoices-notes/editar-facturas/editar-fa
 import { NuevaNotaComponent } from './module-invoices-notes/nueva-nota/nueva-nota';
 import { DetalleFacturas } from './module-invoices-notes/detalle-facturas/detalle-facturas';
 import { RegistrarProductoComponent } from './module-product-service/registrar-producto/registrar-producto';
-
 import { NuevoUsuario } from './module-users/nuevo-usuario/nuevo-usuario';
 import { EditUsuario } from './module-users/edit-usuario/edit-usuario';
 import { VerUsuario } from './module-users/ver-usuario/ver-usuario';
@@ -34,8 +32,8 @@ import { CertificadoDigital } from './module-settings/certificado-digital/certif
 import { NotificacionesEmails } from './module-settings/notificaciones-emails/notificaciones-emails';
 import { Acceder } from './module-home/acceder/acceder';
 import { Registro } from './module-home/registro/registro';
-
-  
+import { ParametrosGenerales } from './module-settings/parametros-generales/parametros-generales';
+import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
 
 
 
@@ -91,19 +89,15 @@ export const routes: Routes = [
   //ESPACIO PARA LAS RUTAS DE DAVID (MODULE FACTURAS, CLIENTES)
 
   { path: '', redirectTo: 'facturas-notas', pathMatch: 'full' }, // redirige al inicio
-  { path: 'facturas-notas', component: FacturasNotas} ,
+  { path: 'facturas-notas', component: FacturasNotas},
+  { path: 'clientes', component: Clientes},
   { path: 'nueva-factura', component: NuevaFactura },
   { path: 'nueva-nota', component: NuevaNotaComponent },
   { path: 'editar-facturas/:id', component: EditarFactura },
   { path: 'detalle-facturas/:id', component: DetalleFacturas },
-  { path: '', redirectTo: '', pathMatch: 'full' }, // redirige al inicio
-  { path: 'facturas-notas', component: FacturasNotas} ,  
-  // clientes
-  { path: 'clientes', component: Clientes },
   { path: 'nuevo-cliente', component: NuevoCliente },
   { path: 'editar-cliente/:id', component: EditarCliente },
   // ... otras rutas
-
 
 
 
@@ -206,6 +200,9 @@ export const routes: Routes = [
 {path: 'contingencia',component: Contingencia},
 {path: 'facturas-contingencia',component: FacturaContingencia},
 {path: 'recepción-documentos',component: RecepcionDocumentos},
+{path: 'notificaciones', component: Notificaciones},
+
+
 
 
 
@@ -241,10 +238,12 @@ export const routes: Routes = [
 
 //ESPACIO PARA LAS RUTAS DE (MODULE COFIGURACIONES)
   {path: 'configuracion',component:Configuracion},
-  {path: 'certiifcacido-digital', component: CertificadoDigital},
+  {path: 'parametros-generales',component: ParametrosGenerales},
+  {path: 'certificado-digital', component: CertificadoDigital},
   {path: 'notificaciones-email',component: NotificacionesEmails},
   {path: 'impuestos-retenciones',component: ImpuestosRetenciones},
   {path: 'nuevo-impuesto',component: NuevoImpuesto},
+
 
 
 
