@@ -25,6 +25,7 @@ import { CertificadoDigital } from './module-settings/certificado-digital/certif
 import { NotificacionesEmails } from './module-settings/notificaciones-emails/notificaciones-emails';
 import { Acceder } from './module-home/acceder/acceder';
 import { Registro } from './module-home/registro/registro';
+import { ParametrosGenerales } from './module-settings/parametros-generales/parametros-generales';
 
 
 
@@ -87,7 +88,6 @@ export const routes: Routes = [
   { path: 'facturas-notas', component: FacturasNotas} ,  
   {path: `clientes`, component: Clientes},
   // ... otras rutas
-
 
 
 
@@ -225,8 +225,10 @@ export const routes: Routes = [
 
 //ESPACIO PARA LAS RUTAS DE (MODULE COFIGURACIONES)
   {path: 'configuracion',component:Configuracion},
+  {path: 'parametros-generales',component: ParametrosGenerales},
   {path: 'certiifcacido-digital', component: CertificadoDigital},
   {path: 'notificaciones-email',component: NotificacionesEmails},
+
 
 
 
