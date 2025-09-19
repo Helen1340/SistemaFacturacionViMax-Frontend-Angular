@@ -1,8 +1,9 @@
 import { Component, signal } from '@angular/core';
-import {  RouterOutlet } from '@angular/router';
+import {  NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { Sidebar } from './sidebar/sidebar';
 import { CommonModule } from '@angular/common';
 import { Footer } from "./footer/footer";
+import { filter } from 'rxjs';
 
 
 @Component({
@@ -15,9 +16,18 @@ export class App {
   protected readonly title = signal('FacturacionAngularPantallas');
 
   isSidebarOpen = false;
+  showLayout = true;
+
+  constructor(private router: Router) {
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        const hiddenRoutes = ['/inicio', '/login', '/registro', '/configuracion', '/parametros-generales'];
+        this.showLayout = !hiddenRoutes.includes(event.urlAfterRedirects);
+      });
+  }
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
-
 }

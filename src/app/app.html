@@ -1,15 +1,31 @@
 <div class="min-h-screen flex flex-col">
-  <div class="flex flex-1">
+  <!-- Contenedor de sidebar + main -->
+  <div class="flex flex-1" *ngIf="showLayout; else noLayout">
+    <!-- Sidebar -->
     <app-sidebar [isOpen]="isSidebarOpen" (closeSidebar)="toggleSidebar()"></app-sidebar>
+
+    <!-- Overlay en móviles -->
     <div *ngIf="isSidebarOpen" class="fixed inset-0 bg-black/50 z-40 md:hidden" (click)="toggleSidebar()"></div>
+
+    <!-- Contenido -->
     <main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
       <button class="fixed top-1 right-4 z-50 p-2 rounded md:hidden" (click)="toggleSidebar()">
         <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
+
       <router-outlet></router-outlet>
     </main>
   </div>
-  <app-footer></app-footer>
+
+  <!-- Pantallas sin layout (inicio, acceso, registro) -->
+  <ng-template #noLayout>
+    <main class="w-full flex-1 overflow-auto">
+      <router-outlet></router-outlet>
+    </main>
+  </ng-template>
+
+  <!-- Footer solo cuando hay layout -->
+  <app-footer *ngIf="showLayout"></app-footer>
 </div>
