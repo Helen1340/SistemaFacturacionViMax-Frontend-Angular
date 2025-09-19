@@ -3,6 +3,8 @@ import { ProductosServicios } from './module-product-service/productos-servicios
 
 import { RegitrarServicio } from './module-product-service/regitrar-servicio/regitrar-servicio';
 import { Clientes } from './module-clients/clientes/clientes';
+import { NuevoCliente } from './module-clients/nuevo-cliente/nuevo-cliente';
+import { EditarCliente } from './module-clients/editar-cliente/editar-cliente';
 import { Reportes } from './module-reports/reportes/reportes';
 import { Usuarios } from './module-users/usuarios/usuarios';
 import { Contingencia } from './module-contingency/contingencia/Contingency/contingencia';
@@ -10,6 +12,8 @@ import { FacturaContingencia } from './module-contingency/contingencia/Contingen
 import { RecepcionDocumentos } from './module-document-reception/recepcion-documentos/recepcion-documentos';
 import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
 import { Configuracion } from './module-settings/configuracion/configuracion';
+import { ImpuestosRetenciones } from './module-settings/impuestos-retenciones/impuestos-retenciones';
+import { NuevoImpuesto } from './module-settings/impuestos-retenciones/nuevo-impuesto/nuevo-impuesto';
 
 import { FacturasNotas } from './module-invoices-notes/facturas-notas/facturas-notas';
 import { NuevaFactura } from './module-invoices-notes/nueva-factura/nueva-factura';
@@ -94,7 +98,10 @@ export const routes: Routes = [
   { path: 'detalle-facturas/:id', component: DetalleFacturas },
   { path: '', redirectTo: '', pathMatch: 'full' }, // redirige al inicio
   { path: 'facturas-notas', component: FacturasNotas} ,  
-  {path: `clientes`, component: Clientes},
+  // clientes
+  { path: 'clientes', component: Clientes },
+  { path: 'nuevo-cliente', component: NuevoCliente },
+  { path: 'editar-cliente/:id', component: EditarCliente },
   // ... otras rutas
 
 
@@ -236,6 +243,8 @@ export const routes: Routes = [
   {path: 'configuracion',component:Configuracion},
   {path: 'certiifcacido-digital', component: CertificadoDigital},
   {path: 'notificaciones-email',component: NotificacionesEmails},
+  {path: 'impuestos-retenciones',component: ImpuestosRetenciones},
+  {path: 'nuevo-impuesto',component: NuevoImpuesto},
 
 
 

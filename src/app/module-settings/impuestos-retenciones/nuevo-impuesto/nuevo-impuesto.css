@@ -42,3 +42,29 @@
 * {
   scrollbar-width: thin;
 }
+
+/* Manejo de texto largo en las tarjetas de impuestos */
+.impuesto-card {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.impuesto-nombre {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.impuesto-descripcion {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+}
+
+/* Asegurar que las tarjetas no se desborden */
+.grid > div {
+  min-width: 0;
+  overflow: hidden;
+}

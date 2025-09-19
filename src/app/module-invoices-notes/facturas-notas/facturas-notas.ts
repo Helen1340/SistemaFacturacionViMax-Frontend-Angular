@@ -25,7 +25,6 @@ export interface InvoiceNote {
   styleUrl: './facturas-notas.css'
 })
 export class FacturasNotas implements OnInit {
-  isSidebarOpen: boolean = false;
   isDropdownOpen: boolean = false;
   openMenuIndex: number | null = null;
   dropdownTop: number = 0;
@@ -297,9 +296,6 @@ export class FacturasNotas implements OnInit {
     return mappedInvoice;
   }
 
-  toggleSidebar(): void {
-    this.isSidebarOpen = !this.isSidebarOpen;
-  }
 
   crearFactura(): void {
     this.router.navigate(['/nueva-factura']);

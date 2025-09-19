@@ -32,7 +32,6 @@ interface InvoiceDetailView {
   styleUrl: './detalle-facturas.css'
 })
 export class DetalleFacturas implements OnInit {
-  isSidebarOpen: boolean = false;
   isLoading: boolean = false;
   isLoadingClient: boolean = false;
   isLoadingNote: boolean = false;
@@ -196,9 +195,6 @@ export class DetalleFacturas implements OnInit {
     };
   }
 
-  toggleSidebar(): void {
-    this.isSidebarOpen = !this.isSidebarOpen;
-  }
 
   goBack(): void {
     this.router.navigate(['/facturas-notas']);
