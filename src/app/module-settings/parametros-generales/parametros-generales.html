@@ -1,7 +1,7 @@
-<main class="w-full p-4 flex-1 overflow-auto">
+<main class="w-full p-4 sm:p-6 lg:p-8 flex-1 overflow-auto">
     <!-- Título -->
-    <div class="pt-2">
-        <h2 class="text-3xl font-semibold text-gray-800">Parámetros Generales de la Empresa</h2>
+    <div class="pt-2 mb-8">
+        <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800">Parámetros Generales de la Empresa</h2>
         <div class="border-b-2 border-gray-300 w-full pt-6"></div>
     </div>
 
@@ -12,37 +12,38 @@
             <span *ngIf="!logoPreview" class="text-gray-500 text-sm">Logo</span>
         </div>
         <label class="text-sm font-medium text-gray-700 mb-2">Logo de la empresa</label>
-        <input type="file" (change)="onLogoSelected($event)" class="text-sm border border-gray-300 rounded px-2 py-1 cursor-pointer" />
+        <input type="file" (change)="onLogoSelected($event)"
+            class="text-sm border border-gray-300 rounded px-2 py-1 cursor-pointer" />
     </div>
 
     <!-- Formulario -->
     <form [formGroup]="form" (ngSubmit)="guardar()"
-        class="grid grid-cols-1 lg:grid-cols-3 gap-10  mx-36 text-sm text-black  p-8 rounded-2xl shadow-lg border border-gray-100 ">
+        class="grid grid-cols-1 lg:grid-cols-3 gap-10 mx-auto max-w-none lg:mx-36 text-sm text-black p-8 rounded-2xl shadow-lg border border-gray-100">
 
         <!-- Columna 1 -->
         <div class="space-y-2">
             <h1 class="font-semibold text-lg text-gray-800 pb-1">Detalles de la Empresa</h1>
             <div>
-                <label class="block font-medium mb-1">Razón social </label>
+                <label class="block font-medium mb-1">Razón social</label>
                 <input formControlName="razonSocial" type="text"
-                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors" />
             </div>
             <div>
                 <label class="block font-medium mb-1">Nombre Comercial</label>
                 <input formControlName="nombreComercial" type="text"
-                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors" />
             </div>
             <div>
                 <label class="block font-medium mb-1">NIT</label>
                 <input formControlName="nit" type="text"
-                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors" />
             </div>
             <div>
                 <label class="block font-medium mb-1">Régimen tributario</label>
                 <select formControlName="regimen"
-                    class="w-full border border-gray-300 rounded px-3 py-2 bg-white ">
+                    class="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors">
                     <option value="">Seleccione...</option>
-                    <option>Regimen Ordinario</option>
+                    <option>Régimen Ordinario</option>
                     <option>Régimen Simple de Tributación (RTS)</option>
                     <option>Régimen Tributario Especial (RTE)</option>
                 </select>
@@ -50,7 +51,7 @@
             <div>
                 <label class="block font-medium mb-1">Actividad Económica</label>
                 <input formControlName="actividadEconomica" type="text"
-                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors" />
             </div>
             <div class="flex items-center">
                 <input formControlName="iva" type="checkbox" class="mr-2 accent-cyan-600" />
@@ -60,36 +61,36 @@
 
         <!-- Columna 2 -->
         <div class="space-y-2">
-            <h1 class="font-semibold text-lg text-gray-800 pb-1">Informacion basica</h1>
+            <h1 class="font-semibold text-lg text-gray-800 pb-1">Información Básica</h1>
             <div>
                 <label class="block font-medium mb-1">Dirección</label>
                 <input formControlName="direccion" type="text"
-                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors" />
             </div>
             <div>
                 <label class="block font-medium mb-1">Municipio</label>
                 <input formControlName="municipio" type="text"
-                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors" />
             </div>
             <div>
                 <label class="block font-medium mb-1">Departamento</label>
                 <input formControlName="departamento" type="text"
-                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors" />
             </div>
             <div>
                 <label class="block font-medium mb-1">País</label>
                 <input formControlName="pais" type="text"
-                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors" />
             </div>
             <div>
                 <label class="block font-medium mb-1">Teléfono</label>
                 <input formControlName="telefono" type="text"
-                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors" />
             </div>
             <div>
                 <label class="block font-medium mb-1">Correo electrónico</label>
                 <input formControlName="correo" type="email"
-                    class="w-full border border-gray-300 rounded px-3 py-2 " />
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors" />
             </div>
         </div>
 
@@ -100,12 +101,12 @@
                 <div>
                     <label class="block font-medium mb-1">Nombre completo</label>
                     <input formControlName="nombre" type="text"
-                        class="w-full border border-gray-300 rounded px-3 py-2 " />
+                        class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors" />
                 </div>
                 <div>
                     <label class="block font-medium mb-1">Tipo de Documento</label>
                     <select formControlName="tipoDocumento"
-                        class="w-full border border-gray-300 rounded px-3 py-2 bg-white ">
+                        class="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors">
                         <option value="">Seleccione...</option>
                         <option>Cédula de Ciudadanía</option>
                         <option>Cédula de Extranjería</option>
@@ -115,26 +116,32 @@
                 <div>
                     <label class="block font-medium mb-1">Número de Documento</label>
                     <input formControlName="numeroDocumento" type="text"
-                        class="w-full border border-gray-300 rounded px-3 py-2 " />
+                        class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-200 transition-colors" />
                 </div>
             </div>
         </div>
     </form>
 
     <!-- Botones -->
-    <div class="mt-10 flex justify-center gap-6">
+    <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 max-w-md mx-auto">
         <button (click)="guardar()"
-            class="bg-cyan-600 text-white px-8 py-2 rounded-lg hover:bg-cyan-700 shadow-md transition">
+            class="w-full sm:w-auto bg-cyan-600 text-white px-8 py-3 rounded-lg hover:bg-cyan-700 shadow-md transition-colors font-medium">
             Guardar
         </button>
         <button type="reset" (click)="form.reset(); logoPreview = null"
-            class="bg-gray-500 text-white px-8 py-2 rounded-lg hover:bg-gray-600 shadow-md transition">
+            class="w-full sm:w-auto bg-gray-500 text-white px-8 py-3 rounded-lg hover:bg-gray-600 shadow-md transition-colors font-medium">
             Cancelar
         </button>
     </div>
 
     <!-- Notificación -->
-    <div *ngIf="notificacion" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-        ¡Parámetros guardados exitosamente!
+    <div *ngIf="notificacion"
+        class="fixed top-4 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 animate-pulse">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            ¡Parámetros guardados exitosamente!
+        </div>
     </div>
 </main>
