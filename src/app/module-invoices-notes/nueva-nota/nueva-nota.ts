@@ -9,11 +9,6 @@ import { CommonModule } from '@angular/common';
   styleUrl: './nueva-nota.css'
 })
 export class NuevaNotaComponent {
-  isSidebarOpen: boolean = false;
-
-  toggleSidebar(): void {
-    this.isSidebarOpen = !this.isSidebarOpen;
-  }
 
   visualizarNota(): void {
     this.showNotification('Vista previa generada');

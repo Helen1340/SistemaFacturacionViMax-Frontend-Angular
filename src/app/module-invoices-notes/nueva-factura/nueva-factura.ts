@@ -18,21 +18,7 @@ export class NuevaFactura implements AfterViewInit {
   constructor(private router: Router) {}
 
   ngAfterViewInit(): void {
-    const overlay = document.getElementById('overlay');
-    if (overlay) {
-      overlay.addEventListener('click', this.toggleSidebar);
-    }
-  }
-
-  toggleSidebar(): void {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    if (!sidebar || !overlay) {
-      return;
-    }
-    const isHidden = sidebar.classList.contains('-translate-x-full');
-    sidebar.classList.toggle('-translate-x-full', !isHidden);
-    overlay.classList.toggle('hidden', !isHidden);
+    // Component view initialization
   }
 
   cancelar(): void {

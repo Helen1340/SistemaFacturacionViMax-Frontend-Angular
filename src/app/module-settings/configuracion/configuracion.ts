@@ -37,7 +37,7 @@ export class Configuracion {
   }
 
   navigateImpuestos() {
-    this.router.navigate(['/impuestos']);
+    this.router.navigate(['/impuestos-retenciones']);
   }
 
   navigateVideos() {

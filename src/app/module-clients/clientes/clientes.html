@@ -1,1 +1,154 @@
-<p>clientes works!</p>
+<main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
+    
+    <!-- Contenido de la página -->
+    <div class="-mt-4 mb-2">
+        <h2 class="text-4xl font-semibold mb-6 mt-8">
+            Clientes
+        </h2>
+    </div>
+    
+    <!-- Línea divisoria -->
+    <div class="border-b-2 border-gray-300 w-full mb-8"></div>
+    
+    <!-- Botones de acción -->
+    <div class="relative flex justify-end mb-4">
+        <div class="relative">
+            <button (click)="nuevoCliente()" class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors duration-200">
+                <span class="mr-2 text-sm">+</span> Nuevo Cliente
+            </button>
+        </div>
+    </div>
+    <!-- CONTENEDOR DEL FILTRO + BUSCADOR -->
+    <div class="bg-white p-6 rounded-2xl border border-gray-200 mb-6 flex flex-col md:flex-row flex-wrap items-center justify-between gap-4 w-full mx-auto">
+        <!-- Buscador -->
+        <div class="flex items-center border border-gray-300 rounded-2xl px-4 py-2 w-full md:w-[70%]">
+            <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" />
+            </svg>
+            <input 
+                type="text" 
+                placeholder="Buscar por nombre, documento o email..." 
+                [(ngModel)]="terminoBusqueda"
+                (input)="buscarClientes()"
+                class="w-full border-none outline-none text-gray-700" 
+            />
+        </div>
+
+        <!-- Filtro -->
+        <div class="flex items-center space-x-2 w-full md:w-[200px]">
+            <label class="text-base font-semibold text-gray-900">Filtro</label>
+            <div class="relative w-full">
+                <select 
+                    [(ngModel)]="filtroSeleccionado"
+                    (change)="buscarClientes()"
+                    class="appearance-none border border-gray-300 rounded-2xl px-4 py-2 text-gray-700 pr-10 w-full">
+                    <option value="">Todos</option>
+                    <option value="numero">No. Documento</option>
+                    <option value="nombre">Nombre del Cliente</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Tabla de clientes con encabezado fijo y cuerpo con scroll -->
+    <div class="bg-white rounded-2xl shadow overflow-hidden">
+        <!-- Encabezados fijos -->
+        <div class="overflow-x-hidden">
+            <table class="w-full table-fixed">
+                <thead class="bg-gray-100 text-gray-800 text-left sticky top-0 z-10">
+                    <tr>
+                        <th class="px-4 py-3 font-semibold w-[22%] text-sm">Nombre/Razón</th>
+                        <th class="px-4 py-3 font-semibold w-[18%] text-sm">Documento</th>
+                        <th class="px-4 py-3 font-semibold w-[20%] text-sm">Dirección</th>
+                        <th class="px-4 py-3 font-semibold w-[10%] text-sm">País</th>
+                        <th class="px-4 py-3 font-semibold w-[20%] text-sm">Email</th>
+                        <th class="px-4 py-3 font-semibold w-[8%] text-sm">Estado</th>
+                        <th class="px-4 py-3 text-center font-semibold w-[8%] text-sm">Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        <!-- Cuerpo con scroll -->
+        <div class="overflow-x-hidden overflow-y-auto max-h-[400px] relative">
+            <table class="w-full table-fixed">
+                <tbody>
+
+                    <!-- Filas de clientes -->
+                    <tr *ngFor="let cliente of paginatedClientes; trackBy: trackByClienteId; let i = index" 
+                        class="border-t border-gray-200 hover:bg-gray-50">
+                        <td class="px-4 py-3 w-[22%] break-words">{{ cliente.nombreRazon }}</td>
+                        <td class="px-4 py-3 w-[18%]">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 break-words">
+                                {{ cliente.documento }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 w-[20%] break-words">{{ cliente.direccion }}</td>
+                        <td class="px-4 py-3 w-[10%] break-words">{{ cliente.pais }}</td>
+                        <td class="px-4 py-3 w-[20%] break-words">{{ cliente.email }}</td>
+                        <td class="px-4 py-3 w-[8%]">
+                            <span [ngClass]="cliente.estado === 'Activo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" 
+                                  class="px-2 py-1 rounded-full text-xs font-medium">
+                                {{ cliente.estado }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 w-[8%] text-center">
+                            <button (click)="toggleMenu(i, $event)" class="p-3 rounded">
+                                <svg width="19" height="19" viewBox="0 0 22 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M13.4136 15.0078C13.4193 13.558 12.5425 12.3793 11.4552 12.375C10.3679 12.3707 9.48184 13.5425 9.47612 14.9922C9.4704 16.4419 10.3472 17.6207 11.4345 17.625C12.5218 17.6293 13.4079 16.4575 13.4136 15.0078Z" fill="black" />
+                                    <path d="M19.976 15.0337C19.9818 13.584 19.105 12.4052 18.0177 12.4009C16.9304 12.3966 16.0443 13.5684 16.0386 15.0181C16.0328 16.4679 16.9096 17.6466 17.9969 17.6509C19.0842 17.6552 19.9703 16.4834 19.976 15.0337Z" fill="black" />
+                                    <path d="M6.85109 14.9819C6.85681 13.5321 5.98002 12.3534 4.89272 12.3491C3.80542 12.3448 2.91934 13.5166 2.91362 14.9663C2.9079 16.4161 3.78469 17.5948 4.87199 17.5991C5.9593 17.6034 6.84537 16.4316 6.85109 14.9819Z" fill="black" />
+                                </svg>
+                            </button>
+                            <div *ngIf="openMenuIndex === i" 
+                                class="dropdown absolute fixed w-48 bg-white border border-gray-300 rounded-2xl shadow z-[9999]" 
+                                [style.top.px]="dropdownTop" 
+                                [style.left.px]="dropdownLeft">
+                                <button *ngFor="let action of getAvailableActions(cliente.estado || 'Activo'); let isLast = last" 
+                                    (click)="executeAction(action, cliente)" 
+                                    class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100" 
+                                    [class.rounded-t-2xl]="action === getAvailableActions(cliente.estado || 'Activo')[0]" 
+                                    [class.rounded-b-2xl]="isLast">
+                                    {{ action }}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Mensaje cuando no hay clientes -->
+                    <tr *ngIf="paginatedClientes.length === 0" class="border-t border-t-gray-200">
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                            {{ cargando ? 'Cargando clientes...' : 'No se encontraron clientes' }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PAGINACIÓN -->
+    <div *ngIf="totalClientes > 0" class="bg-white p-4 rounded-2xl shadow mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="text-xs sm:text-sm text-gray-600 w-full sm:w-auto text-center sm:text-left">
+            Mostrando {{ startItem }} - {{ endItem }} de {{ totalClientes }} clientes
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-center sm:flex-nowrap flex-wrap">
+            <button (click)="previousPage()" [disabled]="currentPage === 1"
+                [ngClass]="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
+                class="px-3 py-1 h-8 border border-gray-300 rounded-lg text-xs sm:text-sm flex-shrink-0">
+                Anterior
+            </button>
+            <span class="px-3 py-1 h-8 inline-flex items-center justify-center bg-cyan-600 text-white rounded-lg text-xs sm:text-sm flex-shrink-0 min-w-[64px]">
+                {{ currentPage }} / {{ totalPages }}
+            </span>
+            <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+                [ngClass]="currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
+                class="px-3 py-1 h-8 border border-gray-300 rounded-lg text-xs sm:text-sm flex-shrink-0">
+                Siguiente
+            </button>
+        </div>
+    </div>
+</main>

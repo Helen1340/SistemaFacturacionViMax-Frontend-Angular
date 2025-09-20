@@ -13,7 +13,6 @@ import { InvoicesNotesService } from '../services/invoices-notes.service';
 })
 export class EditarFactura implements OnInit {
   factura: any = {}; // aquí se cargará la factura seleccionada
-  isSidebarOpen: boolean = false;
   isLoading: boolean = false;
   errorMessage: string = '';
 
@@ -118,7 +117,4 @@ export class EditarFactura implements OnInit {
     this.router.navigate(['/facturas-notas']);
   }
 
-  toggleSidebar(): void {
-    this.isSidebarOpen = !this.isSidebarOpen;
-  }
 }

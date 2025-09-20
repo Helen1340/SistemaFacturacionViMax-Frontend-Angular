@@ -1,0 +1,91 @@
+/* Estilos para el componente editar-cliente */
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos para los campos del formulario */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #0891b2;
+  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+}
+
+/* Estilos para botones deshabilitados */
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Estilos para el spinner de carga */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Estilos para el campo de contraseña */
+.password-field {
+  position: relative;
+}
+
+.password-field input[readonly] {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+  color: #6c757d;
+}
+
+.password-field small {
+  margin-top: 0.25rem;
+  display: block;
+}
+
+/* Animación para cuando se genera la contraseña */
+.password-generated {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .grid-cols-1 {
+    grid-template-columns: 1fr;
+  }
+  
+  .md\:col-span-2 {
+    grid-column: span 1;
+  }
+  
+  .md\:col-span-3 {
+    grid-column: span 1;
+  }
+}
+
