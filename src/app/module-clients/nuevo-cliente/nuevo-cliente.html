@@ -1,0 +1,94 @@
+<main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
+
+    <!-- Alertas personalizadas -->
+    @if (showAlert) {
+    <div class="fixed top-20 right-4 px-6 py-4 rounded-lg shadow-lg z-50 animate-fade-in" [class]="getAlertClasses()">
+        <div class="flex items-center space-x-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                @if (alertType === 'success') {
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                } @else if (alertType === 'info') {
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                } @else if (alertType === 'warning') {
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                } @else if (alertType === 'error') {
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                }
+            </svg>
+            <span class="font-medium">{{ alertMessage }}</span>
+            <button (click)="cerrarAlerta()" class="ml-2 text-current opacity-70 hover:opacity-100">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+    }
+            <!-- Contenido de la página -->
+            <div class="-mt-4 mb-2">
+                <h2 class="text-4xl font-semibold mb-6 mt-8">
+                    Registrar Clientes
+                </h2>
+            </div>
+            <!-- Línea divisoria -->
+            <div class="border-b-2 border-gray-300 w-full mb-8"></div>
+            <!-- Formulario de registro de cliente -->
+            <div class="w-full mx-auto p-6 bg-white rounded-xl shadow-md">
+                <h2 class="text-xl font-semibold mb-6">Formulario de registro</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm">Nombre <span class="text-red-500">*</span></label>
+                        <input type="text" [(ngModel)]="clienteForm.nombre" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                    </div>
+                    <div>
+                        <label class="block text-sm">Tipo de documento <span class="text-red-500">*</span></label>
+                        <select [(ngModel)]="clienteForm.tipo_documento" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                            <option value="">Seleccione...</option>
+                            <option *ngFor="let tipo of tiposDocumento" [value]="tipo.value">{{ tipo.label }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm">Número de documento <span class="text-red-500">*</span></label>
+                        <input type="text" [(ngModel)]="clienteForm.numero_documento" (input)="onNumeroDocumentoChange()" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                    </div>
+                    <div class="password-field">
+                        <label class="block text-sm">Contraseña</label>
+                        <input type="password" [(ngModel)]="clienteForm.contrasena" readonly class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100" />
+                        <small class="text-gray-500 text-xs">La contraseña se genera automáticamente al ingresar el número de documento</small>
+                    </div>
+                    <div>
+                        <label class="block text-sm">Correo electrónico <span class="text-red-500">*</span></label>
+                        <input type="email" [(ngModel)]="clienteForm.correo_electronico" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                    </div>
+                    <div>
+                        <label class="block text-sm">País <span class="text-red-500">*</span></label>
+                        <input type="text" [(ngModel)]="clienteForm.pais" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm">Dirección <span class="text-red-500">*</span></label>
+                        <input type="text" [(ngModel)]="clienteForm.direccion" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                    </div>
+                    <div class="md:col-span-3">
+                        <label class="block text-sm">Descripción</label>
+                        <textarea [(ngModel)]="clienteForm.descripcion" class="w-full border border-gray-300 rounded-lg px-3 py-2" rows="3"></textarea>
+                    </div>
+                    <div class="md:col-span-3">
+                        <label class="block text-sm">Teléfono (opcional)</label>
+                        <input type="text" [(ngModel)]="clienteForm.telefono" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                    </div>
+                </div>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button (click)="registrarCliente()" [disabled]="isLoading" 
+                        [class]="isLoading ? 'bg-gray-400 cursor-not-allowed text-white px-6 py-2 rounded-lg text-sm' : 'bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg text-sm'">
+                        {{ isLoading ? 'Registrando...' : 'Registrar Cliente' }}
+                    </button>
+                    <button (click)="cancelar()" [disabled]="isLoading"
+                        [class]="isLoading ? 'bg-gray-400 cursor-not-allowed text-white px-6 py-2 rounded-lg text-sm' : 'bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg text-sm'">
+                        Cancelar
+                    </button>
+                </div>
+
+            </div>
+        </main>
