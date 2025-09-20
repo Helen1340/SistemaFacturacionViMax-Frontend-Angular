@@ -1,91 +1,84 @@
 <!-- Contenido principal -->
-<main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
+<main class="w-full py-4 flex-1 overflow-y-auto overflow-x-visible">
 
-    <div class="-mt-4 mb-2">
-        <h2 class="contingency-title mb-6 mt-8">
-            Contingencia
-        </h2>
-    </div>
+  <div class="-mt-4 mb-4">
+    <h2 class="text-4xl font-semibold mb-6 mt-8">Contingencia</h2>
+  </div>
 
-    <div class="border-b-2 border-gray-300 w-full mb-8"></div>
+  <div class="border-b-2 border-gray-300 w-full mb-8"></div>
 
-    <!-- CONTENEDOR DEL FILTRO + BUSCADOR -->
-    <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Tarjeta: Activar contingencia -->
-            <div
-                class="bg-red-50 border border-red-200 rounded-xl p-5 shadow hover:shadow-md transition duration-200 flex flex-col">
-                <div class="flex items-center gap-3 mb-4">
-                    <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-4h2v2h-2v-2zm0-8h2v6h-2V6z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <h3 class="text-lg font-semibold text-red-600">Activar contingencia</h3>
-                </div>
-                <p class="text-sm text-gray-600 mb-4 flex-grow">
-                    Usa esta opción cuando el sistema no pueda comunicarse con la DIAN. Se habilita la emisión
-                    temporal local.
-                </p>
-                <button id="btnContingencia" data-active="false" (click)="activarContingencia()"
-                    class="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2 rounded-lg w-full transition">
-                    Activar
-                </button>
-            </div>
-
-            <!-- Tarjeta: Ver facturas en contingencia -->
-            <div
-                class="bg-sky-50 border border-sky-200 rounded-xl p-5 shadow hover:shadow-md transition duration-200 flex flex-col">
-                <div class="flex items-center gap-3 mb-4">
-                    <svg class="w-6 h-6 text-sky-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M5 4v2h14V4H5zm0 14h14v-2H5v2zm0-5h14v-2H5v2z" />
-                    </svg>
-                    <h3 class="text-lg font-semibold text-sky-600">Ver facturas en contingencia</h3>
-                </div>
-                <p class="text-sm text-gray-600 mb-4 flex-grow">
-                    Consulta todas las facturas que fueron generadas mientras el sistema estaba en contingencia.
-                </p>
-                <button (click)="verFacturasContingencia()"
-                    class="bg-sky-400 hover:bg-sky-500 text-white font-semibold px-5 py-2 rounded-lg w-full">
-                    Ver facturas
-                </button>
-            </div>
+  <!-- CONTENEDOR DEL FILTRO + BUSCADOR -->
+  <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Tarjeta: Activar contingencia -->
+      <div class="bg-red-50 border border-red-200 rounded-xl p-5 shadow hover:shadow-md transition duration-200 flex flex-col">
+        <div class="flex items-center gap-3 mb-4">
+          <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-4h2v2h-2v-2zm0-8h2v6h-2V6z"
+                clip-rule="evenodd" />
+          </svg>
+          <h3 class="text-lg font-semibold text-red-600">Activar contingencia</h3>
         </div>
+        <p class="text-sm text-gray-600 mb-4 flex-grow">
+          Usa esta opción cuando el sistema no pueda comunicarse con la DIAN. Se habilita la emisión
+          temporal local.
+        </p>
+        <button id="btnContingencia" data-active="false" (click)="activarContingencia()"
+            class="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2 rounded-lg w-full transition">
+          Activar
+        </button>
+      </div>
+
+      <!-- Tarjeta: Ver facturas en contingencia -->
+      <div class="bg-sky-50 border border-sky-200 rounded-xl p-5 shadow hover:shadow-md transition duration-200 flex flex-col">
+        <div class="flex items-center gap-3 mb-4">
+          <svg class="w-6 h-6 text-sky-600" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M5 4v2h14V4H5zm0 14h14v-2H5v2zm0-5h14v-2H5v2z" />
+          </svg>
+          <h3 class="text-lg font-semibold text-sky-600">Ver facturas en contingencia</h3>
+        </div>
+        <p class="text-sm text-gray-600 mb-4 flex-grow">
+          Consulta todas las facturas que fueron generadas mientras el sistema estaba en contingencia.
+        </p>
+        <button (click)="verFacturasContingencia()"
+            class="bg-sky-400 hover:bg-sky-500 text-white font-semibold px-5 py-2 rounded-lg w-full">
+          Ver facturas
+        </button>
+      </div>
     </div>
+  </div>
 
-
-
-    <!-- SEPARADO: CONTENEDOR DE LA TABLA -->
-    <div class="bg-white rounded-2xl shadow overflow-x-auto">
-        <table class="min-w-full">
-            <thead class="bg-gray-100 text-gray-800 text-left">
-                <tr>
-                    <th class="px-4 py-2">Estado de conexión</th>
-                    <th class="px-4 py-2">Último intento fallido</th>
-                    <th class="px-4 py-2">Facturas en contingencia</th>
-                    <th class="px-4 py-2">Facturas reenviadas</th>
-                    <th class="px-4 py-2 text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of contingenciaData; let i = index">
-                    <td class="px-4 py-2">
-                        <span class="px-2 py-1 rounded-full text-xs font-semibold"
-                            [class]="item.estado === 'Conectado' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
-                            {{ item.estado }}
-                        </span>
-                    </td>
-                    <td class="px-4 py-2">{{ item.ultimoIntento }}</td>
-                    <td class="px-4 py-2">{{ item.facturasContingencia }}</td>
-                    <td class="px-4 py-2">{{ item.facturasReenviadas }}</td>
-                    <td class="px-4 py-4 text-center text-blue-400 hover:text-blue-600">
-                        <button (click)="verFactura(item.id)" class="hover:underline">
-                            ver factura
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+  <!-- SEPARADO: CONTENEDOR DE LA TABLA -->
+  <div class="bg-white rounded-2xl shadow overflow-x-auto">
+    <table class="min-w-full">
+      <thead class="bg-gray-100 text-gray-800 text-left">
+        <tr>
+          <th class="px-4 py-2">Estado de conexión</th>
+          <th class="px-4 py-2">Último intento fallido</th>
+          <th class="px-4 py-2">Facturas en contingencia</th>
+          <th class="px-4 py-2">Facturas reenviadas</th>
+          <th class="px-4 py-2 text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of contingenciaData; let i = index">
+          <td class="px-4 py-2">
+            <span class="px-2 py-1 rounded-full text-xs font-semibold"
+                [class]="item.estado === 'Conectado' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+              {{ item.estado }}
+            </span>
+          </td>
+          <td class="px-4 py-2">{{ item.ultimoIntento }}</td>
+          <td class="px-4 py-2">{{ item.facturasContingencia }}</td>
+          <td class="px-4 py-2">{{ item.facturasReenviadas }}</td>
+          <td class="px-4 py-4 text-center text-blue-400 hover:text-blue-600">
+            <button (click)="verFactura(item.id)" class="hover:underline">
+              ver factura
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
     </div>
 </main>
