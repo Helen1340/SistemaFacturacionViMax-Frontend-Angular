@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-    <!-- Logo Colombia en la esquina superior izquierda -->
+    <!-- Logo -->
     <div class="fixed top-4 left-4 flex items-center gap-2">
         <div class="w-8 h-6 rounded-sm overflow-hidden">
             <div class="w-full h-2 bg-yellow-400"></div>
@@ -9,97 +9,197 @@
         <span class="text-sm font-medium text-gray-700">Colombia</span>
     </div>
 
-    <!-- Contenedor principal -->
-    <div class="w-full max-w-lg mx-auto">
+    <!-- Notification -->
+    <div *ngIf="notification.show" [ngClass]="notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'"
+        class="fixed top-4 right-4 text-white px-4 py-3 rounded-lg font-medium z-50 min-w-[250px]">
+        {{ notification.message }}
+    </div>
+
+    <div class="w-full max-w-2xl mx-auto">
         <!-- Logo y título -->
         <div class="text-center mb-8">
-            <div class="flex justify-center mb-4">
-                <img src="/logo vimax 2.png" alt="Logo VIMAX" class="w-16 h-16 md:w-20 md:h-20 object-contain" />
-            </div>
+            <img src="/logo vimax 2.png" alt="Logo VIMAX"
+                class="mx-auto w-16 h-16 md:w-20 md:h-20 object-contain mb-3" />
             <h1 class="text-2xl md:text-3xl font-bold text-vimax-blue">FACTURACIÓN</h1>
             <h2 class="text-xl md:text-2xl font-bold text-vimax-blue">VIMAX</h2>
         </div>
 
-        <!-- Formulario de registro -->
-        <div class="rounded-2xl p-12 mb-6 bg-vimax-light">
-            <h3 class="text-xl font-semibold text-gray-700 text-center mb-6">Registrarse</h3>
+        <!-- Formulario -->
+        <div class="rounded-2xl p-8 md:p-12 mb-6 bg-vimax-light">
+            <h3 class="text-xl font-semibold text-gray-700 text-center mb-6">Registro</h3>
 
-            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
-                <!-- Campo Nombre Administrador -->
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-6">
+                <!-- 🔹 Datos de Empresa -->
                 <div>
-                    <input type="text" formControlName="firstName" placeholder="Nombre Administrador"
-                        class="w-full px-4 py-3 bg-white border-0 rounded-lg focus:outline-none transition-all placeholder-gray-400 focus:shadow-vimax"
-                        [class.border-red-500]="isFieldInvalid('firstName')" />
-                    <div *ngIf="isFieldInvalid('firstName')" class="text-red-500 text-sm mt-1">
-                        {{ getFieldError('firstName') }}
+                    <h4 class="text-lg font-medium text-gray-600 mb-4">Datos de la Empresa</h4>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        
+                        <!-- Razón Social -->
+                        <div class="space-y-1">
+                            <div class="relative min-h-[48px]">
+                                <input type="text" formControlName="businessName" placeholder="Razón Social"
+                                    class="w-full px-4 py-3 bg-white border-0 rounded-lg focus:outline-none transition-all placeholder-gray-400 focus:shadow-vimax"
+                                    [class.border-2]="isFieldInvalid('businessName')"
+                                    [class.border-red-500]="isFieldInvalid('businessName')" />
+                            </div>
+                            <div *ngIf="isFieldInvalid('businessName')"
+                                class="text-red-500 text-sm min-h-[20px] leading-tight">
+                                {{ getFieldError('businessName') }}
+                            </div>
+                        </div>
+
+                        <!-- NIT -->
+                        <div class="space-y-1">
+                            <div class="relative min-h-[48px]">
+                                <input type="text" formControlName="nit" placeholder="NIT"
+                                    class="w-full px-4 py-3 bg-white border-0 rounded-lg focus:outline-none transition-all placeholder-gray-400 focus:shadow-vimax"
+                                    [class.border-2]="isFieldInvalid('nit')"
+                                    [class.border-red-500]="isFieldInvalid('nit')" />
+                            </div>
+                            <div *ngIf="isFieldInvalid('nit')" class="text-red-500 text-sm min-h-[20px] leading-tight">
+                                {{ getFieldError('nit') }}
+                            </div>
+                        </div>
+
+                        <!-- Correo Empresa -->
+                        <div class="space-y-1">
+                            <div class="relative min-h-[48px]">
+                                <input type="email" formControlName="companyEmail" placeholder="Correo Empresa"
+                                    class="w-full px-4 py-3 bg-white border-0 rounded-lg focus:outline-none transition-all placeholder-gray-400 focus:shadow-vimax"
+                                    [class.border-2]="isFieldInvalid('companyEmail')"
+                                    [class.border-red-500]="isFieldInvalid('companyEmail')" />
+                            </div>
+                            <div *ngIf="isFieldInvalid('companyEmail')"
+                                class="text-red-500 text-sm min-h-[20px] leading-tight">
+                                {{ getFieldError('companyEmail') }}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Campo Nombre Comercial -->
+                <!-- 🔹 Datos del Administrador -->
                 <div>
-                    <input type="text" formControlName="commercialName" placeholder="Nombre Comercial de la Empresa"
-                        class="w-full px-4 py-3 bg-white border-0 rounded-lg focus:outline-none transition-all placeholder-gray-400 focus:shadow-vimax"
-                        [class.border-red-500]="isFieldInvalid('commercialName')" />
-                    <div *ngIf="isFieldInvalid('commercialName')" class="text-red-500 text-sm mt-1">
-                        {{ getFieldError('commercialName') }}
+                    <h4 class="text-lg font-medium text-gray-600 mb-4">Datos del Administrador</h4>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Nombre -->
+                        <div class="space-y-1">
+                            <div class="relative min-h-[48px]">
+                                <input type="text" formControlName="firstName" placeholder="Nombre Completo"
+                                    class="w-full px-4 py-3 bg-white border-0 rounded-lg focus:outline-none transition-all placeholder-gray-400 focus:shadow-vimax"
+                                    [class.border-2]="isFieldInvalid('firstName')"
+                                    [class.border-red-500]="isFieldInvalid('firstName')" />
+                            </div>
+                            <div *ngIf="isFieldInvalid('firstName')"
+                                class="text-red-500 text-sm min-h-[20px] leading-tight">
+                                {{ getFieldError('firstName') }}
+                            </div>
+                        </div>
+
+                        <!-- Correo -->
+                        <div class="space-y-1">
+                            <div class="relative min-h-[48px]">
+                                <input type="email" formControlName="adminEmail" placeholder="Correo Administrador"
+                                    class="w-full px-4 py-3 bg-white border-0 rounded-lg focus:outline-none transition-all placeholder-gray-400 focus:shadow-vimax"
+                                    [class.border-2]="isFieldInvalid('adminEmail')"
+                                    [class.border-red-500]="isFieldInvalid('adminEmail')" />
+                            </div>
+                            <div *ngIf="isFieldInvalid('adminEmail')"
+                                class="text-red-500 text-sm min-h-[20px] leading-tight">
+                                {{ getFieldError('adminEmail') }}
+                            </div>
+                        </div>
+
+                        <!-- Tipo Documento -->
+                        <div class="space-y-1">
+                            <div class="relative min-h-[48px]">
+                                <select formControlName="documentType"
+                                    class="w-full px-4 py-3 bg-white border-0 rounded-lg focus:outline-none transition-all placeholder-gray-400 focus:shadow-vimax"
+                                    [class.border-2]="isFieldInvalid('documentType')"
+                                    [class.border-red-500]="isFieldInvalid('documentType')">
+                                    <option value="" disabled selected>Tipo de Documento</option>
+                                    <option value="CC">Cédula</option>
+                                    <option value="CE">Cédula Extranjería</option>
+                                    <option value="NIT">NIT</option>
+                                </select>
+                            </div>
+                            <div *ngIf="isFieldInvalid('documentType')"
+                                class="text-red-500 text-sm min-h-[20px] leading-tight">
+                                {{ getFieldError('documentType') }}
+                            </div>
+                        </div>
+
+                        <!-- Número Documento -->
+                        <div class="space-y-1">
+                            <div class="relative min-h-[48px]">
+                                <input type="text" formControlName="documentNumber" placeholder="Número Documento"
+                                    class="w-full px-4 py-3 bg-white border-0 rounded-lg focus:outline-none transition-all placeholder-gray-400 focus:shadow-vimax"
+                                    [class.border-2]="isFieldInvalid('documentNumber')"
+                                    [class.border-red-500]="isFieldInvalid('documentNumber')" />
+                            </div>
+                            <div *ngIf="isFieldInvalid('documentNumber')"
+                                class="text-red-500 text-sm min-h-[20px] leading-tight">
+                                {{ getFieldError('documentNumber') }}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Campo Correo -->
-                <div>
-                    <input type="email" formControlName="email" placeholder="Correo Electrónico"
-                        class="w-full px-4 py-3 bg-white border-0 rounded-lg focus:outline-none transition-all placeholder-gray-400 focus:shadow-vimax"
-                        [class.border-red-500]="isFieldInvalid('email')" />
-                    <div *ngIf="isFieldInvalid('email')" class="text-red-500 text-sm mt-1">
-                        {{ getFieldError('email') }}
+                <!-- 🔹 Contraseñas -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Contraseña -->
+                    <div class="space-y-1">
+                        <div class="relative min-h-[48px]">
+                            <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
+                                placeholder="Contraseña"
+                                class="w-full px-4 py-3 pr-12 bg-white border-0 rounded-lg focus:outline-none transition-all placeholder-gray-400 focus:shadow-vimax"
+                                [class.border-2]="isFieldInvalid('password')"
+                                [class.border-red-500]="isFieldInvalid('password')" />
+                            <button type="button" (click)="togglePasswordVisibility()"
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors p-1 focus:outline-none">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path *ngIf="!showPassword"
+                                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                    <line *ngIf="!showPassword" x1="1" y1="1" x2="23" y2="23" />
+                                    <path *ngIf="showPassword" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle *ngIf="showPassword" cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div *ngIf="isFieldInvalid('password')" class="text-red-500 text-sm min-h-[20px] leading-tight">
+                            {{ getFieldError('password') }}
+                        </div>
+                    </div>
+
+                    <!-- Confirmar Contraseña -->
+                    <div class="space-y-1">
+                        <div class="relative min-h-[48px]">
+                            <input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword"
+                                placeholder="Confirmar Contraseña"
+                                class="w-full px-4 py-3 pr-12 bg-white border-0 rounded-lg focus:outline-none transition-all placeholder-gray-400 focus:shadow-vimax"
+                                [class.border-2]="isFieldInvalid('confirmPassword') || registerForm.hasError('passwordMismatch')"
+                                [class.border-red-500]="isFieldInvalid('confirmPassword') || registerForm.hasError('passwordMismatch')" />
+                            <button type="button" (click)="toggleConfirmPasswordVisibility()"
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors p-1 focus:outline-none">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path *ngIf="!showConfirmPassword"
+                                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                    <line *ngIf="!showConfirmPassword" x1="1" y1="1" x2="23" y2="23" />
+                                    <path *ngIf="showConfirmPassword"
+                                        d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle *ngIf="showConfirmPassword" cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div *ngIf="isFieldInvalid('confirmPassword') || registerForm.hasError('passwordMismatch')"
+                            class="text-red-500 text-sm min-h-[20px] leading-tight">
+                            {{ getFieldError('confirmPassword') }}
+                        </div>
                     </div>
                 </div>
 
-                <!-- Campo Contraseña -->
-                <div class="relative">
-                    <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
-                        placeholder="Contraseña (mín. 8 caracteres con mayús., minús., números y símbolos)"
-                        class="w-full px-4 py-3 bg-white border-0 rounded-lg focus:outline-none transition-all pr-12 placeholder-gray-400 focus:shadow-vimax"
-                        [class.border-red-500]="isFieldInvalid('password')" />
-                    <button type="button" (click)="togglePasswordVisibility()"
-                        class="absolute right-3 top-1/3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path *ngIf="!showPassword"
-                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                            <line *ngIf="!showPassword" x1="1" y1="1" x2="23" y2="23" />
-                            <path *ngIf="showPassword" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                            <circle *ngIf="showPassword" cx="12" cy="12" r="3" />
-                        </svg>
-                    </button>
-                    <div *ngIf="isFieldInvalid('password')" class="text-red-500 text-sm mt-1">
-                        {{ getFieldError('password') }}
-                    </div>
-                </div>
-
-                <!-- Campo Confirmar Contraseña -->
-                <div class="relative">
-                    <input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword"
-                        placeholder="Confirmar Contraseña"
-                        class="w-full px-4 py-3 bg-white border-0 rounded-lg focus:outline-none transition-all pr-12 placeholder-gray-400 focus:shadow-vimax"
-                        [class.border-red-500]="isFieldInvalid('confirmPassword')" />
-                    <button type="button" (click)="toggleConfirmPasswordVisibility()"
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path *ngIf="!showConfirmPassword"
-                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                            <line *ngIf="!showConfirmPassword" x1="1" y1="1" x2="23" y2="23" />
-                            <path *ngIf="showConfirmPassword" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                            <circle *ngIf="showConfirmPassword" cx="12" cy="12" r="3" />
-                        </svg>
-                    </button>
-                    <div *ngIf="isFieldInvalid('confirmPassword')" class="text-red-500 text-sm mt-1">
-                        {{ getFieldError('confirmPassword') }}
-                    </div>
-                </div>
-
-                <!-- Botón Crear cuenta -->
+                <!-- Botón -->
                 <button type="submit" [disabled]="registerForm.invalid || isLoading"
                     class="w-full text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 text-lg mt-6 bg-vimax-dark hover:bg-vimax-darker disabled:opacity-50 disabled:cursor-not-allowed">
                     <span *ngIf="!isLoading">Crear cuenta</span>
@@ -108,29 +208,17 @@
             </form>
         </div>
 
-        <!-- Enlaces inferiores -->
+        <!-- Enlaces -->
         <div class="text-center space-y-2">
             <p class="text-gray-600">
-                ¿Ya tienes una cuenta?
-                <button (click)="navigateToLogin()" class="text-blue-500 hover:text-blue-600 transition-colors">
-                    Iniciar sesión
-                </button>
+                ¿Ya tienes cuenta?
+                <button (click)="navigateToLogin()" class="link-vimax focus:outline-none">Iniciar sesión</button>
             </p>
             <p class="text-sm text-gray-500">
                 Al registrarte aceptas los
-                <button (click)="navigateToTerms()"
-                    class="text-blue-500 hover:text-blue-600 transition-colors underline">
-                    Términos y Condiciones
-                </button>
+                <button (click)="navigateToTerms()" class="link-vimax underline focus:outline-none">Términos y
+                    Condiciones</button>
             </p>
         </div>
-    </div>
-
-    <!-- Mensaje de notificación -->
-    <div *ngIf="notification.show"
-        class="fixed top-4 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 z-50"
-        [class.bg-green-500]="notification.type === 'success'" [class.bg-red-500]="notification.type === 'error'"
-        [class.text-white]="true">
-        <span>{{ notification.message }}</span>
     </div>
 </div>
