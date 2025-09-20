@@ -19,11 +19,11 @@ export class Configuracion {
   navigateResolucionFact() {
     this.router.navigate(['/resoluciones']);
   }
-  
+
   navigateRetencionRespaldo() {
-    this.router.navigate(['/retenciones']);
+    this.router.navigate(['/retencion-respaldo']);
   }
-  
+
   navigateNotificaciones() {
     this.router.navigate(['/notificaciones-email']);
   }
@@ -31,7 +31,7 @@ export class Configuracion {
   navigateCambios(){
     this.router.navigate(['/cambios-normativos']);
   }
-  
+
   navigateCertificados() {
     this.router.navigate(['/certiifcacido-digital']);
   }
