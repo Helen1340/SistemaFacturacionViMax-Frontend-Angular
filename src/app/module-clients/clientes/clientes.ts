@@ -11,7 +11,6 @@ export interface Cliente {
   documento: string; // Combined tipo_documento + numero_documento
   direccion: string;
   pais: string;
-  regimen: string;
   email: string;
   estado?: 'Activo' | 'Inactivo';
 }
@@ -24,7 +23,6 @@ interface ClienteApiResponse {
   numero_documento: string;
   direccion?: string;
   pais: string;
-  regimen?: string;
   correo_electronico: string;
   estado?: 'Activo' | 'Inactivo';
 }
@@ -76,7 +74,6 @@ export class Clientes implements OnInit, OnDestroy {
             documento: `${cliente.tipo_documento} - ${cliente.numero_documento}`,
             direccion: cliente.direccion || '-',
             pais: cliente.pais,
-            regimen: cliente.regimen || '-',
             email: cliente.correo_electronico,
             estado: cliente.estado || 'Activo'
           }));
@@ -141,7 +138,7 @@ export class Clientes implements OnInit, OnDestroy {
 
   // Obtener acciones disponibles para un cliente
   getAvailableActions(estado: string): string[] {
-    return ['Ver Detalles', 'Editar', 'Eliminar'];
+    return ['Editar', 'Eliminar'];
   }
 
   // Ejecutar acción
@@ -149,9 +146,6 @@ export class Clientes implements OnInit, OnDestroy {
     this.openMenuIndex = null; // Cerrar dropdown
     
     switch (action) {
-      case 'Ver Detalles':
-        this.verDetalles(cliente);
-        break;
       case 'Editar':
         this.editarCliente(cliente);
         break;
@@ -161,10 +155,6 @@ export class Clientes implements OnInit, OnDestroy {
     }
   }
 
-  verDetalles(cliente: Cliente): void {
-    console.log('Ver detalles del cliente:', cliente);
-    this.router.navigate(['/ver-cliente', cliente.id]);
-  }
 
   editarCliente(cliente: Cliente): void {
     console.log('Editar cliente:', cliente);

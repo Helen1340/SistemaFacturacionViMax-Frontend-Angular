@@ -5,14 +5,14 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ClientService } from '../services/client.service';
 
 export interface EditarClienteForm {
-  nombreRazon: string;
-  tipoDocumento: string;
-  numeroDocumento: string;
-  correoElectronico: string;
-  pais: string;
+  nombre: string;
+  tipo_documento: string;
+  numero_documento: string;
   direccion: string;
-  regimenTributario: string;
+  pais: string;
   descripcion: string;
+  contrasena: string;
+  correo_electronico: string;
   telefono: string;
 }
 
@@ -26,14 +26,14 @@ export class EditarCliente implements OnInit {
   
   // Formulario
   clienteForm: EditarClienteForm = {
-    nombreRazon: '',
-    tipoDocumento: '',
-    numeroDocumento: '',
-    correoElectronico: '',
-    pais: '',
+    nombre: '',
+    tipo_documento: '',
+    numero_documento: '',
     direccion: '',
-    regimenTributario: '',
+    pais: '',
     descripcion: '',
+    contrasena: '',
+    correo_electronico: '',
     telefono: ''
   };
 
@@ -54,12 +54,6 @@ export class EditarCliente implements OnInit {
     { value: 'RC', label: 'Registro Civil' }
   ];
 
-  regimenesTributarios = [
-    { value: 'simplificado', label: 'Régimen Simplificado' },
-    { value: 'comun', label: 'Régimen Común' },
-    { value: 'gran_contribuyente', label: 'Gran Contribuyente' },
-    { value: 'autorretenedor', label: 'Autorretenedor' }
-  ];
 
   constructor(
     private router: Router,
@@ -78,6 +72,30 @@ export class EditarCliente implements OnInit {
     
     // Cargar datos del cliente
     this.cargarDatosCliente();
+  }
+
+  // Generar contraseña automáticamente cuando se ingrese el número de documento
+  onNumeroDocumentoChange(): void {
+    if (this.clienteForm.numero_documento && this.clienteForm.numero_documento.trim() !== '') {
+      this.clienteForm.contrasena = this.generarContraseñaEncriptada(this.clienteForm.numero_documento);
+    }
+  }
+
+  // Generar contraseña encriptada basada en el número de documento
+  private generarContraseñaEncriptada(numeroDocumento: string): string {
+    // Simular encriptación usando base64 y algunos caracteres especiales
+    const timestamp = Date.now().toString();
+    const combined = numeroDocumento + timestamp;
+    
+    // Crear un hash simple simulando encriptación
+    let hash = '';
+    for (let i = 0; i < combined.length; i++) {
+      const char = combined.charCodeAt(i);
+      hash += String.fromCharCode((char + 7) % 94 + 33);
+    }
+    
+    // Convertir a base64 para simular encriptación
+    return btoa(hash).substring(0, 16);
   }
 
   // Cargar datos del cliente para editar
@@ -105,14 +123,14 @@ export class EditarCliente implements OnInit {
   // Popular el formulario con los datos del cliente
   private popularFormulario(cliente: any): void {
     this.clienteForm = {
-      nombreRazon: cliente.nombre || cliente.name || '',
-      tipoDocumento: cliente.tipo_documento || cliente.document_type || '',
-      numeroDocumento: cliente.numero_documento || cliente.document_number || '',
-      correoElectronico: cliente.correo_electronico || cliente.email || '',
-      pais: cliente.pais || cliente.country || '',
+      nombre: cliente.nombre || cliente.name || '',
+      tipo_documento: cliente.tipo_documento || cliente.document_type || '',
+      numero_documento: cliente.numero_documento || cliente.document_number || '',
       direccion: cliente.direccion || cliente.address || '',
-      regimenTributario: cliente.regimen_tributario || cliente.tax_regime || '',
+      pais: cliente.pais || cliente.country || '',
       descripcion: cliente.descripcion || cliente.description || '',
+      contrasena: cliente.contrasena || cliente.password || '',
+      correo_electronico: cliente.correo_electronico || cliente.email || '',
       telefono: cliente.telefono || cliente.phone || ''
     };
   }
@@ -120,10 +138,10 @@ export class EditarCliente implements OnInit {
   // Validación del formulario
   validarFormulario(): boolean {
     const camposObligatorios = [
-      'nombreRazon',
-      'tipoDocumento', 
-      'numeroDocumento',
-      'correoElectronico',
+      'nombre',
+      'tipo_documento', 
+      'numero_documento',
+      'correo_electronico',
       'pais',
       'direccion'
     ];
@@ -137,7 +155,7 @@ export class EditarCliente implements OnInit {
 
     // Validar email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(this.clienteForm.correoElectronico)) {
+    if (!emailRegex.test(this.clienteForm.correo_electronico)) {
       this.mostrarAlerta('El correo electrónico no tiene un formato válido', 'error');
       return false;
     }
@@ -148,10 +166,10 @@ export class EditarCliente implements OnInit {
   // Obtener nombre legible del campo
   private getNombreCampo(campo: string): string {
     const nombres: { [key: string]: string } = {
-      'nombreRazon': 'Nombre o Razón Social',
-      'tipoDocumento': 'Tipo de Documento',
-      'numeroDocumento': 'Número de Documento',
-      'correoElectronico': 'Correo Electrónico',
+      'nombre': 'Nombre',
+      'tipo_documento': 'Tipo de Documento',
+      'numero_documento': 'Número de Documento',
+      'correo_electronico': 'Correo Electrónico',
       'pais': 'País',
       'direccion': 'Dirección'
     };
@@ -169,13 +187,14 @@ export class EditarCliente implements OnInit {
 
     // Preparar datos para la API
     const clienteData = {
-      nombre: this.clienteForm.nombreRazon,
-      tipo_documento: this.clienteForm.tipoDocumento,
-      numero_documento: this.clienteForm.numeroDocumento,
+      nombre: this.clienteForm.nombre,
+      tipo_documento: this.clienteForm.tipo_documento,
+      numero_documento: this.clienteForm.numero_documento,
       direccion: this.clienteForm.direccion,
       pais: this.clienteForm.pais,
       descripcion: this.clienteForm.descripcion,
-      correo_electronico: this.clienteForm.correoElectronico,
+      contrasena: this.clienteForm.contrasena,
+      correo_electronico: this.clienteForm.correo_electronico,
       telefono: this.clienteForm.telefono
     };
 

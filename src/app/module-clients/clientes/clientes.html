@@ -61,14 +61,13 @@
             <table class="w-full table-fixed">
                 <thead class="bg-gray-100 text-gray-800 text-left sticky top-0 z-10">
                     <tr>
-                        <th class="px-4 py-3 font-semibold w-[15%] text-sm">Nombre/Razón</th>
+                        <th class="px-4 py-3 font-semibold w-[22%] text-sm">Nombre/Razón</th>
                         <th class="px-4 py-3 font-semibold w-[18%] text-sm">Documento</th>
-                        <th class="px-4 py-3 font-semibold w-[15%] text-sm">Dirección</th>
-                        <th class="px-4 py-3 font-semibold w-[12%] text-sm">País</th>
-                        <th class="px-4 py-3 font-semibold w-[10%] text-sm">Régimen</th>
-                        <th class="px-4 py-3 font-semibold w-[15%] text-sm">Email</th>
+                        <th class="px-4 py-3 font-semibold w-[20%] text-sm">Dirección</th>
+                        <th class="px-4 py-3 font-semibold w-[10%] text-sm">País</th>
+                        <th class="px-4 py-3 font-semibold w-[20%] text-sm">Email</th>
                         <th class="px-4 py-3 font-semibold w-[8%] text-sm">Estado</th>
-                        <th class="px-4 py-3 text-center font-semibold w-[7%] text-sm">Acciones</th>
+                        <th class="px-4 py-3 text-center font-semibold w-[8%] text-sm">Acciones</th>
                     </tr>
                 </thead>
             </table>
@@ -82,23 +81,22 @@
                     <!-- Filas de clientes -->
                     <tr *ngFor="let cliente of paginatedClientes; trackBy: trackByClienteId; let i = index" 
                         class="border-t border-gray-200 hover:bg-gray-50">
-                        <td class="px-4 py-3 w-[15%] break-words">{{ cliente.nombreRazon }}</td>
+                        <td class="px-4 py-3 w-[22%] break-words">{{ cliente.nombreRazon }}</td>
                         <td class="px-4 py-3 w-[18%]">
                             <span class="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 break-words">
                                 {{ cliente.documento }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 w-[15%] break-words">{{ cliente.direccion }}</td>
-                        <td class="px-4 py-3 w-[12%] break-words">{{ cliente.pais }}</td>
-                        <td class="px-4 py-3 w-[10%] break-words">{{ cliente.regimen }}</td>
-                        <td class="px-4 py-3 w-[15%] break-words">{{ cliente.email }}</td>
+                        <td class="px-4 py-3 w-[20%] break-words">{{ cliente.direccion }}</td>
+                        <td class="px-4 py-3 w-[10%] break-words">{{ cliente.pais }}</td>
+                        <td class="px-4 py-3 w-[20%] break-words">{{ cliente.email }}</td>
                         <td class="px-4 py-3 w-[8%]">
                             <span [ngClass]="cliente.estado === 'Activo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" 
                                   class="px-2 py-1 rounded-full text-xs font-medium">
                                 {{ cliente.estado }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 w-[7%] text-center">
+                        <td class="px-4 py-3 w-[8%] text-center">
                             <button (click)="toggleMenu(i, $event)" class="p-3 rounded">
                                 <svg width="19" height="19" viewBox="0 0 22 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M13.4136 15.0078C13.4193 13.558 12.5425 12.3793 11.4552 12.375C10.3679 12.3707 9.48184 13.5425 9.47612 14.9922C9.4704 16.4419 10.3472 17.6207 11.4345 17.625C12.5218 17.6293 13.4079 16.4575 13.4136 15.0078Z" fill="black" />
@@ -123,7 +121,7 @@
 
                     <!-- Mensaje cuando no hay clientes -->
                     <tr *ngIf="paginatedClientes.length === 0" class="border-t border-t-gray-200">
-                        <td colspan="8" class="px-4 py-8 text-center text-gray-500">
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">
                             {{ cargando ? 'Cargando clientes...' : 'No se encontraron clientes' }}
                         </td>
                     </tr>
