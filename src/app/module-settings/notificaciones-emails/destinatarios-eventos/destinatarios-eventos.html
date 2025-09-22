@@ -1,0 +1,158 @@
+<main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
+
+    <div class="-mt-4 mb-2">
+        <h2 class="text-3xl md:text-4xl font-semibold text-center md:text-left mb-6 pt-8">
+            Destinatarios y Eventos Personalizados
+        </h2>
+    </div>
+
+    <div class="border-b-2 border-gray-300 w-full mb-8"></div>
+    <!-- Párrafo introductorio completo a ancho extendido -->
+    <p class="text-gray-600 mb-6 text-sm max-w-none">
+        Configura quién debe recibir notificaciones según cada evento del sistema.
+        Asigna correos electrónicos específicos para distintos tipos de notificaciones, como facturas aceptadas,
+        rechazadas o creación de nuevos usuarios, asegurando que cada mensaje llegue a la persona correcta.
+    </p>
+
+    <div class="w-full p-6">
+
+
+        <!-- Formulario de asignación -->
+        <form class="bg-white p-6 rounded-xl shadow space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Evento -->
+                <div>
+                    <label class="block text-sm font-medium text-black mb-1">Evento a notificar <span
+                            class="text-red-600">*</span></label>
+                    <select class="w-full border border-gray-300 rounded px-3 py-2 text-sm text-black bg-white"
+                        required>
+                        <option value="">Seleccione un evento</option>
+                        <option value="factura_aceptada">Factura Aceptada</option>
+                        <option value="factura_rechazada">Factura Rechazada</option>
+                        <option value="usuario_creado">Usuario Nuevo Creado</option>
+                    </select>
+                </div>
+
+                <!-- Correo destinatario -->
+                <div>
+                    <label class="block text-sm font-medium text-black mb-1">Correo destinatario <span
+                            class="text-red-600">*</span></label>
+                    <input type="email" placeholder="correo@empresa.com"
+                        class="w-full border border-gray-300 rounded px-3 py-2 text-sm text-black" required />
+                </div>
+
+                <!-- Estado de notificación -->
+                <div>
+                    <label class="block text-sm font-medium text-black mb-1">Estado</label>
+                    <div class="flex items-center gap-3 mt-2">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" class="form-checkbox h-5 w-5 text-cyan-600" checked />
+                            <span class="ml-2 text-sm text-black">Activo</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón guardar -->
+            <div class="flex justify-end pt-4">
+                <button type="submit" onclick="guardarConfiguracion()"
+                    class="bg-cyan-600 text-white px-6 py-2 rounded hover:bg-cyan-700 text-sm">
+                    Guardar configuración
+                </button>
+            </div>
+
+            <!-- Notificación de éxito -->
+            <div id="notificacion"
+                class="hidden fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span>¡Configuración guardada exitosamente!</span>
+                </div>
+            </div>
+        </form>
+
+        <!-- Tabla resumen de asignaciones -->
+        <div class="mt-8 bg-white rounded-xl shadow overflow-x-auto">
+            <table class="min-w-full text-sm text-left">
+                <thead class="bg-gray-100 text-gray-700">
+                    <tr>
+                        <th class="px-4 py-2">Evento</th>
+                        <th class="px-4 py-2">Correo</th>
+                        <th class="px-4 py-2">Estado</th>
+                        <th class="px-4 py-2 text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="text-black">
+                    <!-- Fila real -->
+                    <tr class="border border-gray-200">
+                        <td class="px-4 py-2">Factura Aceptada</td>
+                        <td class="px-4 py-2">auditor@empresa.com</td>
+                        <td class="px-4 py-2 text-green-600 font-medium">Activo</td>
+                        <td class="px-4 py-2 text-center">
+                            <div class="relative inline-block text-left">
+                                <button onclick="toggleMenu(this)" class="p-2 rounded hover:bg-gray-100">
+                                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                </button>
+                                <div
+                                    class="dropdown hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                                    <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Editar</a>
+                                    <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Eliminar</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Fila vacía 1 -->
+                    <tr class="border border-gray-200">
+                        <td class="px-4 py-4"></td>
+                        <td></td>
+                        <td></td>
+                        <td class="px-4 py-2 text-center">
+                            <div class="relative inline-block text-left">
+                                <button onclick="toggleMenu(this)" class="p-2 rounded hover:bg-gray-100">
+                                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                </button>
+                                <div
+                                    class="dropdown hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                                    <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Editar</a>
+                                    <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Eliminar</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Fila vacía 2 -->
+                    <tr class="border border-gray-200">
+                        <td class="px-4 py-4"></td>
+                        <td></td>
+                        <td></td>
+                        <td class="px-4 py-2 text-center">
+                            <div class="relative inline-block text-left">
+                                <button onclick="toggleMenu(this)" class="p-2 rounded hover:bg-gray-100">
+                                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                </button>
+                                <div
+                                    class="dropdown hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                                    <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Editar</a>
+                                    <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Eliminar</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>

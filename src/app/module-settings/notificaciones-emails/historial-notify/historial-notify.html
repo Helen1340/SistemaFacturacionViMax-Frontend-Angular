@@ -1,0 +1,166 @@
+<main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
+
+    <div class="-mt-4 mb-2">
+        <h2 class="text-3xl md:text-4xl font-semibold text-center md:text-left mb-6 pt-8">
+            Historial de Notificaciones
+        </h2>
+    </div>
+
+    <div class="border-b-2 border-gray-300 w-full mb-8"></div>
+    <p class="text-gray-600 mb-6 text-sm max-w-none">Consulta el historial completo de notificaciones enviadas por el
+        sistema. Visualiza cuándo,
+        a quién y por qué evento se envió cada notificación, lo que te permite hacer seguimiento y asegurar una correcta
+        comunicación con tus usuarios.</p>
+    <div class="w-full p-6">
+
+
+
+        <!-- Filtros -->
+        <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+
+            <!-- Fila 1: Buscador + Desde + Hasta -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <!-- Buscador -->
+                <div>
+                    <label class="text-sm font-medium text-black block mb-1">Buscar</label>
+                    <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2">
+                        <svg class="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" />
+                        </svg>
+                        <input type="text" placeholder="Buscar notificación..."
+                            class="w-full border-none outline-none text-black text-sm" />
+                    </div>
+                </div>
+
+                <!-- Desde -->
+                <div>
+                    <label class="text-sm font-medium text-black block mb-1">Desde</label>
+                    <input type="date"
+                        class="w-full border border-gray-300 rounded px-3 py-2 text-sm text-black bg-white" />
+                </div>
+
+                <!-- Hasta -->
+                <div>
+                    <label class="text-sm font-medium text-black block mb-1">Hasta</label>
+                    <input type="date"
+                        class="w-full border border-gray-300 rounded px-3 py-2 text-sm text-black bg-white" />
+                </div>
+            </div>
+
+            <!-- Fila 2: Tipo de evento, correo, estado -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <!-- Tipo de evento -->
+                <div>
+                    <label class="text-sm font-medium text-black block mb-1">Tipo de Evento</label>
+                    <select class="w-full border border-gray-300 rounded px-3 py-2 text-sm text-black bg-white">
+                        <option value="">Todos</option>
+                        <option value="factura_aceptada">Factura Aceptada</option>
+                        <option value="factura_rechazada">Factura Rechazada</option>
+                        <option value="usuario_creado">Usuario Nuevo Creado</option>
+                    </select>
+                </div>
+
+                <!-- Correo -->
+                <div>
+                    <label class="text-sm font-medium text-black block mb-1">Correo destinatario</label>
+                    <input type="text" placeholder="correo@empresa.com"
+                        class="w-full border border-gray-300 rounded px-3 py-2 text-sm text-black bg-white">
+                </div>
+
+                <!-- Estado -->
+                <div>
+                    <label class="text-sm font-medium text-black block mb-1">Estado de Envío</label>
+                    <select class="w-full border border-gray-300 rounded px-3 py-2 text-sm text-black bg-white">
+                        <option value="">Todos</option>
+                        <option value="enviado">Enviado</option>
+                        <option value="fallido">Fallido</option>
+                        <option value="pendiente">Pendiente</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Botón Buscar -->
+            <div class="flex justify-end">
+                <button onclick="buscarNotificaciones()"
+                    class="bg-cyan-600 text-white px-6 py-2 rounded hover:bg-cyan-700 text-sm">
+                    Buscar
+                </button>
+            </div>
+
+            <!-- Notificación -->
+            <div id="notificacion"
+                class="hidden fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span>Buscando notificaciones...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de resultados -->
+        <div class="bg-white rounded-xl shadow overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gray-100 text-gray-800">
+                    <tr>
+                        <th class="px-4 py-2">Fecha</th>
+                        <th class="px-4 py-2">Evento</th>
+                        <th class="px-4 py-2">Correo destinatario</th>
+                        <th class="px-4 py-2">Estado</th>
+                        <th class="px-4 py-2">Resultado</th>
+                        <th class="px-4 py-2 text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="text-black">
+                    <!-- Fila ejemplo -->
+                    <tr class="border border-gray-200">
+                        <td class="px-4 py-2">2025-07-07 09:21</td>
+                        <td class="px-4 py-2">Factura Aceptada</td>
+                        <td class="px-4 py-2">auditor@empresa.com</td>
+                        <td class="px-4 py-2 text-green-600 font-medium">Enviado</td>
+                        <td class="px-4 py-2">200 OK</td>
+                        <td class="px-4 py-2 text-center">
+                            <div class="relative inline-block text-left">
+                                <button onclick="toggleMenu(this)" class="p-2 rounded hover:bg-gray-100">
+                                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                </button>
+                                <div
+                                    class="dropdown hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                                    <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Ver detalle</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Fila vacía -->
+                    <tr class="border border-gray-200">
+                        <td class="px-4 py-6"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-center">
+                            <div class="relative inline-block text-left">
+                                <button onclick="toggleMenu(this)" class="p-2 rounded hover:bg-gray-100">
+                                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                </button>
+                                <div
+                                    class="dropdown hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                                    <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Ver detalle</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>

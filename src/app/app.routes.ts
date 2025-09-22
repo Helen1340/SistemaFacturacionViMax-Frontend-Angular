@@ -39,12 +39,7 @@ import { CambiosNormativos } from './module-settings/cambios-normativos/cambios-
 import { Acceder } from './module-home/acceder/acceder';
 import { Registro } from './module-home/registro/registro';
 import { ParametrosGenerales } from './module-settings/parametros-generales/parametros-generales';
-import { NuevaFactura } from './module-invoices-notes/nueva-factura/nueva-factura';
-import { EditarFactura } from './module-invoices-notes/editar-facturas/editar-facturas';
-import { NuevaNotaComponent } from './module-invoices-notes/nueva-nota/nueva-nota';
-import { DetalleFacturas } from './module-invoices-notes/detalle-facturas/detalle-facturas';
 import { HistorialTecnico } from './module-notifications/historial-tecnico/historial-tecnico';
-import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
 
 
 
