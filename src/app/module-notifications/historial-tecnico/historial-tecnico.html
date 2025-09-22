@@ -1,11 +1,8 @@
-
-
-
 <!-- Contenido principal -->
 <main class="w-full py-4 flex-1 overflow-y-auto overflow-x-visible">
 
   <div class="-mt-4 mb-4">
-    <h2 class="text-4xl font-semibold mb-6 mt-8">Recepción de documentos</h2>
+    <h2 class="text-4xl font-semibold mb-6 mt-8">Historial técnico de notificaciones</h2>
   </div>
 
   <div class="border-b-2 border-gray-300 w-full mb-8"></div>
@@ -23,54 +20,56 @@
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
-          <input type="text" placeholder="Buscar .."
-                 class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
+          <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()"
+                 class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                 placeholder="Buscar ..">
         </div>
       </div>
 
-      <!-- Filtro -->
+      <!-- Filtrar por -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Filtro</label>
-        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
-          <option>Todos</option>
-          <option>Cliente</option>
-          <option>Estado DIAN</option>
-          <option>N° Documento</option>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Filtrar por</label>
+        <select [(ngModel)]="filterValue" (change)="onFilter()"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+          <option value="">ID</option>
+          <option value="tipo">Tipo</option>
+          <option value="modulo">Módulo Afectado</option>
+          <option value="usuario">Usuario Afectado</option>
         </select>
       </div>
 
       <!-- Desde -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">Desde</label>
-        <input type="date" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+        <input type="date" [(ngModel)]="fechaDesde" name="fechaDesde"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
       </div>
 
       <!-- Hasta -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">Hasta</label>
-        <input type="date" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+        <input type="date" [(ngModel)]="fechaHasta" name="fechaHasta"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
       </div>
     </div>
   </div>
 
-  <!-- Tabla de documentos recibidos -->
+  <!-- Tabla de Historial Técnico -->
   <div class="bg-white rounded-2xl shadow-lg border border-gray-200">
     <div class="overflow-x-auto">
       <table class="w-full table-auto">
         <thead class="bg-gray-100 text-black text-left sticky top-0 z-10">
           <tr>
-            <th class="px-4 py-3 font-semibold min-w-[150px] rounded-tl-2xl">Tipo de documento</th>
-            <th class="px-4 py-3 font-semibold min-w-[120px]">N° Documento</th>
-            <th class="px-4 py-3 font-semibold min-w-[150px]">Cliente</th>
-            <th class="px-4 py-3 font-semibold min-w-[120px]">Fecha emisión</th>
-            <th class="px-4 py-3 font-semibold min-w-[120px]">Estado DIAN</th>
-            <th class="px-4 py-3 font-semibold min-w-[100px]">Modo</th>
-            <th class="px-4 py-3 font-semibold min-w-[100px] rounded-tr-2xl">Acciones</th>
+            <th class="px-4 py-3 font-semibold min-w-[80px] rounded-tl-2xl">ID</th>
+            <th class="px-4 py-3 font-semibold min-w-[150px]">Fecha / Hora</th>
+            <th class="px-4 py-3 font-semibold min-w-[120px]">Tipo</th>
+            <th class="px-4 py-3 font-semibold min-w-[150px]">Modulo Afectado</th>
+            <th class="px-4 py-3 font-semibold min-w-[200px]">Mensaje</th>
+            <th class="px-4 py-3 font-semibold min-w-[120px] rounded-tr-2xl">Usuario afectado</th>
           </tr>
         </thead>
         <tbody>
           <tr class="border-t border-gray-200 hover:bg-gray-50">
-            <td class="px-4 py-3 text-gray-400 text-sm">-</td>
             <td class="px-4 py-3 text-gray-400 text-sm">-</td>
             <td class="px-4 py-3 text-gray-400 text-sm">-</td>
             <td class="px-4 py-3 text-gray-400 text-sm">-</td>
@@ -84,3 +83,5 @@
   </div>
 
 </main>
+
+

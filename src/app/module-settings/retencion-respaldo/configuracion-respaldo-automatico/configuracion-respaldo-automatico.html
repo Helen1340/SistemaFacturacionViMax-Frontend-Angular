@@ -1,0 +1,123 @@
+<div id="overlay" class="hidden fixed inset-0 bg-black/50 z-40 md:hidden"></div>
+<!-- Contenido principal -->
+<main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <div class="-mt-2 mb-2">
+            <h2 class="text-4xl font-semibold mb-5 mt-4">
+                Configuración De Respaldo Automático
+            </h2>
+        </div>
+
+        <div class="border-b-2 border-gray-300 w-full mb-6"></div>
+
+        <!-- Content Area -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <div class="max-w-7xl mx-auto">
+
+                <!-- Formulario de Configuración -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+                    <form class="space-y-6">
+                        <!-- Activar respaldo automático -->
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">
+                                    Activar respaldo automático
+                                </label>
+                                <p class="text-xs text-gray-500 mt-1">Recomendado mantener activo</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" [(ngModel)]="formData.activarRespaldo" name="activarRespaldo"
+                                       class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- Frecuencia de respaldo -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Frecuencia de respaldo <span class="text-red-500">*</span>
+                            </label>
+                            <select [(ngModel)]="formData.frecuencia" name="frecuencia"
+                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                <option value="">Seleccione...</option>
+                                <option value="diario">Diario</option>
+                                <option value="semanal">Semanal</option>
+                                <option value="mensual">Mensual</option>
+                                <option value="trimestral">Trimestral</option>
+                            </select>
+                        </div>
+
+                        <!-- Destino del respaldo -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Destino del respaldo <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" [(ngModel)]="formData.destino" name="destino"
+                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                                   placeholder="Ej: Servidor local, Nube, etc.">
+                        </div>
+
+                        <!-- Ruta de respaldo o URL -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Ruta de respaldo o URL
+                            </label>
+                            <input type="text" [(ngModel)]="formData.rutaUrl" name="rutaUrl"
+                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                                   placeholder="Ruta o URL de destino">
+                            <p class="text-xs text-gray-500 mt-1">Obligatorio si el destino no es local.</p>
+                        </div>
+
+                        <!-- Formato de respaldo -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Formato de respaldo
+                            </label>
+                            <div class="space-y-3">
+                                <label class="flex items-center">
+                                    <input type="checkbox" [(ngModel)]="formData.formatos.zip" name="zip"
+                                           class="mr-2 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500">
+                                    <span class="text-sm text-gray-700">ZIP de XML + PDF</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" [(ngModel)]="formData.formatos.json" name="json"
+                                           class="mr-2 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500">
+                                    <span class="text-sm text-gray-700">JSON resumen</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" [(ngModel)]="formData.formatos.csv" name="csv"
+                                           class="mr-2 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500">
+                                    <span class="text-sm text-gray-700">CSV de movimientos</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Notificación de respaldo -->
+                        <div>
+                            <label class="flex items-center">
+                                <input type="checkbox" [(ngModel)]="formData.notificarCorreo" name="notificarCorreo"
+                                       class="mr-2 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500">
+                                <span class="text-sm text-gray-700">
+                                    Notificar respaldo exitoso al correo del administrador
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Botón de Guardar -->
+                        <div class="flex justify-end pt-6">
+                            <button type="submit" (click)="guardarConfiguracion()"
+                                    class="px-8 py-3 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors font-medium">
+                                Guardar Configuración
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</main>

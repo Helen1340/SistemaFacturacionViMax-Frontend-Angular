@@ -1,4 +1,4 @@
-/* Estilos específicos para el componente de retención y respaldo */
+/* Estilos específicos para el componente de historial técnico */
 
 /* Animación de carga para el estado de loading */
 @keyframes pulse {
@@ -13,3 +13,5 @@
 .loading-state {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+

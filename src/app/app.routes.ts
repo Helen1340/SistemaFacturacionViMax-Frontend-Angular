@@ -1,7 +1,5 @@
 import { Routes } from '@angular/router';
 import { ProductosServicios } from './module-product-service/productos-servicios/productos-servicios';
-
-import { RegitrarServicio } from './module-product-service/regitrar-servicio/regitrar-servicio';
 import { Clientes } from './module-clients/clientes/clientes';
 import { NuevoCliente } from './module-clients/nuevo-cliente/nuevo-cliente';
 import { EditarCliente } from './module-clients/editar-cliente/editar-cliente';
@@ -10,6 +8,7 @@ import { Usuarios } from './module-users/usuarios/usuarios';
 import { Contingencia } from './module-contingency/contingencia/Contingency/contingencia';
 import { FacturaContingencia } from './module-contingency/contingencia/Contingency/Contingency invoices/factura-contingencia';
 import { RecepcionDocumentos } from './module-document-reception/recepcion-documentos/recepcion-documentos';
+import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
 import { Configuracion } from './module-settings/configuracion/configuracion';
 import { ImpuestosRetenciones } from './module-settings/impuestos-retenciones/impuestos-retenciones';
 import { NuevoImpuesto } from './module-settings/impuestos-retenciones/nuevo-impuesto/nuevo-impuesto';
@@ -19,7 +18,6 @@ import { NuevaFactura } from './module-invoices-notes/nueva-factura/nueva-factur
 import { EditarFactura } from './module-invoices-notes/editar-facturas/editar-facturas';
 import { NuevaNotaComponent } from './module-invoices-notes/nueva-nota/nueva-nota';
 import { DetalleFacturas } from './module-invoices-notes/detalle-facturas/detalle-facturas';
-import { RegistrarProductoComponent } from './module-product-service/registrar-producto/registrar-producto';
 import { NuevoUsuario } from './module-users/nuevo-usuario/nuevo-usuario';
 import { EditUsuario } from './module-users/edit-usuario/edit-usuario';
 import { VerUsuario } from './module-users/ver-usuario/ver-usuario';
@@ -30,10 +28,14 @@ import { ReporteUsuarios } from './module-reports/reporte-usuarios/reporte-usuar
 import { ReporteImpuestos } from './module-reports/reporte-impuestos/reporte-impuestos';
 import { CertificadoDigital } from './module-settings/certificado-digital/certificado-digital';
 import { NotificacionesEmails } from './module-settings/notificaciones-emails/notificaciones-emails';
+import { RetencionRespaldo } from './module-settings/retencion-respaldo/retencion-respaldo';
+import { ConfiguracionRetencionDocumental } from './module-settings/retencion-respaldo/configuracion-retencion-documental/configuracion-retencion-documental';
+import { ConfiguracionRespaldoAutomatico } from './module-settings/retencion-respaldo/configuracion-respaldo-automatico/configuracion-respaldo-automatico';
+import { CambiosNormativos } from './module-settings/cambios-normativos/cambios-normativos';
 import { Acceder } from './module-home/acceder/acceder';
-import { Registro } from './module-home/registro/registro';
 import { ParametrosGenerales } from './module-settings/parametros-generales/parametros-generales';
-import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
+import { HistorialTecnico } from './module-notifications/historial-tecnico/historial-tecnico';
+import { Registro } from './module-home/registro/registro';
 
 
 
@@ -87,10 +89,10 @@ export const routes: Routes = [
 
 
   //ESPACIO PARA LAS RUTAS DE DAVID (MODULE FACTURAS, CLIENTES)
-
-  { path: '', redirectTo: 'facturas-notas', pathMatch: 'full' }, // redirige al inicio
-  { path: 'facturas-notas', component: FacturasNotas},
-  { path: 'clientes', component: Clientes},
+  
+  { path: '', redirectTo: 'facturas-notas', pathMatch: 'full' },
+  { path: 'facturas-notas', component: FacturasNotas },
+  { path: 'clientes', component: Clientes },
   { path: 'nueva-factura', component: NuevaFactura },
   { path: 'nueva-nota', component: NuevaNotaComponent },
   { path: 'editar-facturas/:id', component: EditarFactura },
@@ -121,10 +123,10 @@ export const routes: Routes = [
 
 
 
+
   //ESPACIO PARA LAS RUTAS DE HELEN (MODULE PRODUCTOS)
   { path: 'productos-servicios', component: ProductosServicios},
-  {path: 'registrar-producto', component: RegistrarProductoComponent},
-  {path: 'registrar-servicio',component: RegitrarServicio},
+  
 
   // ... otras rutas
 
@@ -144,7 +146,7 @@ export const routes: Routes = [
   //rutes home
   { path: 'login', component: Acceder },
   { path: 'acceso', component: Acceder },
-  { path: 'registro', component: Registro },
+  { path: 'register', component: Registro },
 
 
   {path: 'reportes',component: Reportes},
@@ -159,7 +161,7 @@ export const routes: Routes = [
   {path: 'reporte-usuarios', component: ReporteUsuarios},
   {path: 'reporte-impuestos', component: ReporteImpuestos},
 
-  
+
 
 
 
@@ -200,9 +202,8 @@ export const routes: Routes = [
 {path: 'contingencia',component: Contingencia},
 {path: 'facturas-contingencia',component: FacturaContingencia},
 {path: 'recepción-documentos',component: RecepcionDocumentos},
-{path: 'notificaciones', component: Notificaciones},
-
-
+{path: 'notificaciones',component: Notificaciones},
+{path: 'historial-tecnico',component: HistorialTecnico},
 
 
 
@@ -241,6 +242,10 @@ export const routes: Routes = [
   {path: 'parametros-generales',component: ParametrosGenerales},
   {path: 'certificado-digital', component: CertificadoDigital},
   {path: 'notificaciones-email',component: NotificacionesEmails},
+  {path: 'retencion-respaldo', component: RetencionRespaldo},
+  {path: 'configuracion-retencion-documental', component: ConfiguracionRetencionDocumental},
+  {path: 'configuracion-respaldo-automatico', component: ConfiguracionRespaldoAutomatico},
+  {path: 'cambios-normativos', component: CambiosNormativos},
   {path: 'impuestos-retenciones',component: ImpuestosRetenciones},
   {path: 'nuevo-impuesto',component: NuevoImpuesto},
 
