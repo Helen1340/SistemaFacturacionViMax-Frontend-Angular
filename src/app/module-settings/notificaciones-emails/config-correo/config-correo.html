@@ -1,1 +1,114 @@
-<p>config-correo works!</p>
+<main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
+
+    <div class="mt-4 mb-6">
+        <!-- Título -->
+        <h2 class="text-3xl md:text-4xl font-semibold text-center md:text-left">
+            Configuración de Correo Remitente
+        </h2>
+    </div>
+
+    <div class="border-b-2 border-gray-300 w-full mb-8"></div>
+    <p class="text-gray-600 mb-6 text-sm max-w-none">Configura el correo desde el cual se enviarán las notificaciones
+        automáticas</p>
+    <div class="w-full p-6">
+
+
+
+        <form class="bg-white rounded-xl shadow-md p-6 space-y-6 border border-gray-100">
+            <!-- Nombre del Remitente -->
+            <div>
+                <label for="nombre_remitente" class="block text-sm font-medium text-black mb-1">
+                    Nombre del remitente <span class="text-red-600">*</span>
+                </label>
+                <input type="text" id="nombre_remitente" name="nombre_remitente" required
+                    class="w-full border border-gray-300 rounded px-3 py-2 text-sm text-black"
+                    placeholder="Ej: Facturación VIMAX">
+            </div>
+
+            <!-- Correo del Remitente -->
+            <div>
+                <label for="correo_remitente" class="block text-sm font-medium text-black mb-1">
+                    Correo electrónico remitente <span class="text-red-600">*</span>
+                </label>
+                <input type="email" id="correo_remitente" name="correo_remitente" required
+                    class="w-full border border-gray-300 rounded px-3 py-2 text-sm text-black"
+                    placeholder="notificaciones@empresa.com">
+            </div>
+
+            <!-- Servidor SMTP -->
+            <div>
+                <label for="smtp" class="block text-sm font-medium text-black mb-1">Servidor SMTP</label>
+                <input type="text" id="smtp" name="smtp"
+                    class="w-full border border-gray-300 rounded px-3 py-2 text-sm text-black"
+                    placeholder="Ej: smtp.gmail.com">
+            </div>
+
+            <!-- Puerto -->
+            <div>
+                <label for="puerto" class="block text-sm font-medium text-black mb-1">Puerto</label>
+                <input type="number" id="puerto" name="puerto"
+                    class="w-full border border-gray-300 rounded px-3 py-2 text-sm text-black" placeholder="Ej: 587">
+            </div>
+
+            <!-- Usuario SMTP -->
+            <div>
+                <label for="usuario_smtp" class="block text-sm font-medium text-black mb-1">Usuario SMTP</label>
+                <input type="text" id="usuario_smtp" name="usuario_smtp"
+                    class="w-full border border-gray-300 rounded px-3 py-2 text-sm text-black"
+                    placeholder="Ej: notificaciones@empresa.com">
+            </div>
+
+            <!-- Contraseña SMTP -->
+            <div>
+                <label for="clave_smtp" class="block text-sm font-medium text-black mb-1">Contraseña SMTP</label>
+                <input type="password" id="clave_smtp" name="clave_smtp"
+                    class="w-full border border-gray-300 rounded px-3 py-2 text-sm text-black"
+                    placeholder="Clave segura">
+            </div>
+
+            <!-- Botones -->
+            <div class="flex flex-col justify-end sm:flex-row gap-2 w-full md:w-auto">
+                <button type="button" class= "px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition w-full sm:w-auto">
+                    Probar envío
+                </button>
+                <button type="submit" class="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition w-full sm:w-auto">
+                    Guardar configuración
+                </button>
+            </div>
+        </form>
+
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mt-8 mb-6 space-y-4 md:space-y-0 bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <!-- Título -->
+            <h2 class="text-2xl md:text-2xl  text-center md:text-left pr-10">
+                Mas configuraciónes
+            </h2>
+
+            <!-- Navegación -->
+            <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                <button
+                    (click)="navigateconfigCorreo()"
+                    class="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition w-full sm:w-auto">
+                    Configuración de Correo Remitente
+                </button>
+                <button
+                    (click)="navigatePreferencias()"
+                    class="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition w-full sm:w-auto">
+                    Preferencias de Notificaciones
+                </button>
+                <button
+                    (click)="navigateEventos()"
+                    class="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition w-full sm:w-auto">
+                    Destinatarios y Eventos
+                </button>
+
+                <button 
+                    (click)="navigateHistorialNotificaciones()"
+                class="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition w-full sm:w-auto">
+                    Historial de Notificaciones
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+</main>

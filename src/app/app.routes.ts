@@ -40,6 +40,10 @@ import { Acceder } from './module-home/acceder/acceder';
 import { Registro } from './module-home/registro/registro';
 import { ParametrosGenerales } from './module-settings/parametros-generales/parametros-generales';
 import { HistorialTecnico } from './module-notifications/historial-tecnico/historial-tecnico';
+import { DestinatariosEventos } from './module-settings/notificaciones-emails/destinatarios-eventos/destinatarios-eventos';
+import { HistorialNotify } from './module-settings/notificaciones-emails/historial-notify/historial-notify';
+import { ConfigCorreo } from './module-settings/notificaciones-emails/config-correo/config-correo';
+
 
 
 
@@ -254,6 +258,12 @@ export const routes: Routes = [
   {path: 'cambios-normativos', component: CambiosNormativos},
   {path: 'impuestos-retenciones',component: ImpuestosRetenciones},
   {path: 'nuevo-impuesto',component: NuevoImpuesto},
+
+  //notificaciones 
+  {path: 'notificaciones-email',component: NotificacionesEmails},
+  {path: 'config-correo',component: ConfigCorreo},
+  {path: 'eventos',component: DestinatariosEventos},
+  {path: 'historial-notificaciones',component: HistorialNotify},
 
 
 

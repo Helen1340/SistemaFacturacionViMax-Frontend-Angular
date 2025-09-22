@@ -25,7 +25,7 @@ export class Configuracion {
   }
 
   navigateNotificaciones() {
-    this.router.navigate(['/notificaciones-email']);
+    this.router.navigate(['/config-correo']);
   }
 
   navigateCambios(){
@@ -33,7 +33,7 @@ export class Configuracion {
   }
 
   navigateCertificados() {
-    this.router.navigate(['/certiifcacido-digital']);
+    this.router.navigate(['/certificado-digital']);
   }
 
   navigateImpuestos() {
