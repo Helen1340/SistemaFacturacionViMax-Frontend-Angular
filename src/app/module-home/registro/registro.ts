@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AuthService } from '../services/Auth.Service';
 
 @Component({
   selector: 'app-registro',
@@ -23,68 +23,37 @@ export class Registro {
     type: 'success'
   };
 
-  constructor(private fb: FormBuilder, private router: Router, private http: HttpClient) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.registerForm = this.fb.group({
-      // 🔹 Empresa
-      
-      businessName: ['', [
-        Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(120),
-        this.noOnlySpacesValidator,
-        this.noSpecialCharactersValidator
-      ]],
-      nit: ['', [
-        Validators.required,
-        Validators.pattern(/^[0-9]{6,11}-[0-9]$/)
-      ]],
-      companyEmail: ['', [
-        Validators.required,
-        Validators.email,
-        Validators.maxLength(100),
-        this.validEmailValidator
-      ]],
+      // Empresa
+      businessName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(120), this.noOnlySpacesValidator, this.noSpecialCharactersValidator]],
+      nit: ['', [Validators.required, Validators.pattern(/^[0-9]{6,11}-[0-9]$/)]],
+      companyEmail: ['', [Validators.required, Validators.email, Validators.maxLength(100), this.validEmailValidator]],
 
-      // 🔹 Admin
-      firstName: ['', [
-        Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(80),
-        Validators.pattern(/^[a-zA-ZÀ-ÿ\s]+$/),
-        this.noOnlySpacesValidator
-      ]],
-      adminEmail: ['', [
-        Validators.required,
-        Validators.email,
-        Validators.maxLength(100),
-        this.validEmailValidator
-      ]],
+      // Admin
+      firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(80), Validators.pattern(/^[a-zA-ZÀ-ÿ\s]+$/), this.noOnlySpacesValidator]],
+      adminEmail: ['', [Validators.required, Validators.email, Validators.maxLength(100), this.validEmailValidator]],
       documentType: ['', Validators.required],
-      documentNumber: ['', [
-        Validators.required,
-        Validators.pattern(/^[0-9]{5,15}$/)
-      ]],
+      documentNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{5,15}$/)]],
 
-      // 🔹 Contraseñas
-      password: ['', [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.maxLength(50),
-        this.strongPasswordValidator
-      ]],
+      // Contraseñas
+      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50), this.strongPasswordValidator]],
       confirmPassword: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
   }
 
-  // ✅ Validadores personalizados
+  // 🔹 Validadores
   noOnlySpacesValidator(control: AbstractControl): ValidationErrors | null {
     return control.value && control.value.trim() === '' ? { onlySpaces: true } : null;
   }
 
   noSpecialCharactersValidator(control: AbstractControl): ValidationErrors | null {
     return control.value && !/^[a-zA-ZÀ-ÿ0-9\s\.\-]+$/.test(control.value)
-      ? { invalidCharacters: true }
-      : null;
+      ? { invalidCharacters: true } : null;
   }
 
   validEmailValidator(control: AbstractControl): ValidationErrors | null {
@@ -96,30 +65,19 @@ export class Registro {
   strongPasswordValidator(control: AbstractControl): ValidationErrors | null {
     if (!control.value) return null;
     const value = control.value;
-    const valid =
-      /[0-9]/.test(value) &&
-      /[a-z]/.test(value) &&
-      /[A-Z]/.test(value) &&
-      /[#?!@$%^&*-]/.test(value);
+    const valid = /[0-9]/.test(value) && /[a-z]/.test(value) && /[A-Z]/.test(value) && /[#?!@$%^&*-]/.test(value);
     return valid ? null : { weakPassword: true };
   }
 
   passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
     const password = group.get('password')?.value;
     const confirm = group.get('confirmPassword')?.value;
-    return password && confirm && password !== confirm
-      ? { passwordMismatch: true }
-      : null;
+    return password && confirm && password !== confirm ? { passwordMismatch: true } : null;
   }
 
-  // ✅ Utilidades
-  togglePasswordVisibility() { 
-    this.showPassword = !this.showPassword; 
-  }
-  
-  toggleConfirmPasswordVisibility() { 
-    this.showConfirmPassword = !this.showConfirmPassword; 
-  }
+  // 🔹 Acciones
+  togglePasswordVisibility() { this.showPassword = !this.showPassword; }
+  toggleConfirmPasswordVisibility() { this.showConfirmPassword = !this.showConfirmPassword; }
 
   isFieldInvalid(field: string): boolean {
     const control = this.registerForm.get(field);
@@ -129,7 +87,6 @@ export class Registro {
   getFieldError(field: string): string {
     const control = this.registerForm.get(field);
     if (!control || !control.errors) {
-      // Verificar error de validación del formulario para confirmPassword
       if (field === 'confirmPassword' && this.registerForm.hasError('passwordMismatch')) {
         return 'Las contraseñas no coinciden';
       }
@@ -148,12 +105,11 @@ export class Registro {
       weakPassword: 'Debe incluir mayúsculas, minúsculas, números y símbolos'
     };
 
-    // Obtener el primer error
     const firstErrorKey = Object.keys(control.errors)[0];
     return messages[firstErrorKey] || 'Error en el campo';
   }
 
-  // ✅ Envío mejorado para Laravel Sanctum
+  // 🔹 Enviar al backend con AuthService
   onSubmit() {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
@@ -161,46 +117,42 @@ export class Registro {
     }
 
     this.isLoading = true;
-    const formData = this.registerForm.value;
+    const formValue = this.registerForm.value;
 
-    // Remover confirmPassword antes de enviar
-    const { confirmPassword, ...dataToSend } = formData;
+    // ✅ Mapeo correcto de campos a lo que Laravel espera
+    const dataToSend = {
+      razon_social: formValue.businessName,
+      nit: formValue.nit,
+      correo_electronico: formValue.adminEmail,   // login admin
+      company_email: formValue.companyEmail,      // correo empresa
+      nombre: formValue.firstName,
+      tipo_documento: formValue.documentType,
+      numero_documento: formValue.documentNumber,
+      password: formValue.password,
+      password_confirmation: formValue.confirmPassword
+    };
 
-    // Headers para Laravel Sanctum
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest'
-    });
-
-    // 🔹 Conexión con Laravel Sanctum
-    this.http.post('/api/register', dataToSend, { headers }).subscribe({
-      next: (response: any) => {
+    this.authService.register(dataToSend).subscribe({
+      next: () => {
         this.showNotification('Registro exitoso 🚀', 'success');
         this.isLoading = false;
-        
-        // Redirigir después de un breve delay
         setTimeout(() => {
           this.router.navigate(['/configuracion']);
         }, 1500);
       },
       error: (err) => {
         console.error('Error en registro:', err);
-        
         let errorMessage = 'Error en el registro';
-        
-        // Manejar errores específicos de Laravel
+
         if (err.error) {
           if (err.error.message) {
             errorMessage = err.error.message;
           } else if (err.error.errors) {
-            // Errores de validación de Laravel
-            const errors = err.error.errors;
-            const firstField = Object.keys(errors)[0];
-            errorMessage = errors[firstField][0];
+            const firstField = Object.keys(err.error.errors)[0];
+            errorMessage = err.error.errors[firstField][0];
           }
         }
-        
+
         this.showNotification(errorMessage, 'error');
         this.isLoading = false;
       }
@@ -209,16 +161,9 @@ export class Registro {
 
   private showNotification(message: string, type: 'success' | 'error') {
     this.notification = { show: true, message, type };
-    setTimeout(() => {
-      this.notification.show = false;
-    }, 4000);
+    setTimeout(() => { this.notification.show = false; }, 4000);
   }
 
-  navigateToLogin() { 
-    this.router.navigate(['/login']); 
-  }
-  
-  navigateToTerms() { 
-    this.router.navigate(['/terms-conditions']); 
-  }
+  navigateToLogin() { this.router.navigate(['/login']); }
+  navigateToTerms() { this.router.navigate(['/terms-conditions']); }
 }
