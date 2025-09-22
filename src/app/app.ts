@@ -8,7 +8,7 @@ import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Sidebar, CommonModule, Footer, ],
+  imports: [RouterOutlet, Sidebar, CommonModule,  Footer, ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -22,7 +22,7 @@ export class App {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
-        const hiddenRoutes = ['/inicio', '/login', '/registro', '/configuracion', '/parametros-generales'];
+        const hiddenRoutes = ['/inicio', '/login', '/register', '/configuracion', '/parametros-generales'];
         this.showLayout = !hiddenRoutes.includes(event.urlAfterRedirects);
       });
   }
