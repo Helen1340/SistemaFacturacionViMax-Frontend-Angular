@@ -12,6 +12,8 @@ export interface Cliente {
   direccion: string;
   pais: string;
   email: string;
+  telefono?: string;
+  descripcion?: string;
   estado?: 'Activo' | 'Inactivo';
 }
 
@@ -65,16 +67,23 @@ export class Clientes implements OnInit, OnDestroy {
   cargarClientes(): void {
     this.cargando = true;
     this.subscription.add(
-      this.clientService.getClientes().subscribe({
-        next: (clientes: ClienteApiResponse[]) => {
+      this.clientService.getClientesConFiltro().subscribe({
+        next: (usuarios: any[]) => {
+          // Filtrar solo usuarios con rol ID 4 (cliente)
+          const clientesConRol4 = usuarios.filter(usuario => {
+            return usuario.rol_id === 4 || usuario.rol === 4 || usuario.role_id === 4;
+          });
+          
           // Transform the API response to match our interface
-          this.clientes = clientes.map(cliente => ({
+          this.clientes = clientesConRol4.map(cliente => ({
             id: cliente.id,
             nombreRazon: cliente.nombre,
             documento: `${cliente.tipo_documento} - ${cliente.numero_documento}`,
             direccion: cliente.direccion || '-',
             pais: cliente.pais,
             email: cliente.correo_electronico,
+            telefono: cliente.telefono || '',
+            descripcion: cliente.descripcion || '',
             estado: cliente.estado || 'Activo'
           }));
           this.clientesFiltrados = [...this.clientes];
@@ -83,7 +92,6 @@ export class Clientes implements OnInit, OnDestroy {
           this.cargando = false;
         },
         error: (error) => {
-          console.error('Error al cargar clientes:', error);
           this.cargando = false;
         }
       })
@@ -138,7 +146,7 @@ export class Clientes implements OnInit, OnDestroy {
 
   // Obtener acciones disponibles para un cliente
   getAvailableActions(estado: string): string[] {
-    return ['Editar', 'Eliminar'];
+    return ['Ver Detalle', 'Editar', 'Eliminar'];
   }
 
   // Ejecutar acción
@@ -146,6 +154,9 @@ export class Clientes implements OnInit, OnDestroy {
     this.openMenuIndex = null; // Cerrar dropdown
     
     switch (action) {
+      case 'Ver Detalle':
+        this.verCliente(cliente);
+        break;
       case 'Editar':
         this.editarCliente(cliente);
         break;
@@ -156,8 +167,11 @@ export class Clientes implements OnInit, OnDestroy {
   }
 
 
+  verCliente(cliente: Cliente): void {
+    this.router.navigate(['/ver-cliente', cliente.id]);
+  }
+
   editarCliente(cliente: Cliente): void {
-    console.log('Editar cliente:', cliente);
     this.router.navigate(['/editar-cliente', cliente.id]);
   }
 
@@ -167,10 +181,9 @@ export class Clientes implements OnInit, OnDestroy {
         this.clientService.deleteCliente(cliente.id).subscribe({
           next: () => {
             this.cargarClientes(); // Recargar la lista
-            console.log('Cliente eliminado exitosamente');
           },
           error: (error) => {
-            console.error('Error al eliminar cliente:', error);
+            // Error al eliminar cliente
           }
         })
       );
@@ -182,7 +195,6 @@ export class Clientes implements OnInit, OnDestroy {
   }
 
   verHistorial(): void {
-    console.log('Ver historial de clientes');
     // Aquí implementarías la navegación al historial
   }
 

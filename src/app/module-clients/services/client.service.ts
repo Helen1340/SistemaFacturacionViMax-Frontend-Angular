@@ -12,10 +12,17 @@ export class ClientService {
   constructor(private http: HttpClient) {}
 
   /**
-   * Obtiene todos los clientes (usuarios con rol "cliente")
+   * Obtiene todos los clientes (usuarios con rol ID 4)
    */
   getClientes(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}?role=cliente&include=nombre,tipo_documento,numero_documento,pais,correo_electronico`);
+    return this.http.get<any[]>(`${this.apiUrl}?role=4&include=nombre,tipo_documento,numero_documento,pais,correo_electronico`);
+  }
+
+  /**
+   * Obtiene todos los usuarios y filtra del lado del cliente por rol ID 4
+   */
+  getClientesConFiltro(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}?include=nombre,tipo_documento,numero_documento,pais,correo_electronico,rol_id,rol,role_id,role`);
   }
 
   /**

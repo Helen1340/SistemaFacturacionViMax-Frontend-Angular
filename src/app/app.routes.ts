@@ -3,6 +3,7 @@ import { ProductosServicios } from './module-product-service/productos-servicios
 import { Clientes } from './module-clients/clientes/clientes';
 import { NuevoCliente } from './module-clients/nuevo-cliente/nuevo-cliente';
 import { EditarCliente } from './module-clients/editar-cliente/editar-cliente';
+import { VerCliente } from './module-clients/ver-cliente/ver-cliente';
 import { Reportes } from './module-reports/reportes/reportes';
 import { Usuarios } from './module-users/usuarios/usuarios';
 import { Contingencia } from './module-contingency/contingencia/Contingency/contingencia';
@@ -102,6 +103,7 @@ export const routes: Routes = [
   { path: 'detalle-facturas/:id', component: DetalleFacturas },
   { path: 'nuevo-cliente', component: NuevoCliente },
   { path: 'editar-cliente/:id', component: EditarCliente },
+  { path: 'ver-cliente/:id', component: VerCliente },
   // ... otras rutas
 
 
