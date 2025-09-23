@@ -146,7 +146,10 @@ export class Clientes implements OnInit, OnDestroy {
 
   // Obtener acciones disponibles para un cliente
   getAvailableActions(estado: string): string[] {
-    return ['Ver Detalle', 'Editar', 'Eliminar'];
+
+    return ['Ver Detalles', 'Editar', 'Eliminar'];
+
+   
   }
 
   // Ejecutar acción
@@ -154,7 +157,9 @@ export class Clientes implements OnInit, OnDestroy {
     this.openMenuIndex = null; // Cerrar dropdown
     
     switch (action) {
-      case 'Ver Detalle':
+
+      case 'Ver Detalles':
+
         this.verCliente(cliente);
         break;
       case 'Editar':
@@ -164,6 +169,11 @@ export class Clientes implements OnInit, OnDestroy {
         this.eliminarCliente(cliente);
         break;
     }
+  }
+  
+  verCliente(cliente: Cliente): void {
+    console.log('ver cliente:', cliente);
+    this.router.navigate(['/ver-cliente', cliente.id]);
   }
 
 

@@ -1,1 +1,71 @@
-<p>editar-producto works!</p>
+<main class="w-full p-4 flex-1">
+    <div class="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-xl">
+        <h2 class="text-3xl font-semibold mb-6">Editar Producto</h2>
+        <div class="border-b-2 border-gray-300 mb-6"></div>
+
+        <form [formGroup]="productoForm" (ngSubmit)="onSubmit()">
+
+            <!-- Nombre -->
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">Nombre</label>
+                <input type="text" formControlName="nombre" class="w-full border p-2 rounded-md"
+                    placeholder="Nombre del producto">
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">Descripción</label>
+                <textarea formControlName="descripcion" class="w-full border p-2 rounded-md"
+                    placeholder="Descripción del producto"></textarea>
+            </div>
+
+            <!-- Código estándar -->
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">Código Estándar</label>
+                <input type="text" formControlName="codigo_estandar" class="w-full border p-2 rounded-md"
+                    placeholder="Código estándar">
+            </div>
+
+            <!-- Código producto -->
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">Código Producto</label>
+                <input type="text" formControlName="codigo_producto" class="w-full border p-2 rounded-md"
+                    placeholder="Código del producto">
+            </div>
+
+            <!-- Precio -->
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">Precio Unitario</label>
+                <input type="number" formControlName="precio_unitario" class="w-full border p-2 rounded-md"
+                    placeholder="Precio unitario">
+            </div>
+
+            <!-- Unidad de Medida -->
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">Unidad de Medida</label>
+                <select formControlName="measurement_unit_id" class="w-full border p-2 rounded-md">
+                    <option *ngFor="let unit of measurementUnits" [value]="unit.id">
+                        {{ unit.nombre }} ({{ unit.codigo_dian }})
+                    </option>
+                </select>
+            </div>
+
+            <!-- Estado -->
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">Estado</label>
+                <select formControlName="estado" class="w-full border p-2 rounded-md">
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo</option>
+                </select>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex justify-end space-x-2">
+                <button type="submit" class="bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-700"
+                    [disabled]="productoForm.invalid">Guardar Cambios</button>
+                <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500"
+                    (click)="cancelar()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</main>

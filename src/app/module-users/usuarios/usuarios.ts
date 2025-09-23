@@ -1,8 +1,8 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService, Role } from '../services/user.service';
+import { CommonModule } from '@angular/common';
 
 export interface User {
   id: number;

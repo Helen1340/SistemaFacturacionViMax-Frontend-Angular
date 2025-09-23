@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { ProductosServicios } from './module-product-service/productos-servicios/productos-servicios';
 import { Clientes } from './module-clients/clientes/clientes';
 import { NuevoCliente } from './module-clients/nuevo-cliente/nuevo-cliente';
 import { EditarCliente } from './module-clients/editar-cliente/editar-cliente';
@@ -39,8 +38,21 @@ import { ResolucionesFactura } from './module-settings/resoluciones-factura/reso
 import { NuevaResolucion } from './module-settings/resoluciones-factura/nueva-resolucion/nueva-resolucion';
 import { EditarResolucion } from './module-settings/resoluciones-factura/editar-resolucion/editar-resolucion';
 import { HistorialTecnico } from './module-notifications/historial-tecnico/historial-tecnico';
+import { DestinatariosEventos } from './module-settings/notificaciones-emails/destinatarios-eventos/destinatarios-eventos';
+import { HistorialNotify } from './module-settings/notificaciones-emails/historial-notify/historial-notify';
+import { ConfigCorreo } from './module-settings/notificaciones-emails/config-correo/config-correo';
+
+
 import { Registro } from './module-home/registro/registro';
 import { LogoutComponent } from './module-home/logout/logout';
+import { ProductosServicios } from './module-product-service/productos-servicios/productos-servicios';
+import { RegistrarProductoComponent } from './module-product-service/registrar-producto/registrar-producto';
+import { RegitrarServicio } from './module-product-service/regitrar-servicio/regitrar-servicio';
+import { EditarProducto } from './module-product-service/editar-item/editar-producto';
+import { EditarServicio } from './module-product-service/editar-servicio/editar-servicio';
+import { DetallesProducto } from './module-product-service/detalles-producto/detalles-producto';
+import { DetallesServicio } from './module-product-service/detalles-servicio/detalles-servicio';
+
 
 
 
@@ -132,6 +144,14 @@ export const routes: Routes = [
 
   //ESPACIO PARA LAS RUTAS DE HELEN (MODULE PRODUCTOS)
   { path: 'productos-servicios', component: ProductosServicios},
+  { path: 'registrar-producto', component: RegistrarProductoComponent},
+  { path: 'registrar-servicio', component: RegitrarServicio},
+
+  {path: 'editar-producto/:id', component: EditarProducto},
+  {path: 'editar-servicio/:id', component: EditarServicio},
+
+  {path: 'detalles-producto/:id', component: DetallesProducto},
+  {path: 'detalles-servicio/:id', component: DetallesServicio},
   
 
   // ... otras rutas
@@ -259,6 +279,12 @@ export const routes: Routes = [
   {path: 'cambios-normativos', component: CambiosNormativos},
   {path: 'impuestos-retenciones',component: ImpuestosRetenciones},
   {path: 'nuevo-impuesto',component: NuevoImpuesto},
+
+  //notificaciones 
+  {path: 'notificaciones-email',component: NotificacionesEmails},
+  {path: 'config-correo',component: ConfigCorreo},
+  {path: 'eventos',component: DestinatariosEventos},
+  {path: 'historial-notificaciones',component: HistorialNotify},
 
 
 

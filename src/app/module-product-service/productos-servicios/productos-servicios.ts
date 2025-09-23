@@ -18,7 +18,7 @@ export class ProductosServicios implements OnInit {
   filterValue: string = '';
   openDropdownId: number | null = null;
   isLoading: boolean = false;
-  isDropdownOpen: boolean = false; // Propiedad agregada
+  isDropdownOpen: boolean = false;
   
   // Paginación
   currentPage: number = 1;
@@ -46,7 +46,8 @@ export class ProductosServicios implements OnInit {
         this.calculatePagination();
         this.isLoading = false;
       },
-      error: () => {
+      error: (error) => {
+        console.error('Error al cargar items:', error);
         this.items = [];
         this.filteredItems = [];
         this.totalItems = 0;
@@ -57,19 +58,34 @@ export class ProductosServicios implements OnInit {
   }
 
   // Métodos de acción
-  toggleRegisterDropdown(): void { // Método agregado
+  toggleRegisterDropdown(): void {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
+
+
   viewItem(item: ItemTabla) {
     this.openDropdownId = null;
-    this.router.navigate(['/ver-item', item.id, item.tipo]);
+    if (item.tipo === 'Producto') {
+    this.router.navigate(['/detalles-producto', item.id]);
+    } else if (item.tipo === 'Servicio') {
+      this.router.navigate(['detalles-servicio', item.id]);
+    } else {
+    console.warn('Tipo desconocido:', item.tipo);
+  }
   }
 
   editItem(item: ItemTabla) {
-    this.openDropdownId = null;
-    this.router.navigate(['/editar-item', item.id, item.tipo]);
+  this.openDropdownId = null;
+
+  if (item.tipo === 'Producto') {
+    this.router.navigate(['/editar-producto', item.id]);
+  } else if (item.tipo === 'Servicio') {
+    this.router.navigate(['/editar-servicio', item.id]);
+  } else {
+    console.warn('Tipo desconocido:', item.tipo);
   }
+}
 
   deleteItem(item: ItemTabla) {
     if (!confirm(`¿Estás seguro de que deseas eliminar ${item.nombre}?`)) {
@@ -82,13 +98,23 @@ export class ProductosServicios implements OnInit {
         alert('Ítem eliminado correctamente');
         this.loadItems();
       },
-      error: () => {
+      error: (error) => {
+        console.error('Error al eliminar item:', error);
         alert('Error al eliminar el ítem');
       }
     });
   }
 
-  // Búsqueda y filtros (basados en el código de usuarios)
+  //navigation
+  navigateToRegistrarProducto(){
+    this.router.navigate(['/registrar-producto']);
+  }
+
+  navigateToRegistrarServicio(){
+    this.router.navigate(['/registrar-servicio']);
+  }
+
+  // Búsqueda y filtros
   onSearch() {
     this.applyFilters();
   }
@@ -103,8 +129,9 @@ export class ProductosServicios implements OnInit {
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       filtered = filtered.filter(item => 
-        item.nombre.toLowerCase().includes(term) ||
-        item.referencia.toLowerCase().includes(term)
+        item.nombre.toLowerCase().includes(term) || 
+        (item.descripcion && item.descripcion.toLowerCase().includes(term)) ||
+        (item.codigo && item.codigo.toLowerCase().includes(term))
       );
     }
 
@@ -131,9 +158,7 @@ export class ProductosServicios implements OnInit {
     this.calculatePagination();
   }
   
-  // Lógica de paginación (copiada de tu componente de usuarios)
-  // ...
-  
+  // Lógica de paginación
   get paginatedItems(): ItemTabla[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
@@ -181,5 +206,16 @@ export class ProductosServicios implements OnInit {
 
   trackByFn(index: number, item: ItemTabla): number {
     return item.id;
+  }
+
+  // Método para formatear precios
+  formatPrice(price: number): string {
+    if (!price) return '-';
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }).format(price);
   }
 }

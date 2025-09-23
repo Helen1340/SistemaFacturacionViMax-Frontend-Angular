@@ -1,1 +1,69 @@
-<p>detalles-servicio works!</p>
+<main class="w-full p-6 flex-1">
+    <div class="sticky top-0 bg-white z-10 pb-4 mt-4">
+        <h2 class="text-4xl font-semibold mb-4 mt-4">Detalles del Servicio</h2>
+        <div class="border-b-2 border-gray-300 w-full"></div>
+    </div>
+
+    <div *ngIf="servicio" class="max-w-3xl mx-auto mt-6 p-6 bg-white shadow-md rounded-xl">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+            <div>
+                <p class="text-gray-500 font-medium">Nombre</p>
+                <p class="text-lg font-semibold">{{ servicio.nombre }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Código Servicio</p>
+                <p class="text-lg font-semibold">{{ servicio.codigo_servicio }}</p>
+            </div>
+
+            <div class="sm:col-span-2">
+                <p class="text-gray-500 font-medium">Descripción</p>
+                <p class="text-lg">{{ servicio.descripcion }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Precio Unitario</p>
+                <p class="text-lg font-semibold">{{ servicio.precio_unitario | currency:'COP':'symbol':'1.0-2' }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Estado</p>
+                <span class="px-3 py-1 text-sm rounded-full" [ngClass]="{
+          'bg-green-100 text-green-800': servicio.estado === 'Activo',
+          'bg-red-100 text-red-800': servicio.estado === 'Inactivo'
+        }">
+                    {{ servicio.estado }}
+                </span>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Unidad de Medida</p>
+                <p class="text-lg font-semibold">
+                    {{ unidadMedidaNombre || 'Cargando...' }}
+                </p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Creado</p>
+                <p class="text-lg">{{ servicio.created_at | date:'short' }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Última Actualización</p>
+                <p class="text-lg">{{ servicio.updated_at | date:'short' }}</p>
+            </div>
+
+        </div>
+
+        <div class="mt-6">
+            <button (click)="volver()" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">
+                Volver
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="!servicio" class="text-center text-gray-600 mt-10">
+        Cargando servicio...
+    </div>
+</main>

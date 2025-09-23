@@ -1,104 +1,122 @@
 <div class="-mt-4 mb-2">
-                <h2 class="text-4xl font-semibold mb-10 mt-8">
-                    Registrar Servicio
-                </h2>
-            </div>
-
+  <h2 class="text-4xl font-semibold mb-10 mt-8">
+    Registrar Servicio
+  </h2>
+</div>
 
 <div class="border-b-2 border-gray-300 w-full mb-8"></div>
 
 <div class="max-w-5xl mx-auto p-6 bg-white shadow-md rounded-xl">
-  <form id="formProducto" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <form [formGroup]="servicioForm" (ngSubmit)="guardarServicio()" class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-    <!-- Código -->
+    <!-- Código Servicio -->
     <div class="col-span-1">
-      <label for="codigo" class="block text-sm font-medium text-black mb-1">Código único <span class="text-red-600">*</span></label>
-      <input type="text" id="codigo" name="codigo" required class="w-full border rounded px-3 py-2 text-sm text-black" />
+      <label for="codigo_servicio" class="block text-sm font-medium text-black mb-1">
+        Código único <span class="text-red-600">*</span>
+      </label>
+      <input type="text" id="codigo_servicio" formControlName="codigo_servicio"
+        class="w-full border rounded px-3 py-2 text-sm text-black" />
+      <p class="text-red-600 text-xs mt-1"
+        *ngIf="servicioForm.get('codigo_servicio')?.touched && servicioForm.get('codigo_servicio')?.hasError('required')">
+        El código es obligatorio
+      </p>
+      <p class="text-red-600 text-xs mt-1" *ngIf="servicioForm.get('codigo_servicio')?.hasError('maxlength')">
+        Máximo 50 caracteres
+      </p>
     </div>
 
     <!-- Nombre -->
     <div class="col-span-1">
-      <label for="nombre" class="block text-sm font-medium text-black mb-1">Nombre del producto/servicio <span class="text-red-600">*</span></label>
-      <input type="text" id="nombre" name="nombre" maxlength="100" required class="w-full border rounded px-3 py-2 text-sm text-black" />
-    </div>
-
-    <!-- Tipo -->
-    <div class="col-span-1">
-      <label for="tipo" class="block text-sm font-medium text-black mb-1">Tipo <span class="text-red-600">*</span></label>
-      <select id="tipo" name="tipo" required 
-              class="w-full border rounded px-3 py-2 text-sm text-black bg-transparent focus:bg-transparent focus:ring-0 focus:outline-none">
-        <option value="">Seleccione</option>
-        <option value="producto">Producto</option>
-        <option value="servicio">Servicio</option>
-      </select>
+      <label for="nombre" class="block text-sm font-medium text-black mb-1">
+        Nombre del servicio <span class="text-red-600">*</span>
+      </label>
+      <input type="text" id="nombre" formControlName="nombre" maxlength="100"
+        class="w-full border rounded px-3 py-2 text-sm text-black" />
+      <p class="text-red-600 text-xs mt-1"
+        *ngIf="servicioForm.get('nombre')?.touched && servicioForm.get('nombre')?.hasError('required')">
+        El nombre es obligatorio
+      </p>
+      <p class="text-red-600 text-xs mt-1" *ngIf="servicioForm.get('nombre')?.hasError('maxlength')">
+        Máximo 100 caracteres
+      </p>
     </div>
 
     <!-- Unidad de medida -->
     <div class="col-span-1">
-      <label for="unidad" class="block text-sm font-medium text-black mb-1">Unidad de medida <span class="text-red-600">*</span></label>
-      <select id="unidad" name="unidad" required 
-              class="w-full border rounded px-3 py-2 text-sm text-black bg-transparent focus:bg-transparent focus:ring-0 focus:outline-none">
-        <option value="">Seleccione unidad DIAN</option>
-        <option value="NIU">Unidad (NIU)</option>
-        <option value="KGM">Kilogramo (KGM)</option>
-        <option value="LTR">Litro (LTR)</option>
+      <label for="measurement_unit_id" class="block text-sm font-medium text-black mb-1">
+        Unidad de medida <span class="text-red-600">*</span>
+      </label>
+      <select formControlName="measurement_unit_id"
+        class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-cyan-500">
+        <option value="">Seleccione unidad</option>
+        <option *ngFor="let unit of measurementUnits" [value]="unit.id">
+          {{ unit.nombre }} ({{ unit.codigo_dian }})
+        </option>
       </select>
+      <p class="text-red-600 text-xs mt-1"
+        *ngIf="servicioForm.get('measurement_unit_id')?.touched && servicioForm.get('measurement_unit_id')?.hasError('required')">
+        La unidad de medida es obligatoria
+      </p>
     </div>
 
     <!-- Precio unitario -->
     <div class="col-span-1">
-      <label for="precio" class="block text-sm font-medium text-black mb-1">Precio unitario <span class="text-red-600">*</span></label>
-      <input type="number" id="precio" name="precio" min="0.01" step="0.01" required class="w-full border rounded px-3 py-2 text-sm text-black" />
+      <label for="precio_unitario" class="block text-sm font-medium text-black mb-1">
+        Precio unitario <span class="text-red-600">*</span>
+      </label>
+      <input type="number" id="precio_unitario" formControlName="precio_unitario" min="0.01" step="0.01"
+        class="w-full border rounded px-3 py-2 text-sm text-black" />
+      <p class="text-red-600 text-xs mt-1"
+        *ngIf="servicioForm.get('precio_unitario')?.touched && servicioForm.get('precio_unitario')?.hasError('required')">
+        El precio es obligatorio
+      </p>
+      <p class="text-red-600 text-xs mt-1" *ngIf="servicioForm.get('precio_unitario')?.hasError('min')">
+        El precio debe ser mayor a 0
+      </p>
     </div>
 
     <!-- Estado -->
     <div class="col-span-1">
       <label for="estado" class="block text-sm font-medium text-black mb-1">Estado</label>
-      <select id="estado" name="estado" 
-              class="w-full border rounded px-3 py-2 text-sm text-black bg-transparent focus:bg-transparent focus:ring-0 focus:outline-none">
-        <option value="activo" selected>Activo</option>
-        <option value="inactivo">Inactivo</option>
+      <select id="estado" formControlName="estado"
+        class="w-full border rounded px-3 py-2 text-sm text-black bg-transparent focus:ring-0 focus:outline-none">
+        <option value="Activo">Activo</option>
+        <option value="Inactivo">Inactivo</option>
       </select>
-    </div>
-
-    <!-- Facturable -->
-    <div class="col-span-1">
-      <label class="block text-sm font-medium text-black mb-1">Facturable <span class="text-red-600">*</span></label>
-      <div class="flex gap-4 text-sm text-black">
-        <label><input type="radio" name="facturable" value="si" required class="mr-1" /> Sí</label>
-        <label><input type="radio" name="facturable" value="no" required class="mr-1" /> No</label>
-      </div>
-    </div>
-
-    <!-- Categoría -->
-    <div class="col-span-1">
-      <label for="categoria" class="block text-sm font-medium text-black mb-1">Categoría o grupo</label>
-      <input type="text" id="categoria" name="categoria" class="w-full border rounded px-3 py-2 text-sm text-black" placeholder="Opcional" />
     </div>
 
     <!-- Impuestos -->
     <div class="col-span-1">
       <label class="block text-sm font-medium text-black mb-1">Impuestos aplicados</label>
       <div class="space-y-1 text-sm text-black">
-        <label class="block"><input type="checkbox" name="impuestos[]" value="IVA" class="mr-2" /> IVA</label>
-        <label class="block"><input type="checkbox" name="impuestos[]" value="INC" class="mr-2" /> INC</label>
-        <label class="block"><input type="checkbox" name="impuestos[]" value="ICA" class="mr-2" /> ICA</label>
+        <label class="block">
+          <input type="checkbox" value="IVA" (change)="toggleImpuesto($event)" class="mr-2" /> IVA
+        </label>
+        <label class="block">
+          <input type="checkbox" value="INC" (change)="toggleImpuesto($event)" class="mr-2" /> INC
+        </label>
+        <label class="block">
+          <input type="checkbox" value="ICA" (change)="toggleImpuesto($event)" class="mr-2" /> ICA
+        </label>
       </div>
     </div>
 
     <!-- Descripción -->
     <div class="col-span-full">
       <label for="descripcion" class="block text-sm font-medium text-black mb-1">Descripción</label>
-      <textarea id="descripcion" name="descripcion" rows="3" class="w-full border rounded px-3 py-2 text-sm text-black" placeholder="Opcional"></textarea>
+      <textarea id="descripcion" formControlName="descripcion" rows="3"
+        class="w-full border rounded px-3 py-2 text-sm text-black" placeholder="Opcional"></textarea>
     </div>
 
-    <!-- Botones alineados a la derecha -->
-<div class="col-span-full flex justify-end gap-4 mt-6">
-  <button type="submit" class="bg-cyan-600 text-white px-6 py-2 rounded hover:bg-cyan-700">
-    Guardar
-  </button>
-  <button type="reset" class="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500">
-    Cancelar
-  </button>
+    <!-- Botones -->
+    <div class="col-span-full flex justify-end gap-4 mt-6">
+      <button type="submit" class="bg-cyan-600 text-white px-6 py-2 rounded hover:bg-cyan-700 disabled:bg-gray-400"
+        [disabled]="servicioForm.invalid">
+        Guardar
+      </button>
+      <button type="reset" class="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500">
+        Cancelar
+      </button>
+    </div>
+  </form>
 </div>
-

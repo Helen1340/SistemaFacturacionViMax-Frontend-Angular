@@ -7,7 +7,7 @@ import { Cliente } from '../clientes/clientes';
   providedIn: 'root'
 })
 export class ClientService {
-  private apiUrl = 'http://facturacion-vimax-api/api/users';
+  private apiUrl = 'http://localhost/api/users';
 
   constructor(private http: HttpClient) {}
 
