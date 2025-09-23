@@ -154,6 +154,54 @@ export class InvoicesNotesService {
       );
   }
 
+  // Método para buscar usuarios por nombre y número de documento
+  searchUsersByNameAndDocument(nombre: string, numeroDocumento: string): Observable<any[]> {
+    console.log('🔍 Buscando cliente con:', { nombre, numeroDocumento });
+    console.log('🔗 URL de búsqueda:', `${this.usersApiUrl}?nombre=${encodeURIComponent(nombre)}&numero_documento=${encodeURIComponent(numeroDocumento)}`);
+    
+    return this.http.get<any[]>(`${this.usersApiUrl}?nombre=${encodeURIComponent(nombre)}&numero_documento=${encodeURIComponent(numeroDocumento)}`)
+      .pipe(
+        timeout(10000),
+        catchError((error) => {
+          console.error('❌ Error en búsqueda por nombre y documento:', error);
+          return this.handleError(error);
+        })
+      );
+  }
+
+  // Método para buscar usuarios por nombre
+  searchUsersByName(nombre: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.usersApiUrl}?nombre=${encodeURIComponent(nombre)}`)
+      .pipe(
+        timeout(10000),
+        catchError(this.handleError)
+      );
+  }
+
+  // Método para buscar usuarios por número de documento
+  searchUsersByDocument(numeroDocumento: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.usersApiUrl}?numero_documento=${encodeURIComponent(numeroDocumento)}`)
+      .pipe(
+        timeout(10000),
+        catchError(this.handleError)
+      );
+  }
+
+  // Método de búsqueda estricta que solo busca coincidencias exactas
+  searchUsersRobust(nombre: string, numeroDocumento: string): Observable<any[]> {
+    console.log('🔍 Iniciando búsqueda estricta:', { nombre, numeroDocumento });
+    
+    // Obtener todos los usuarios y filtrar localmente para mayor control
+    return this.http.get<any[]>(this.usersApiUrl)
+      .pipe(
+        timeout(10000),
+        catchError((error) => {
+          console.error('❌ Error al obtener usuarios:', error);
+          return this.handleError(error);
+        })
+      );
+  }
+
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Error desconocido';
     

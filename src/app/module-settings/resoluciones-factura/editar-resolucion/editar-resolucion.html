@@ -1,0 +1,90 @@
+<main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
+    <!-- Contenido de la página -->
+    <div class="-mt-4 mb-2">
+        <h2 class="text-4xl font-semibold mb-10 mt-4">
+            Editar resolución
+        </h2>
+    </div>
+    <!-- Línea divisoria -->
+    <div class="border-b-2 w-full mb-8 border-gray-300"></div>
+
+    <!-- CONTENEDOR DEL FORMULARIO CON SCROLL -->
+    <div class="bg-white rounded-2xl shadow overflow-hidden">
+        <!-- Contenedor del formulario con scroll -->
+        <div class="overflow-y-auto max-h-[600px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+            <form class="p-8 w-full max-w-5xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-base font-medium mb-1">Prefijo <span class="text-red-500">*</span></label>
+                        <input type="text" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Prefijo" required />
+                    </div>
+                    <div>
+                        <label class="block text-base font-medium mb-1">Número de resolución DIAN <span class="text-red-500">*</span></label>
+                        <input type="text" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Número de resolución" required />
+                    </div>
+                    <div>
+                        <label class="block text-base font-medium mb-1">Tipo de documento <span class="text-red-500">*</span></label>
+                        <select class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Factura EL">Factura EL</option>
+                            <option value="Nota Crédito">Nota Crédito</option>
+                            <option value="Nota Débito">Nota Débito</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-base font-medium mb-1">Fecha de resolución <span class="text-red-500">*</span></label>
+                        <input type="date" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required />
+                    </div>
+                    <div>
+                        <label class="block text-base font-medium mb-1">Fecha de inicio de vigencia <span class="text-red-500">*</span></label>
+                        <input type="date" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required />
+                    </div>
+                    <div>
+                        <label class="block text-base font-medium mb-1">Fecha de fin de vigencia <span class="text-red-500">*</span></label>
+                        <input type="date" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required />
+                    </div>
+                    <div>
+                        <label class="block text-base font-medium mb-1">Rango inicial (Desde) <span class="text-red-500">*</span></label>
+                        <input type="number" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Rango inicial" required />
+                    </div>
+                    <div>
+                        <label class="block text-base font-medium mb-1">Rango final (Hasta) <span class="text-red-500">*</span></label>
+                        <input type="number" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Rango final" required />
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-base font-medium mb-1">Cantidad disponible (Calculada automáticamente)</label>
+                        <input type="text" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base bg-gray-100" placeholder="Cantidad disponible" readonly />
+                    </div>
+                    <div class="md:col-span-2 flex items-center gap-4">
+                        <label class="block text-base font-medium mb-1">¿Es principal?</label>
+                        <input type="checkbox" class="w-5 h-5 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500" />
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-base font-medium mb-1">Archivo de la resolución (opcional)</label>
+                        <input type="file" accept="application/pdf" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" />
+                        <span class="text-xs text-gray-500 mt-1 block">Tamaño máximo: 2 MB. Solo PDF.</span>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-base font-medium mb-1">Observaciones</label>
+                        <textarea class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none min-h-[100px]" placeholder="Observaciones"></textarea>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-4 mt-8">
+                    <button type="submit" onclick="guardarResolucion()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-8 py-3 text-lg rounded-xl shadow-lg">Guardar resolución</button>
+                    <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-8 py-3 text-lg rounded-xl shadow-lg">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notificación de éxito -->
+    <div id="notificacion" class="hidden fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <div class="flex items-center space-x-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>¡Resolución guardada exitosamente!</span>
+        </div>
+    </div>
+
+</main>

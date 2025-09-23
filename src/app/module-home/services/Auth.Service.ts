@@ -1,106 +1,47 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap } from 'rxjs';
-import { Router } from '@angular/router';
-
-export interface AuthResponse {
-  message: string;
-  access_token: string;
-  token_type: string;
-  user: {
-    id: number;
-    nombre: string;
-    correo_electronico: string;
-    company_id: number;
-    role_id: number;
-    numero_documento: string;
-  };
-  company: {
-    id: number;
-    razon_social: string;
-    nit: string;
-    correo_electronico: string;
-  };
-}
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private apiUrl = 'http://localhost:8000/api'; // Ajusta si usas /v1
 
-  private apiUrl = 'http://127.0.0.1:8000/api';
-  private authToken = new BehaviorSubject<string | null>(null);
-  private isLoggedIn = new BehaviorSubject<boolean>(false);
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient, private router: Router) {
-    this.checkToken();
+  // Registro
+  register(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, data);
   }
 
-  // Comprueba el token al iniciar la aplicación
-  private checkToken() {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      this.authToken.next(token);
-      this.isLoggedIn.next(true);
-    }
+  // Login
+  login(data: { correo_electronico: string; password: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login`, data);
   }
 
-  // 🟢 Método de registro
-  // Envía todos los datos de la empresa y el usuario como lo pide tu API
-  register(registerData: any): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, registerData).pipe(
-      tap(response => {
-        this.setToken(response.access_token);
-      })
-    );
+  // Perfil actual
+  me(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/me`);
   }
 
-  // 🟢 Método de inicio de sesión
-  // Envía solo el correo y la contraseña
-  login(credentials: any): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
-      tap(response => {
-        this.setToken(response.access_token);
-      })
-    );
+  // Logout (backend)
+  logout(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/logout`, {});
   }
 
-  // 🟢 Método para cerrar sesión
-  logout(): void {
-    const headers = { Authorization: `Bearer ${this.getToken()}` };
-    this.http.post(`${this.apiUrl}/logout`, null, { headers }).subscribe({
-      next: () => {
-        this.removeToken();
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        console.error('Error al cerrar sesión:', err);
-        // En caso de error, igual cierra la sesión localmente
-        this.removeToken();
-        this.router.navigate(['/login']);
-      }
-    });
+  // Guardar token
+  setToken(token: string): void {
+    localStorage.setItem('token', token);
   }
 
-  // Devuelve el token actual
+  // Obtener token
   getToken(): string | null {
-    return this.authToken.getValue();
+    return localStorage.getItem('token');
   }
 
-  // Devuelve si el usuario está autenticado
-  get isAuthenticated(): Observable<boolean> {
-    return this.isLoggedIn.asObservable();
-  }
-
-  private setToken(token: string): void {
-    localStorage.setItem('auth_token', token);
-    this.authToken.next(token);
-    this.isLoggedIn.next(true);
-  }
-
-  private removeToken(): void {
-    localStorage.removeItem('auth_token');
-    this.authToken.next(null);
-    this.isLoggedIn.next(false);
+  // Eliminar token
+  clearToken(): void {
+    localStorage.removeItem('token');
   }
 }

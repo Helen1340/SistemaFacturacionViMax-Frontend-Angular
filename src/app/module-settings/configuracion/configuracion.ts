@@ -17,7 +17,7 @@ export class Configuracion {
   }
 
   navigateResolucionFact() {
-    this.router.navigate(['/resoluciones']);
+    this.router.navigate(['/resolucion-facturas']);
   }
 
   navigateRetencionRespaldo() {
