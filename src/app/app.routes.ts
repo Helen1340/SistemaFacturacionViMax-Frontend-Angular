@@ -3,6 +3,7 @@ import { ProductosServicios } from './module-product-service/productos-servicios
 import { Clientes } from './module-clients/clientes/clientes';
 import { NuevoCliente } from './module-clients/nuevo-cliente/nuevo-cliente';
 import { EditarCliente } from './module-clients/editar-cliente/editar-cliente';
+import { VerCliente } from './module-clients/ver-cliente/ver-cliente';
 import { Reportes } from './module-reports/reportes/reportes';
 import { Usuarios } from './module-users/usuarios/usuarios';
 import { Contingencia } from './module-contingency/contingencia/Contingency/contingencia';
@@ -34,6 +35,9 @@ import { ConfiguracionRespaldoAutomatico } from './module-settings/retencion-res
 import { CambiosNormativos } from './module-settings/cambios-normativos/cambios-normativos';
 import { Acceder } from './module-home/acceder/acceder';
 import { ParametrosGenerales } from './module-settings/parametros-generales/parametros-generales';
+import { ResolucionesFactura } from './module-settings/resoluciones-factura/resoluciones-factura';
+import { NuevaResolucion } from './module-settings/resoluciones-factura/nueva-resolucion/nueva-resolucion';
+import { EditarResolucion } from './module-settings/resoluciones-factura/editar-resolucion/editar-resolucion';
 import { HistorialTecnico } from './module-notifications/historial-tecnico/historial-tecnico';
 import { Registro } from './module-home/registro/registro';
 import { LogoutComponent } from './module-home/logout/logout';
@@ -100,6 +104,7 @@ export const routes: Routes = [
   { path: 'detalle-facturas/:id', component: DetalleFacturas },
   { path: 'nuevo-cliente', component: NuevoCliente },
   { path: 'editar-cliente/:id', component: EditarCliente },
+  { path: 'ver-cliente/:id', component: VerCliente },
   // ... otras rutas
 
 
@@ -243,6 +248,9 @@ export const routes: Routes = [
 //ESPACIO PARA LAS RUTAS DE (MODULE COFIGURACIONES)
   {path: 'configuracion',component:Configuracion},
   {path: 'parametros-generales',component: ParametrosGenerales},
+  {path: 'resolucion-facturas', component: ResolucionesFactura},
+  {path: 'nueva-resolucion', component: NuevaResolucion},
+  {path: 'editar-resolucion/:id', component: EditarResolucion},
   {path: 'certificado-digital', component: CertificadoDigital},
   {path: 'notificaciones-email',component: NotificacionesEmails},
   {path: 'retencion-respaldo', component: RetencionRespaldo},
