@@ -1,34 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
-import { ProductosServicioService } from '../servicio-product-serv/productos-servicio.service';
-
-// Interfaz unificada para la tabla
-export interface ProductoOServicio {
-  id?: number;
-  referencia?: string;
-  nombre: string;
-  tipo: 'Producto' | 'Servicio';
-  cantidad?: number;
-  impuesto?: number;
-  precio: number;
-  estado: 'Activo' | 'Inactivo';
-  showMenu?: boolean;
-}
+import { Router } from '@angular/router';
+import { ProductosServicioService, ItemTabla } from '../service/productos-servicio.service';
 
 @Component({
   selector: 'app-productos-servicios',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   templateUrl: './productos-servicios.html',
   styleUrl: './productos-servicios.css'
 })
 export class ProductosServicios implements OnInit {
-
-  items: ProductoOServicio[] = [];
-  filteredItems: ProductoOServicio[] = [];
+  items: ItemTabla[] = [];
+  filteredItems: ItemTabla[] = [];
   searchTerm: string = '';
   filterValue: string = '';
   openDropdownId: number | null = null;
@@ -48,118 +33,88 @@ export class ProductosServicios implements OnInit {
 
   ngOnInit() {
     this.loadItems();
-    this.setupClickOutside();
+    document.addEventListener('click', () => this.openDropdownId = null);
   }
 
-  // Cargar productos y servicios desde la API
   loadItems() {
     this.isLoading = true;
-    
-    forkJoin({
-      productos: this.productosServicio.getProductos(),
-      servicios: this.productosServicio.getServicios()
-    }).subscribe({
-      next: (data) => {
-        // Asegurar que las respuestas son arrays antes de usarlas
-        const productos = Array.isArray(data.productos) ? data.productos : [];
-        const servicios = Array.isArray(data.servicios) ? data.servicios : [];
-
-        // Función auxiliar para asegurar el tipo de 'estado'
-        const getEstado = (estado: string | undefined): 'Activo' | 'Inactivo' => {
-          return (estado === 'Activo' || estado === 'Inactivo') ? estado : 'Inactivo';
-        };
-
-        // Mapeamos los productos a la interfaz unificada
-        const mappedProductos: ProductoOServicio[] = productos.map(p => ({
-            id: p.id,
-            referencia: p.referencia,
-            nombre: p.nombre,
-            tipo: 'Producto',
-            cantidad: p.cantidad,
-            impuesto: p.impuesto,
-            precio: p.precio,
-            estado: getEstado(p.estado),
-            showMenu: false
-        }));
-        
-        // Mapeamos los servicios a la interfaz unificada
-        const mappedServicios: ProductoOServicio[] = servicios.map(s => ({
-            id: s.id,
-            referencia: s.referencia,
-            nombre: s.nombre,
-            tipo: 'Servicio',
-            cantidad: undefined,
-            impuesto: s.impuesto,
-            precio: s.precio,
-            estado: getEstado(s.estado),
-            showMenu: false
-        }));
-
-        this.items = [...mappedProductos, ...mappedServicios];
+    this.productosServicio.getAllItems().subscribe({
+      next: (items) => {
+        this.items = items;
         this.filteredItems = [...this.items];
         this.totalItems = this.items.length;
         this.calculatePagination();
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error cargando productos y servicios:', error);
+        console.error('Error al cargar items:', error);
         this.items = [];
         this.filteredItems = [];
         this.totalItems = 0;
         this.isLoading = false;
-        alert('Error al cargar los datos. Verifica que la API esté funcionando.');
+        alert('Error al cargar los ítems. Verifica que la API esté funcionando.');
       }
     });
   }
 
-  // ... después de tus otras propiedades y métodos
-shouldShowDropdownUp(index: number): boolean {
-  // Define un umbral para mostrar el dropdown hacia arriba
-  const threshold = 3; 
-  // Usa la longitud de los elementos paginados para saber cuántos elementos se muestran
-  const totalItemsOnPage = this.paginatedItems.length;
-  // Si el índice del elemento es uno de los últimos 3, se muestra hacia arriba
-  return index >= totalItemsOnPage - threshold;
+  // Métodos de acción
+  toggleRegisterDropdown(): void {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+
+
+  viewItem(item: ItemTabla) {
+    this.openDropdownId = null;
+    if (item.tipo === 'Producto') {
+    this.router.navigate(['/detalles-producto', item.id]);
+    } else if (item.tipo === 'Servicio') {
+      this.router.navigate(['detalles-servicio', item.id]);
+    } else {
+    console.warn('Tipo desconocido:', item.tipo);
+  }
+  }
+
+  editItem(item: ItemTabla) {
+  this.openDropdownId = null;
+
+  if (item.tipo === 'Producto') {
+    this.router.navigate(['/editar-producto', item.id]);
+  } else if (item.tipo === 'Servicio') {
+    this.router.navigate(['/editar-servicio', item.id]);
+  } else {
+    console.warn('Tipo desconocido:', item.tipo);
+  }
 }
-// ...
 
-  // Acciones de ítem (producto o servicio)
-  viewItem(item: ProductoOServicio) {
-    console.log('Ver ítem:', item);
-    this.openDropdownId = null;
-    this.router.navigate(['/ver-item', item.id]);
-  }
-
-  editItem(item: ProductoOServicio) {
-    console.log('Editar ítem:', item);
-    this.openDropdownId = null;
-    this.router.navigate([`/${item.tipo.toLowerCase()}/editar`, item.id]);
-  }
-
-  deleteItem(item: ProductoOServicio) {
-    if (!confirm(`¿Estás seguro de que deseas ${item.estado === 'Activo' ? 'desactivar' : 'activar'} este ítem?`)) {
+  deleteItem(item: ItemTabla) {
+    if (!confirm(`¿Estás seguro de que deseas eliminar ${item.nombre}?`)) {
       return;
     }
     
     this.openDropdownId = null;
-    
-    const deleteMethod = item.tipo === 'Producto' ? 
-      this.productosServicio.deleteProducto(item.id!) : 
-      this.productosServicio.deleteServicio(item.id!);
-
-    deleteMethod.subscribe({
+    this.productosServicio.deleteItem(item.id, item.tipo).subscribe({
       next: () => {
-        alert(`Ítem ${item.estado === 'Activo' ? 'desactivado' : 'activado'} correctamente`);
+        alert('Ítem eliminado correctamente');
         this.loadItems();
       },
       error: (error) => {
-        alert('Error al cambiar el estado del ítem');
-        console.error(error);
+        console.error('Error al eliminar item:', error);
+        alert('Error al eliminar el ítem');
       }
     });
   }
 
-  // Búsqueda y filtrado
+  //navigation
+  navigateToRegistrarProducto(){
+    this.router.navigate(['/registrar-producto']);
+  }
+
+  navigateToRegistrarServicio(){
+    this.router.navigate(['/registrar-servicio']);
+  }
+
+  // Búsqueda y filtros
   onSearch() {
     this.applyFilters();
   }
@@ -174,8 +129,9 @@ shouldShowDropdownUp(index: number): boolean {
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       filtered = filtered.filter(item => 
-        item.nombre.toLowerCase().includes(term) ||
-        (item.referencia && item.referencia.toLowerCase().includes(term))
+        item.nombre.toLowerCase().includes(term) || 
+        (item.descripcion && item.descripcion.toLowerCase().includes(term)) ||
+        (item.codigo && item.codigo.toLowerCase().includes(term))
       );
     }
 
@@ -201,25 +157,9 @@ shouldShowDropdownUp(index: number): boolean {
     this.currentPage = 1;
     this.calculatePagination();
   }
-
-  // Manejo de dropdowns
-  toggleDropdown(event: Event, itemId: number) {
-    event.stopPropagation();
-    this.openDropdownId = this.openDropdownId === itemId ? null : itemId;
-  }
   
-  toggleRegisterDropdown(): void {
-    this.isDropdownOpen = !this.isDropdownOpen;
-  }
-
-  private setupClickOutside() {
-    document.addEventListener('click', () => {
-      this.openDropdownId = null;
-    });
-  }
-
-  // Paginación
-  get paginatedItems(): ProductoOServicio[] {
+  // Lógica de paginación
+  get paginatedItems(): ItemTabla[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     return this.filteredItems.slice(startIndex, endIndex);
@@ -253,12 +193,29 @@ shouldShowDropdownUp(index: number): boolean {
     return Math.min(this.currentPage * this.itemsPerPage, this.totalItems);
   }
 
-  // Navegación y utilidades
-  navigateToNewItem(type: 'producto' | 'servicio') {
-    this.router.navigate([`/${type}/nuevo`]);
+  toggleDropdown(event: Event, itemId: number) {
+    event.stopPropagation();
+    this.openDropdownId = this.openDropdownId === itemId ? null : itemId;
   }
-  
-  trackByFn(index: number, item: ProductoOServicio): number | undefined {
+
+  shouldShowDropdownUp(index: number): boolean {
+    const threshold = 3;
+    const totalItemsOnPage = this.paginatedItems.length;
+    return index >= totalItemsOnPage - threshold;
+  }
+
+  trackByFn(index: number, item: ItemTabla): number {
     return item.id;
+  }
+
+  // Método para formatear precios
+  formatPrice(price: number): string {
+    if (!price) return '-';
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }).format(price);
   }
 }

@@ -1,1 +1,73 @@
-<p>detalles-producto works!</p>
+<main class="w-full p-6 flex-1">
+    <div class="sticky top-0 bg-white z-10 pb-4 mt-6">
+        <h2 class="text-4xl font-semibold mb-4 mt-2">Detalles del Producto</h2>
+        <div class="border-b-2 border-gray-300 w-full"></div>
+    </div>
+
+    <div *ngIf="producto" class="max-w-3xl mx-auto mt-6 p-6 bg-white shadow-md rounded-xl">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+            <div>
+                <p class="text-gray-500 font-medium">ID</p>
+                <p class="text-lg font-semibold">{{ producto.id }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Código Estándar</p>
+                <p class="text-lg font-semibold">{{ producto.codigo_estandar }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Código Producto</p>
+                <p class="text-lg font-semibold">{{ producto.codigo_producto }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Nombre</p>
+                <p class="text-lg font-semibold">{{ producto.nombre }}</p>
+            </div>
+
+            <div class="sm:col-span-2">
+                <p class="text-gray-500 font-medium">Descripción</p>
+                <p class="text-lg">{{ producto.descripcion }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Precio Unitario</p>
+                <p class="text-lg font-semibold">{{ producto.precio_unitario | currency:'COP':'symbol':'1.0-0' }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Estado</p>
+                <span class="px-3 py-1 text-sm rounded-full" [ngClass]="{
+            'bg-green-100 text-green-800': producto.estado === 'Activo',
+            'bg-red-100 text-red-800': producto.estado === 'Inactivo'
+            }">
+                    {{ producto.estado }}
+                </span>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Unidad de Medida</p>
+                <p class="text-lg font-semibold">
+                    {{ unidadMedidaNombre || 'Cargando...' }}
+                </p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Creado</p>
+                <p class="text-lg">{{ producto.created_at | date:'short' }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 font-medium">Última Actualización</p>
+                <p class="text-lg">{{ producto.updated_at | date:'short' }}</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div *ngIf="!producto" class="text-center text-gray-600 mt-10">
+        Cargando producto...
+    </div>
+</main>

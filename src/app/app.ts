@@ -8,7 +8,7 @@ import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Sidebar, CommonModule, Footer, ],
+  imports: [RouterOutlet, Sidebar, CommonModule,  Footer, ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

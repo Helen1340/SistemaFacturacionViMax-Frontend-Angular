@@ -68,29 +68,4 @@ export class UserService {
   getUserByEmail(email: string): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrl}?email=${email}`);
   }
-
-
-  /*
-  // En el ngOnInit o donde inicialices el formulario de empresa
-
-  ngOnInit() {
-    // Obtener el usuario actual (desde tu servicio de autenticación)
-    const currentUser = this.authService.getCurrentUser(); // o como obtengas el usuario actual
-    
-    if (currentUser) {
-      const tempCommercialName = this.userService.getTempCommercialName(currentUser);
-      
-      if (tempCommercialName) {
-        // Pre-llenar el formulario con el nombre comercial
-        this.empresaForm.patchValue({
-          nombreComercial: tempCommercialName
-        });
-        
-        // Opcional: Mostrar mensaje informativo
-        this.showNotification('Se ha cargado el nombre comercial de tu registro', 'info');
-      }
-    }
-    
-  }
-  */
 }

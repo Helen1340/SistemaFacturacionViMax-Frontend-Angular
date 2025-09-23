@@ -1,7 +1,4 @@
 import { Routes } from '@angular/router';
-import { ProductosServicios } from './module-product-service/productos-servicios/productos-servicios';
-
-import { RegitrarServicio } from './module-product-service/regitrar-servicio/regitrar-servicio';
 import { Clientes } from './module-clients/clientes/clientes';
 import { NuevoCliente } from './module-clients/nuevo-cliente/nuevo-cliente';
 import { EditarCliente } from './module-clients/editar-cliente/editar-cliente';
@@ -20,8 +17,6 @@ import { NuevaFactura } from './module-invoices-notes/nueva-factura/nueva-factur
 import { EditarFactura } from './module-invoices-notes/editar-facturas/editar-facturas';
 import { NuevaNotaComponent } from './module-invoices-notes/nueva-nota/nueva-nota';
 import { DetalleFacturas } from './module-invoices-notes/detalle-facturas/detalle-facturas';
-import { RegistrarProductoComponent } from './module-product-service/registrar-producto/registrar-producto';
-
 import { NuevoUsuario } from './module-users/nuevo-usuario/nuevo-usuario';
 import { EditUsuario } from './module-users/edit-usuario/edit-usuario';
 import { VerUsuario } from './module-users/ver-usuario/ver-usuario';
@@ -37,7 +32,6 @@ import { ConfiguracionRetencionDocumental } from './module-settings/retencion-re
 import { ConfiguracionRespaldoAutomatico } from './module-settings/retencion-respaldo/configuracion-respaldo-automatico/configuracion-respaldo-automatico';
 import { CambiosNormativos } from './module-settings/cambios-normativos/cambios-normativos';
 import { Acceder } from './module-home/acceder/acceder';
-import { Registro } from './module-home/registro/registro';
 import { ParametrosGenerales } from './module-settings/parametros-generales/parametros-generales';
 import { HistorialTecnico } from './module-notifications/historial-tecnico/historial-tecnico';
 import { DestinatariosEventos } from './module-settings/notificaciones-emails/destinatarios-eventos/destinatarios-eventos';
@@ -45,6 +39,14 @@ import { HistorialNotify } from './module-settings/notificaciones-emails/histori
 import { ConfigCorreo } from './module-settings/notificaciones-emails/config-correo/config-correo';
 
 
+import { Registro } from './module-home/registro/registro';
+import { ProductosServicios } from './module-product-service/productos-servicios/productos-servicios';
+import { RegistrarProductoComponent } from './module-product-service/registrar-producto/registrar-producto';
+import { RegitrarServicio } from './module-product-service/regitrar-servicio/regitrar-servicio';
+import { EditarProducto } from './module-product-service/editar-item/editar-producto';
+import { EditarServicio } from './module-product-service/editar-servicio/editar-servicio';
+import { DetallesProducto } from './module-product-service/detalles-producto/detalles-producto';
+import { DetallesServicio } from './module-product-service/detalles-servicio/detalles-servicio';
 
 
 
@@ -135,8 +137,15 @@ export const routes: Routes = [
 
   //ESPACIO PARA LAS RUTAS DE HELEN (MODULE PRODUCTOS)
   { path: 'productos-servicios', component: ProductosServicios},
-  {path: 'registrar-producto', component: RegistrarProductoComponent},
-  {path: 'registrar-servicio',component: RegitrarServicio},
+  { path: 'registrar-producto', component: RegistrarProductoComponent},
+  { path: 'registrar-servicio', component: RegitrarServicio},
+
+  {path: 'editar-producto/:id', component: EditarProducto},
+  {path: 'editar-servicio/:id', component: EditarServicio},
+
+  {path: 'detalles-producto/:id', component: DetallesProducto},
+  {path: 'detalles-servicio/:id', component: DetallesServicio},
+  
 
   // ... otras rutas
 
@@ -156,7 +165,7 @@ export const routes: Routes = [
   //rutes home
   { path: 'login', component: Acceder },
   { path: 'acceso', component: Acceder },
-  { path: 'registro', component: Registro },
+  { path: 'register', component: Registro },
 
 
   {path: 'reportes',component: Reportes},

@@ -1,195 +1,91 @@
 <main class="w-full p-4 flex-1">
-
     <div class="sticky top-0 bg-white z-10 pb-4 mt-6">
-        <h2 class="text-4xl font-semibold mb-4 mt-2">
-            Registrar Producto
-        </h2>
+        <h2 class="text-4xl font-semibold mb-4 mt-2">Registrar Producto</h2>
         <div class="border-b-2 border-gray-300 w-full"></div>
     </div>
 
-    <div class="max-w-10xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white rounded-lg shadow-xl p-4 sm:p-6 lg:p-8 
-            max-h-[75vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div
+            class="bg-white rounded-lg shadow-xl p-4 sm:p-6 lg:p-8 max-h-[75vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
             <form [formGroup]="productoForm" (ngSubmit)="onSubmit()" class="space-y-6">
-
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div>
-                        <label for="codigo" class="block text-sm font-medium text-black mb-2">
-                            Código único <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" id="codigo" formControlName="codigo"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                            [class.border-red-500]="productoForm.get('codigo')?.invalid && productoForm.get('codigo')?.touched">
-                        <div *ngIf="productoForm.get('codigo')?.invalid && productoForm.get('codigo')?.touched"
-                            class="text-red-500 text-xs mt-1">
-                            El código es requerido
-                        </div>
+                        <label class="block text-sm font-medium text-black mb-2">Código estándar <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" formControlName="codigo_estandar"
+                            class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-cyan-500" />
                     </div>
 
                     <div>
-                        <label for="nombre" class="block text-sm font-medium text-black mb-2">
-                            Nombre del producto/servicio <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" id="nombre" formControlName="nombre" maxlength="100"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                            [class.border-red-500]="productoForm.get('nombre')?.invalid && productoForm.get('nombre')?.touched">
-                        <div *ngIf="productoForm.get('nombre')?.invalid && productoForm.get('nombre')?.touched"
-                            class="text-red-500 text-xs mt-1">
-                            El nombre es requerido
-                        </div>
+                        <label class="block text-sm font-medium text-black mb-2">Código producto <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" formControlName="codigo_producto"
+                            class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-cyan-500" />
                     </div>
 
                     <div>
-                        <label for="tipo" class="block text-sm font-medium text-black mb-2">
-                            Tipo <span class="text-red-500">*</span>
-                        </label>
-                        <select id="tipo" formControlName="tipo"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                            [class.border-red-500]="productoForm.get('tipo')?.invalid && productoForm.get('tipo')?.touched">
-                            <option value="">Seleccione</option>
-                            <option value="producto">Producto</option>
-                            <option value="servicio">Servicio</option>
-                        </select>
-                        <div *ngIf="productoForm.get('tipo')?.invalid && productoForm.get('tipo')?.touched"
-                            class="text-red-500 text-xs mt-1">
-                            El tipo es requerido
-                        </div>
+                        <label class="block text-sm font-medium text-black mb-2">Nombre <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" formControlName="nombre"
+                            class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-cyan-500" />
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div>
-                        <label for="unidad" class="block text-sm font-medium text-black mb-2">
-                            Unidad de medida <span class="text-red-500">*</span>
-                        </label>
-                        <select id="unidad" formControlName="unidad"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                            [class.border-red-500]="productoForm.get('unidad')?.invalid && productoForm.get('unidad')?.touched">
-                            <option value="">Seleccione unidad DIAN</option>
-                            <option value="NIU">Unidad (NIU)</option>
-                            <option value="KGM">Kilogramo (KGM)</option>
-                            <option value="LTR">Litro (LTR)</option>
+                        <label class="block text-sm font-medium text-black mb-2">Unidad de medida <span
+                                class="text-red-500">*</span></label>
+                        <select formControlName="measurement_unit_id"
+                            class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-cyan-500">
+                            <option value="">Seleccione unidad</option>
+                            <option *ngFor="let unit of measurementUnits" [value]="unit.id">
+                                {{ unit.nombre }} ({{ unit.codigo_dian }})
+                            </option>
                         </select>
-                        <div *ngIf="productoForm.get('unidad')?.invalid && productoForm.get('unidad')?.touched"
-                            class="text-red-500 text-xs mt-1">
-                            La unidad de medida es requerida
-                        </div>
                     </div>
 
                     <div>
-                        <label for="precio" class="block text-sm font-medium text-black mb-2">
-                            Precio unitario <span class="text-red-500">*</span>
-                        </label>
-                        <input type="number" id="precio" formControlName="precio" min="0.01" step="0.01"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                            [class.border-red-500]="productoForm.get('precio')?.invalid && productoForm.get('precio')?.touched">
-                        <div *ngIf="productoForm.get('precio')?.invalid && productoForm.get('precio')?.touched"
-                            class="text-red-500 text-xs mt-1">
-                            El precio es requerido
-                        </div>
+                        <label class="block text-sm font-medium text-black mb-2">Precio unitario <span
+                                class="text-red-500">*</span></label>
+                        <input type="number" formControlName="precio_unitario" min="0.01" step="0.01"
+                            class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-cyan-500" />
                     </div>
-                    
+
                     <div>
-                        <label for="estado" class="block text-sm font-medium text-black mb-2">
-                            Estado
-                        </label>
-                        <select id="estado" formControlName="estado"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
-                            <option value="activo">Activo</option>
-                            <option value="inactivo">Inactivo</option>
+                        <label class="block text-sm font-medium text-black mb-2">Estado</label>
+                        <select formControlName="estado"
+                            class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-cyan-500">
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-black mb-2">
-                            Facturable <span class="text-red-500">*</span>
-                        </label>
-                        <div class="flex items-center gap-4 text-sm text-black pt-2">
-                            <label><input type="radio" formControlName="facturable" value="si" class="mr-1" /> Sí</label>
-                            <label><input type="radio" formControlName="facturable" value="no" class="mr-1" /> No</label>
-                        </div>
-                        <div *ngIf="productoForm.get('facturable')?.invalid && productoForm.get('facturable')?.touched"
-                            class="text-red-500 text-xs mt-1">
-                            Este campo es requerido
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label for="categoria" class="block text-sm font-medium text-black mb-2">
-                            Categoría o grupo
-                        </label>
-                        <input type="text" id="categoria" formControlName="categoria" placeholder="Opcional"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500" />
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-black mb-2">Descripción</label>
+                    <textarea formControlName="descripcion" rows="3"
+                        class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-cyan-500 resize-none"></textarea>
+                </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-black mb-2">
-                            Impuestos aplicados
-                        </label>
-                        <div class="space-y-1 text-sm text-black">
-                             <label class="block"><input type="checkbox" formControlName="impuestoIva" class="mr-2" /> IVA</label>
-                            <label class="block"><input type="checkbox" formControlName="impuestoInc" class="mr-2" /> INC</label>
-                            <label class="block"><input type="checkbox" formControlName="impuestoIca" class="mr-2" /> ICA</label>
-                        </div>
+                <div>
+                    <label class="block text-sm font-medium text-black mb-2">Impuestos aplicados</label>
+                    <div class="space-y-1 text-sm text-black">
+                        <label class="block"><input type="checkbox" formControlName="impuestoIva" class="mr-2" />
+                            IVA</label>
+                        <label class="block"><input type="checkbox" formControlName="impuestoInc" class="mr-2" />
+                            INC</label>
+                        <label class="block"><input type="checkbox" formControlName="impuestoIca" class="mr-2" />
+                            ICA</label>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-6">
-                    <div>
-                        <label for="descripcion" class="block text-sm font-medium text-black mb-2">
-                            Descripción
-                        </label>
-                        <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Opcional"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 resize-none"></textarea>
-                    </div>
+                <div class="pt-6 flex justify-end">
+                    <button type="submit" [disabled]="productoForm.invalid || isLoading"
+                        class="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-400 text-white font-medium py-2 px-16 rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
+                        <span *ngIf="!isLoading">Guardar</span>
+                        <span *ngIf="isLoading">Guardando...</span>
+                    </button>
                 </div>
-
-                <div class="pt-6 flex justify-end items-center">
-                    <div class="flex space-x-3">
-                        <button type="button" (click)="cancelar()"
-                            class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-8 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-200">
-                            Cancelar
-                        </button>
-                        <button type="submit" [disabled]="productoForm.invalid || isLoading"
-                            class="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-400 text-white font-medium py-2 px-16 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition duration-200">
-                            <span *ngIf="!isLoading">Guardar</span>
-                            <span *ngIf="isLoading" class="flex items-center">
-                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                        stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                    </path>
-                                </svg>
-                                Guardando...
-                            </span>
-                        </button>
-                    </div>
-                </div>
-
-                <div *ngIf="showNotification"
-                    class="fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300"
-                    [class.bg-green-500]="notificationType === 'success'"
-                    [class.bg-red-500]="notificationType === 'error'" [class.text-white]="true">
-                    <div class="flex items-center space-x-2">
-                        <svg *ngIf="notificationType === 'success'" class="w-5 h-5" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
-                            </path>
-                        </svg>
-                        <svg *ngIf="notificationType === 'error'" class="w-5 h-5" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                        <span>{{ notificationMessage }}</span>
-                    </div>
-                </div>
-
             </form>
         </div>
     </div>

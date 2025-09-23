@@ -580,9 +580,9 @@ export class FacturasNotas implements OnInit {
     
     // Mostrar información en la consola y en una alerta
     const infoMessage = `
-URL Base: ${diagnosticInfo.baseUrl}
-URL API: ${diagnosticInfo.apiUrl}
-Timestamp: ${diagnosticInfo.timestamp}
+    URL Base: ${diagnosticInfo.baseUrl}
+    URL API: ${diagnosticInfo.apiUrl}
+    Timestamp: ${diagnosticInfo.timestamp}
     `.trim();
     
     console.log('Diagnóstico completo:', infoMessage);
