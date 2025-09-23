@@ -177,10 +177,6 @@ export class Clientes implements OnInit, OnDestroy {
   }
 
 
-  verCliente(cliente: Cliente): void {
-    this.router.navigate(['/ver-cliente', cliente.id]);
-  }
-
   editarCliente(cliente: Cliente): void {
     this.router.navigate(['/editar-cliente', cliente.id]);
   }

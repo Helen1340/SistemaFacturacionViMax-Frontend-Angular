@@ -119,7 +119,7 @@ onSubmit() {
   this.isLoading = true;
   const formValue = this.registerForm.value;
 
-    // ✅ Mapeo corregido según AuthController
+    //Mapeo corregido según AuthController
     const dataToSend = {
       razon_social: formValue.businessName,
       nit: formValue.nit,
@@ -134,7 +134,7 @@ onSubmit() {
 
     this.authService.register(dataToSend).subscribe({
       next: () => {
-        this.showNotification('Registro exitoso 🚀', 'success');
+        this.showNotification('Registro exitoso', 'success');
         this.isLoading = false;
         setTimeout(() => {
           this.router.navigate(['/configuracion']);

@@ -28,7 +28,7 @@ export class Acceder {
     private authService: AuthService
   ) {
     this.loginForm = this.formBuilder.group({
-      correo_electronico: ['', [Validators.required, Validators.email]], // 👈 coincide con el backend
+      correo_electronico: ['', [Validators.required, Validators.email]], // coincide con el backend
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
@@ -55,12 +55,12 @@ export class Acceder {
         this.isLoading = false;
 
         if (res && res.access_token) {
-          // ✅ Guardar token en localStorage con AuthService
+          //  Guardar token en localStorage con AuthService
           this.authService.setToken(res.access_token);
 
           this.showNotification('Inicio de sesión exitoso 🚀', 'success');
 
-          // ✅ Redirigir a facturas-notas
+          // Redirigir a facturas-notas
           this.router.navigate(['/facturas-notas']);
         } else {
           this.showNotification('Error: no se recibió el token', 'error');
