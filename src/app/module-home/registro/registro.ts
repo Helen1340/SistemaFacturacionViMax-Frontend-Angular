@@ -30,15 +30,15 @@ export class Registro {
   ) {
     this.registerForm = this.fb.group({
       // Empresa
-      businessName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(120), this.noOnlySpacesValidator, this.noSpecialCharactersValidator]],
-      nit: ['', [Validators.required, Validators.pattern(/^[0-9]{6,11}-[0-9]$/)]],
+      businessName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(150), this.noOnlySpacesValidator, this.noSpecialCharactersValidator]],
+      nit: ['', [Validators.required, Validators.maxLength(50)]],
       companyEmail: ['', [Validators.required, Validators.email, Validators.maxLength(100), this.validEmailValidator]],
 
       // Admin
-      firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(80), Validators.pattern(/^[a-zA-ZÀ-ÿ\s]+$/), this.noOnlySpacesValidator]],
-      adminEmail: ['', [Validators.required, Validators.email, Validators.maxLength(100), this.validEmailValidator]],
+      firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100), Validators.pattern(/^[a-zA-ZÀ-ÿ\s]+$/), this.noOnlySpacesValidator]],
+      adminEmail: ['', [Validators.required, Validators.email, Validators.maxLength(150), this.validEmailValidator]],
       documentType: ['', Validators.required],
-      documentNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{5,15}$/)]],
+      documentNumber: ['', [Validators.required, Validators.maxLength(20)]],
 
       // Contraseñas
       password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50), this.strongPasswordValidator]],
@@ -110,22 +110,22 @@ export class Registro {
   }
 
   // 🔹 Enviar al backend con AuthService
-  onSubmit() {
-    if (this.registerForm.invalid) {
-      this.registerForm.markAllAsTouched();
-      return;
-    }
+onSubmit() {
+  if (this.registerForm.invalid) {
+    this.registerForm.markAllAsTouched();
+    return;
+  }
 
-    this.isLoading = true;
-    const formValue = this.registerForm.value;
+  this.isLoading = true;
+  const formValue = this.registerForm.value;
 
-    // ✅ Mapeo correcto de campos a lo que Laravel espera
+    // ✅ Mapeo corregido según AuthController
     const dataToSend = {
       razon_social: formValue.businessName,
       nit: formValue.nit,
-      correo_electronico: formValue.adminEmail,   // login admin
-      company_email: formValue.companyEmail,      // correo empresa
+      correo_empresa: formValue.companyEmail,     // 🔹 Laravel espera este nombre
       nombre: formValue.firstName,
+      correo_electronico: formValue.adminEmail,   // 🔹 login admin
       tipo_documento: formValue.documentType,
       numero_documento: formValue.documentNumber,
       password: formValue.password,

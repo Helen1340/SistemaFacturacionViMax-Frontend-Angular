@@ -36,6 +36,7 @@ import { Acceder } from './module-home/acceder/acceder';
 import { ParametrosGenerales } from './module-settings/parametros-generales/parametros-generales';
 import { HistorialTecnico } from './module-notifications/historial-tecnico/historial-tecnico';
 import { Registro } from './module-home/registro/registro';
+import { LogoutComponent } from './module-home/logout/logout';
 
 
 
@@ -147,6 +148,8 @@ export const routes: Routes = [
   { path: 'login', component: Acceder },
   { path: 'acceso', component: Acceder },
   { path: 'register', component: Registro },
+  { path: 'logout', component: LogoutComponent },
+
 
 
   {path: 'reportes',component: Reportes},

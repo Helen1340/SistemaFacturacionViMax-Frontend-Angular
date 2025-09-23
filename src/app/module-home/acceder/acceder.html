@@ -15,17 +15,18 @@
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4 w-full max-w-xs mx-auto flex flex-col items-center">
         <!-- Campo de correo electrónico -->
         <div class="w-full">
-            <label for="email" class="block text-xs font-medium text-gray-600 mb-1">
-                Correo electronico
+            <label for="correo_electronico" class="block text-xs font-medium text-gray-600 mb-1">
+                Correo electrónico
             </label>
-            <input type="email" id="email" formControlName="email" placeholder="Ingresa tu correo electrónico"
+            <input type="email" id="correo_electronico" formControlName="correo_electronico" 
+                placeholder="Ingresa tu correo electrónico"
                 class="w-full px-4 py-2 bg-gray-200 border-0 rounded-lg focus:outline-none focus:ring-2 text-sm placeholder-gray-400"
-                [class.border-red-500]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+                [class.border-red-500]="loginForm.get('correo_electronico')?.invalid && loginForm.get('correo_electronico')?.touched"
                 style="--tw-ring-color: #0799B6;" />
-            <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+            <div *ngIf="loginForm.get('correo_electronico')?.invalid && loginForm.get('correo_electronico')?.touched"
                 class="text-red-500 text-xs mt-1">
-                <span *ngIf="loginForm.get('email')?.errors?.['required']">El correo es requerido</span>
-                <span *ngIf="loginForm.get('email')?.errors?.['email']">Ingresa un correo válido</span>
+                <span *ngIf="loginForm.get('correo_electronico')?.errors?.['required']">El correo es requerido</span>
+                <span *ngIf="loginForm.get('correo_electronico')?.errors?.['email']">Ingresa un correo válido</span>
             </div>
         </div>
 
@@ -35,7 +36,7 @@
                 <label for="password" class="block text-xs font-medium text-gray-600">
                     Contraseña
                 </label>
-                <button type="button" id="forgotPassword"
+                <button type="button" id="forgotPassword" (click)="onForgotPassword()"
                     class="text-cyan-600 hover:text-cyan-700 text-xs transition-colors">
                     ¿Olvidaste tu contraseña?
                 </button>
