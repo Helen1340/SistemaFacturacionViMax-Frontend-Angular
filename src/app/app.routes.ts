@@ -107,7 +107,7 @@ export const routes: Routes = [
 
   //ESPACIO PARA LAS RUTAS DE DAVID (MODULE FACTURAS, CLIENTES)
   
-  { path: '', redirectTo: 'facturas-notas', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'facturas-notas', component: FacturasNotas },
   { path: 'clientes', component: Clientes },
   { path: 'nueva-factura', component: NuevaFactura },

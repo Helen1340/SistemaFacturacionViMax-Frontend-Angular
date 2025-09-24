@@ -93,7 +93,7 @@ export class Acceder {
   }
 
   navigateToRegister(): void {
-    this.router.navigate(['/registro']);
+    this.router.navigate(['/register']);
   }
 
   private showNotification(message: string, type: 'success' | 'error'): void {

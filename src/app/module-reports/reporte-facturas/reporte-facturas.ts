@@ -90,26 +90,6 @@ export class ReporteFacturas implements OnInit {
         responsible: 'admin_vimax',
         totalValue: '$875.500',
         status: 'Aceptada'
-      },
-      {
-        date: '2025-07-07',
-        documentType: 'Nota Crédito',
-        invoiceNumber: 'NC-00457',
-        client: 'Servicios ABC Ltda',
-        nit: '800555333-2',
-        responsible: 'user_ana',
-        totalValue: '$-25.000',
-        status: 'Emitida'
-      },
-      {
-        date: '2025-07-08',
-        documentType: 'Factura de ajuste',
-        invoiceNumber: 'FA-00101',
-        client: 'Comercial XYZ S.A.S',
-        nit: '900123456-7',
-        responsible: 'user_juan',
-        totalValue: '$10.000',
-        status: 'Aceptada'
       }
     ];
   }

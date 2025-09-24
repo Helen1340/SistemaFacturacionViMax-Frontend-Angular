@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class DocumentsService {
-  private apiUrl = 'http://localhost:8000/api'; // Reemplaza esto con la URL de tu API en Laravel
+  private apiUrl = 'http://localhost/api'; // Reemplaza esto con la URL de tu API en Laravel
 
   constructor(private http: HttpClient) { }
 
