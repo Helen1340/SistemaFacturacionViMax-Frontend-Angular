@@ -1,76 +1,77 @@
-<div id="overlay" class="hidden fixed inset-0 bg-black/50 z-40 md:hidden"></div>
-<!-- Contenido principal -->
-<main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
+<main class="w-full py-4 flex-1 overflow-y-auto overflow-x-visible">
+  <div class="-mt-4 mb-4">
+    <h2 class="text-4xl font-semibold mb-6 mt-8">Política de Retención y Respaldo</h2>
+  </div>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Header -->
-        <div class="-mt-2 mb-2">
-            <h2 class="text-4xl font-semibold mb-5 mt-4">
-                Política De Retención Y Respaldo De Documentos Electrónicos
-            </h2>
+  <div class="border-b-2 border-gray-300 w-full mb-8"></div>
+  <p class="text-base text-gray-500">
+  Configure las políticas para el almacenamiento y respaldo de sus documentos electrónicos.
+  Esto es crucial para el cumplimiento normativo y la seguridad de la información.
+</p>
+  <br>
+
+  <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+    <h3 class="text-2xl font-semibold mb-6">Configuración de la Política</h3>
+
+    <form (ngSubmit)="savePolicy()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label for="retentionPeriod" class="block text-base font-medium text-gray-700 mb-2">Período de Retención</label>
+          <div class="relative">
+            <select id="retentionPeriod" name="retentionPeriod" [(ngModel)]="policy.retentionPeriod" required
+                    class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 pr-10 appearance-none">
+              <option value="5">5 Años</option>
+              <option value="10">10 Años</option>
+              <option value="15">15 Años</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+          <p class="mt-2 text-sm text-gray-500">
+            Tiempo mínimo que los documentos deben ser conservados para cumplir con la ley.
+          </p>
         </div>
 
-        <div class="border-b-2 border-gray-300 w-full mb-6"></div>
-
-        <!-- Content Area -->
-        <main class="flex-1 overflow-y-auto p-6">
-            <div class="max-w-7xl mx-auto">
-
-                <!-- Botones de Configuración -->
-                <div class="flex flex-col gap-3 mb-8">
-                    <button (click)="navigateRetencionDocumental()"
-                        class="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-lg flex items-center justify-center transition-colors duration-200 w-fit">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span class="text-base font-medium">Configuración De Retención Documental</span>
-                    </button>
-
-                    <button (click)="navigateRespaldoAutomatico()"
-                        class="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-lg flex items-center justify-center transition-colors duration-200 w-fit">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                        </svg>
-                        <span class="text-base font-medium">Configuración De Respaldo Automático</span>
-                    </button>
-                </div>
-
-                <!-- Título Historial de Respaldos -->
-                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Historial De Respaldos</h3>
-
-                <!-- Tabla Historial de Respaldos -->
-                <div class="bg-white rounded-2xl shadow-lg border border-gray-200">
-                    <div class="overflow-x-auto">
-                        <table class="w-full table-auto">
-                            <thead class="bg-gray-100 text-black text-left sticky top-0 z-10">
-                                <tr>
-                                    <th class="px-4 py-3 font-semibold min-w-[150px] rounded-tl-2xl">Fecha</th>
-                                    <th class="px-4 py-3 font-semibold min-w-[200px]">Tipo De Respaldo</th>
-                                    <th class="px-4 py-3 font-semibold min-w-[150px]">Frecuencia</th>
-                                    <th class="px-4 py-3 font-semibold min-w-[200px]">Destino</th>
-                                    <th class="px-4 py-3 font-semibold min-w-[120px]">Estado</th>
-                                    <th class="px-4 py-3 font-semibold min-w-[150px] rounded-tr-2xl">Generado Por</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-t border-gray-200 hover:bg-gray-50">
-                                    <td class="px-4 py-3 text-gray-400 text-sm">-</td>
-                                    <td class="px-4 py-3 text-gray-400 text-sm">-</td>
-                                    <td class="px-4 py-3 text-gray-400 text-sm">-</td>
-                                    <td class="px-4 py-3 text-gray-400 text-sm">-</td>
-                                    <td class="px-4 py-3 text-gray-400 text-sm">-</td>
-                                    <td class="px-4 py-3 text-gray-400 text-sm">-</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
+        <div>
+          <label for="backupFrequency" class="block text-base font-medium text-gray-700 mb-2">Frecuencia de Respaldo</label>
+          <div class="relative">
+            <select id="backupFrequency" name="backupFrequency" [(ngModel)]="policy.backupFrequency" required
+                    class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 pr-10 appearance-none">
+              <option value="Diaria">Diaria</option>
+              <option value="Semanal">Semanal</option>
+              <option value="Mensual">Mensual</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
             </div>
-        </main>
-    </div>
+          </div>
+          <p class="mt-2 text-sm text-gray-500">
+            Con qué frecuencia se generará un respaldo de sus documentos.
+          </p>
+        </div>
+      </div>
 
+      <div class="mt-6">
+        <label for="backupLocation" class="block text-base font-medium text-gray-700 mb-2">Ubicación de Respaldo</label>
+        <input type="text" id="backupLocation" name="backupLocation" [(ngModel)]="policy.backupLocation" required
+               class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+               placeholder="Ej: Google Drive, Servidor local, Dropbox">
+        <p class="mt-2 text-sm text-gray-500">
+          Ruta o servicio donde se almacenarán los archivos de respaldo.
+        </p>
+      </div>
+
+      <div class="mt-8 flex justify-end">
+        <button type="submit"
+                class="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-8 py-2 rounded-2xl">
+          Guardar Cambios
+        </button>
+      </div>
+    </form>
+  </div>
 </main>
