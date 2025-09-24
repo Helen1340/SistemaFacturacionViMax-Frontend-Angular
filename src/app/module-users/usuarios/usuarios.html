@@ -54,14 +54,12 @@
       <table class="w-full table-auto">
         <thead class="bg-gray-100 text-black text-left sticky top-0 z-10">
           <tr>
-            <th class="px-4 py-3 font-semibold min-w-[170px]">Nombre</th>
-            <th class="px-4 py-3 font-semibold min-w-[120px]">Documento</th>
-            <th class="px-4 py-3 font-semibold min-w-[260px]">Correo Electrónico</th>
-            <th class="px-4 py-3 font-semibold min-w-[120px]">Teléfono</th>
-            <th class="px-4 py-3 font-semibold min-w-[100px]">País</th>
+            <th class="px-4 py-3 font-semibold min-w-[320px]">Nombre</th>
+            <th class="px-4 py-3 font-semibold min-w-[150px]">Documento</th>
+            <th class="px-4 py-3 font-semibold min-w-[210px]">Correo Electrónico</th>
+            <th class="px-4 py-3 font-semibold min-w-[170px]">Teléfono</th>
             <th class="px-4 py-3 font-semibold min-w-[100px]">Rol</th>
             <th class="px-4 py-3 font-semibold min-w-[100px]">Estado</th>
-            <th class="px-4 py-3 font-semibold min-w-[150px]">Último Acceso</th>
             <th class="px-4 py-3 text-center font-semibold min-w-[90px]">Acciones</th>
           </tr>
         </thead>
@@ -75,7 +73,7 @@
           <!-- CAMBIO PRINCIPAL: Usar paginatedUsers en lugar de filteredUsers -->
           <tr *ngFor="let user of paginatedUsers; trackBy: trackByFn; let i = index"
             class="border-t border-t-gray-200 hover:bg-gray-50">
-            <td class="px-4 py-3 min-w-[150px]">
+            <td class="px-4 py-3 min-w-[140px]">
               <div class="font-medium text-gray-900">{{ user.nombre }}</div>
             </td>
             <td class="px-4 py-3 min-w-[120px]">
@@ -86,8 +84,7 @@
               </div>
             </td>
             <td class="px-4 py-3 text-gray-600 min-w-[170px]">{{ user.correo_electronico }}</td>
-            <td class="px-4 py-3 text-gray-600 min-w-[120px]">{{ user.telefono }}</td>
-            <td class="px-4 py-3 text-gray-600 min-w-[100px]">{{ user.pais }}</td>
+            <td class="px-4 py-3 text-gray-600 min-w-[100px]">{{ user.telefono }}</td>
             <td class="px-4 py-3 min-w-[100px]">
               <!-- CORRECCIÓN: Usar getRoleName() para obtener el nombre del rol -->
               <span [ngClass]="getRoleClass(getRoleName(user.role_id))" class="text-xs px-2 py-1 rounded-full">{{
@@ -97,7 +94,6 @@
               <span [ngClass]="getStatusClass(user.estado)" class="text-xs px-2 py-1 rounded-full">{{
                 user.estado }}</span>
             </td>
-            <td class="px-4 py-3 text-gray-600 text-sm min-w-[150px]">{{ user.ultimo_acceso || 'No disponible' }}</td>
             <td class="px-4 py-3 text-center relative min-w-[90px]" style="overflow: visible;">
               <!-- CORRECCIÓN: Manejar user.id que puede ser undefined -->
               <button (click)="toggleDropdown($event, user.id)" class="p-2 rounded hover:bg-gray-100">
@@ -143,11 +139,11 @@
   </div>
 
   <!-- PAGINACIÓN -->
-  <div *ngIf="totalUsers > 0" class="bg-white p-4 rounded-2xl shadow mt-4 flex items-center justify-between">
-    <div class="text-sm text-gray-600">
+  <div *ngIf="totalUsers > 0" class="bg-white p-4 rounded-2xl shadow mt-4 flex flex-col sm:flex-row items-center sm:justify-between space-y-2 sm:space-y-0">
+    <div class="text-sm text-gray-600 text-center sm:text-left">
       Mostrando {{ startItem }} - {{ endItem }} de {{ totalUsers }} usuarios
     </div>
-    <div class="flex items-center space-x-2">
+    <div class="flex items-center justify-center sm:justify-end space-x-2">
       <button (click)="previousPage()" [disabled]="currentPage === 1"
         [ngClass]="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
         class="px-3 py-1 border border-gray-300 rounded-lg">

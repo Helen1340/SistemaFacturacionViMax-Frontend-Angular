@@ -1,25 +1,32 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService, Role } from '../services/user.service';
-import { User } from '../usuarios/usuarios';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-nuevo-usuario',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './nuevo-usuario.html',
-  styleUrl: './nuevo-usuario.css'
+  styleUrl: './nuevo-usuario.css',
 })
 export class NuevoUsuario implements OnInit {
   usuarioForm!: FormGroup;
+  roles: any[] = [];
   isLoading = false;
-  showNotification = false;
-  notificationType: 'success' | 'error' = 'success';
-  notificationMessage = '';
 
-  roles: Role[] = [];
+  showNotification = false;
+  notificationMessage = '';
+  notificationType: 'success' | 'error' = 'success';
 
   constructor(
     private fb: FormBuilder,
@@ -28,140 +35,112 @@ export class NuevoUsuario implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadRoles();
+    this.initForm();
+    this.cargarRoles();
   }
 
-  private initializeForm(): void {
+  initForm() {
     this.usuarioForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.maxLength(100)]],
-      tipo_documento: ['', [Validators.required]],
-      numero_documento: ['', [Validators.required, Validators.maxLength(15)]],
-      direccion: ['', [Validators.required, Validators.maxLength(150)]],
-      pais: ['', [Validators.required, Validators.maxLength(50)]],
-      descripcion: ['', [Validators.maxLength(250)]],
-      contrasena: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/)]],
-      confirmar_contrasena: ['', [Validators.required]],
-      correo_electronico: ['', [Validators.required, Validators.email, Validators.maxLength(100)]],
-      telefono: ['', [Validators.required, Validators.maxLength(20)]],
-      company_id: [2, [Validators.required]],
-      role_id: ['', [Validators.required]],
-      estado_activo: [true]
-    }, { validators: this.passwordMatchValidator });
-  }
-
-  private passwordMatchValidator(group: FormGroup): any {
-    const password = group.get('contrasena');
-    const confirmPassword = group.get('confirmar_contrasena');
-    
-    if (password?.value !== confirmPassword?.value) {
-      confirmPassword?.setErrors({ passwordMismatch: true });
-      return { passwordMismatch: true };
-    }
-    
-    if (confirmPassword?.hasError('passwordMismatch')) {
-      delete confirmPassword.errors?.['passwordMismatch'];
-      confirmPassword.updateValueAndValidity();
-    }
-    
-    return null;
-  }
-
-  onSubmit(): void {
-    if (this.usuarioForm.valid) {
-      this.isLoading = true;
-      const formValue = this.usuarioForm.value;
-      
-      const userData: Omit<User, 'id' | 'created_at' | 'updated_at' | 'ultimo_acceso' | 'remember_token'> = {
-        nombre: formValue.nombre,
-        tipo_documento: formValue.tipo_documento,
-        numero_documento: formValue.numero_documento,
-        direccion: formValue.direccion,
-        pais: formValue.pais,
-        descripcion: formValue.descripcion || '',
-        contrasena: formValue.contrasena,
-        correo_electronico: formValue.correo_electronico,
-        telefono: formValue.telefono,
-        estado: formValue.estado_activo ? 'Activo' : 'Inactivo',
-        company_id: formValue.company_id,
-        role_id: formValue.role_id
-      };
-
-      this.userService.createUser(userData as any).subscribe({
-        next: () => {
-          this.showNotification = true;
-          this.notificationType = 'success';
-          this.notificationMessage = '¡Usuario creado exitosamente!';
-          this.resetForm();
-          this.isLoading = false;
-          setTimeout(() => this.router.navigate(['/usuarios']), 2000);
-        },
-        error: (error) => {
-          this.showNotification = true;
-          this.notificationType = 'error';
-          this.notificationMessage = this.getErrorMessage(error.status);
-          this.isLoading = false;
-        }
-      });
-    } else {
-      Object.keys(this.usuarioForm.controls).forEach(key => {
-        this.usuarioForm.get(key)?.markAsTouched();
-      });
-    }
-  }
-
-  private getErrorMessage(status: number): string {
-    const messages: { [key: number]: string } = {
-      422: 'Datos inválidos. Verifique la información ingresada.',
-      409: 'Ya existe un usuario con este documento o correo.',
-      0: 'Error de conexión. Verifique que el servidor esté ejecutándose.'
-    };
-    return messages[status] || 'Error al crear el usuario. Intente nuevamente.';
-  }
-
-  private resetForm(): void {
-    this.usuarioForm.reset();
-    this.usuarioForm.patchValue({ 
-      estado_activo: true,
-      company_id: 2
+      company_id: [5], // nullable - coincide con API
+      role_id: [null, Validators.required], // required en el template, nullable en API
+      nombre: ['', [Validators.required, Validators.maxLength(100)]], // ✓ coincide
+      tipo_documento: ['', Validators.required], // ✓ required en template, nullable en API pero requerido en UI
+      numero_documento: ['', [Validators.required, Validators.maxLength(50)]], // ✓ corregido maxLength
+      direccion: ['', [Validators.required, Validators.maxLength(150)]], // ✓ required en template, nullable en API
+      pais: ['', Validators.required], // ✓ required en template, nullable en API
+      descripcion: ['', Validators.maxLength(250)], // ✓ coincide
+      correo_electronico: ['', [Validators.required, Validators.email, Validators.maxLength(150)]], // ✓ coincide
+      telefono: ['', [Validators.required, Validators.maxLength(20)]], // ✓ corregido maxLength
+      estado_activo: [true], // ✓ para el checkbox del template
+      contrasena: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/)]], // ✓ coincide con template
+      confirmar_contrasena: ['', Validators.required], // ✓ coincide con template
+    }, {
+      validators: this.passwordMatchValidator
     });
   }
 
-  cancelar(): void {
+  passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
+    const pass = group.get('contrasena')?.value;
+    const confirmPass = group.get('confirmar_contrasena')?.value;
+    return pass === confirmPass ? null : { passwordMismatch: true };
+  }
+
+  cargarRoles() {
+    this.userService.getRoles().subscribe({
+      next: (res: any) => { 
+        this.roles = res; 
+      },
+      error: (err) => { 
+        console.error('Error cargando roles:', err); 
+        this.showNotificationMessage('Error cargando roles', 'error');
+      }
+    });
+  }
+
+  onSubmit() {
+    if (this.usuarioForm.invalid) {
+      this.usuarioForm.markAllAsTouched();
+      this.showNotificationMessage('Por favor complete todos los campos requeridos', 'error');
+      return;
+    }
+
+    const formValue = this.usuarioForm.value;
+    
+    // Mapear los datos según lo que espera la API
+    const payload = {
+      company_id: formValue.company_id || null,
+      role_id: formValue.role_id || null,
+      nombre: formValue.nombre,
+      tipo_documento: formValue.tipo_documento || null,
+      numero_documento: formValue.numero_documento,
+      direccion: formValue.direccion || null,
+      pais: formValue.pais || null,
+      descripcion: formValue.descripcion || null,
+      correo_electronico: formValue.correo_electronico,
+      telefono: formValue.telefono || null,
+      estado: formValue.estado_activo ? 'Activo' : 'Inactivo', // Mapear checkbox a string
+      password: formValue.contrasena, // Mapear nombre del campo
+      ultimo_acceso: null // Campo que espera la API
+    };
+
+    this.isLoading = true;
+    this.userService.createUser(payload as any).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.showNotificationMessage('Usuario creado correctamente', 'success');
+        // Opcional: redirigir después de un delay
+        setTimeout(() => {
+          this.router.navigate(['/usuarios']);
+        }, 2000);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        let errorMessage = 'Error al crear el usuario';
+        
+        if (err.error?.message) {
+          errorMessage = err.error.message;
+        } else if (err.error?.errors) {
+          // Manejar errores de validación de Laravel
+          const errors = Object.values(err.error.errors).flat();
+          errorMessage = errors.join(', ');
+        }
+        
+        this.showNotificationMessage(errorMessage, 'error');
+        console.error('Error API:', err);
+      }
+    });
+  }
+
+
+
+  cancelar() {
     this.router.navigate(['/usuarios']);
   }
 
-  private loadRoles(): void {
-    this.userService.getRoles().subscribe({
-      next: (roles) => {
-        // Filtrar roles de cliente/clientes para el módulo de usuarios
-        this.roles = (roles || []).filter(role => 
-          !role.nombre.toLowerCase().includes('cliente')
-        );
-        // Inicializar formulario después de cargar roles
-        this.initializeForm();
-      },
-      error: () => {
-        console.log('Fallo la carga de roles,');
-        // Inicializar formulario después de cargar roles
-        this.initializeForm();
-      }
-    });
-  }
-
-  testConnection(): void {
-    this.userService.testApiConnection().subscribe({
-      next: () => {
-        this.showNotification = true;
-        this.notificationType = 'success';
-        this.notificationMessage = 'Conexión con la API exitosa';
-        setTimeout(() => this.showNotification = false, 4000);
-      },
-      error: () => {
-        this.showNotification = true;
-        this.notificationType = 'error';
-        this.notificationMessage = 'Error de conexión con la API';
-        setTimeout(() => this.showNotification = false, 4000);
-      }
-    });
+  showNotificationMessage(message: string, type: 'success' | 'error') {
+    this.notificationMessage = message;
+    this.notificationType = type;
+    this.showNotification = true;
+    setTimeout(() => this.showNotification = false, 4000);
   }
 }
