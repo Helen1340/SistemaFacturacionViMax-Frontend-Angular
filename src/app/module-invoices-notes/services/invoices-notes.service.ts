@@ -8,7 +8,7 @@ import { catchError, timeout } from 'rxjs/operators';
 })
 export class InvoicesNotesService {
   // URLs de la API - configura estas según tu servidor
-  private baseUrl = 'http://localhost'; // Cambia por tu URL correcta
+  private baseUrl = 'http://localhost:8000'; // Cambia por tu URL correcta
   private apiUrl = `${this.baseUrl}/api/electronicInvoices`;
   private notesApiUrl = `${this.baseUrl}/api/creditDebitNotes`;
   private usersApiUrl = `${this.baseUrl}/api/users`;
@@ -196,7 +196,7 @@ export class InvoicesNotesService {
       .pipe(
         timeout(10000),
         catchError((error) => {
-          console.error('❌ Error al obtener usuarios:', error);
+          console.error(' Error al obtener usuarios:', error);
           return this.handleError(error);
         })
       );
