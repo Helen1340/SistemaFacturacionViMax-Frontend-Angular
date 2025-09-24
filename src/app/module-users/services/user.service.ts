@@ -12,6 +12,23 @@ export interface Role {
   updated_at: string;
 }
 
+// Interface que coincide con lo que espera la API
+export interface CreateUserPayload {
+  company_id?: number | null;
+  role_id?: number | null;
+  nombre: string;
+  tipo_documento?: 'NIT' | 'CC' | 'CE' | null;
+  numero_documento: string;
+  direccion?: string | null;
+  pais?: string | null;
+  descripcion?: string | null;
+  correo_electronico: string;
+  telefono?: string | null;
+  estado?: 'Activo' | 'Inactivo' | null;
+  ultimo_acceso?: string | null;
+  password: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -37,8 +54,9 @@ export class UserService {
     return this.http.get<User>(`${this.apiUrl}/${id}`);
   }
 
-  createUser(user: User): Observable<User> {
-    return this.http.post<User>(this.apiUrl, user);
+  // Método actualizado con tipado correcto
+  createUser(userPayload: CreateUserPayload): Observable<User> {
+    return this.http.post<User>(this.apiUrl, userPayload);
   }
 
   updateUser(user: User): Observable<User> {
@@ -50,7 +68,6 @@ export class UserService {
   }
 
   // Funciones para manejar el nombre comercial temporal en la descripción
-
   getTempCommercialName(user: User): string | null {
     if (user.descripcion?.startsWith('TEMP_COMMERCIAL_NAME:')) {
       return user.descripcion.replace('TEMP_COMMERCIAL_NAME:', '');
@@ -67,5 +84,10 @@ export class UserService {
   // Método para verificar si un usuario existe por email
   getUserByEmail(email: string): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrl}?email=${email}`);
+  }
+
+  // Método para verificar si un documento ya existe
+  getUserByDocument(numeroDocumento: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}?documento=${numeroDocumento}`);
   }
 }

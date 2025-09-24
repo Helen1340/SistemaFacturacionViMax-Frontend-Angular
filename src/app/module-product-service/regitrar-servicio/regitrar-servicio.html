@@ -114,7 +114,9 @@
         [disabled]="servicioForm.invalid">
         Guardar
       </button>
-      <button type="reset" class="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500">
+      <button
+      (click)="cancelar()"
+      type="reset" class="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500">
         Cancelar
       </button>
     </div>

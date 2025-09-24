@@ -149,7 +149,7 @@ export class Clientes implements OnInit, OnDestroy {
 
     return ['Ver Detalles', 'Editar', 'Eliminar'];
 
-   
+  
   }
 
   // Ejecutar acción

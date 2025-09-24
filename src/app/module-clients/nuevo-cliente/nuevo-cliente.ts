@@ -11,7 +11,7 @@ export interface NuevoClienteForm {
   direccion: string;
   pais: string;
   descripcion: string;
-  contrasena: string;
+  password: string; // Cambiado de 'contrasena' a 'password'
   correo_electronico: string;
   telefono: string;
 }
@@ -32,7 +32,7 @@ export class NuevoCliente implements OnInit {
     direccion: '',
     pais: '',
     descripcion: '',
-    contrasena: '',
+    password: '',
     correo_electronico: '',
     telefono: ''
   };
@@ -43,22 +43,12 @@ export class NuevoCliente implements OnInit {
   alertMessage: string = '';
   alertType: 'success' | 'error' | 'warning' | 'info' = 'info';
 
-  // Opciones para selects
+  // Opciones para selects - Solo los tipos validados por la API
   tiposDocumento = [
     { value: 'CC', label: 'Cédula de Ciudadanía' },
     { value: 'CE', label: 'Cédula de Extranjería' },
-    { value: 'NIT', label: 'NIT' },
-    { value: 'PP', label: 'Pasaporte' },
-    { value: 'RC', label: 'Registro Civil' }
+    { value: 'NIT', label: 'NIT' }
   ];
-
-  regimenesTributarios = [
-    { value: 'simplificado', label: 'Régimen Simplificado' },
-    { value: 'comun', label: 'Régimen Común' },
-    { value: 'gran_contribuyente', label: 'Gran Contribuyente' },
-    { value: 'autorretenedor', label: 'Autorretenedor' }
-  ];
-
 
   constructor(
     private router: Router,
@@ -66,55 +56,117 @@ export class NuevoCliente implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Inicialización del componente
+    // Probar conexión con la API al inicializar
+    this.testApiConnection();
+  }
+
+  /**
+   * Probar conexión con la API
+   */
+  private testApiConnection(): void {
+    this.clientService.testApiConnection().subscribe({
+      next: (response) => {
+        console.log('Conexión con API exitosa:', response);
+      },
+      error: (error) => {
+        console.error('Error de conexión con API:', error);
+        this.mostrarAlerta('Error de conexión con el servidor', 'error');
+      }
+    });
   }
 
   // Generar contraseña automáticamente cuando se ingrese el número de documento
   onNumeroDocumentoChange(): void {
     if (this.clienteForm.numero_documento && this.clienteForm.numero_documento.trim() !== '') {
-      this.clienteForm.contrasena = this.generarContraseñaEncriptada(this.clienteForm.numero_documento);
+      this.clienteForm.password = this.generarContraseñaSegura(this.clienteForm.numero_documento);
+    } else {
+      this.clienteForm.password = '';
     }
   }
 
-  // Generar contraseña encriptada basada en el número de documento
-  private generarContraseñaEncriptada(numeroDocumento: string): string {
-    // Simular encriptación usando base64 y algunos caracteres especiales
-    const timestamp = Date.now().toString();
-    const combined = numeroDocumento + timestamp;
-    
-    // Crear un hash simple simulando encriptación
-    let hash = '';
-    for (let i = 0; i < combined.length; i++) {
-      const char = combined.charCodeAt(i);
-      hash += String.fromCharCode((char + 7) % 94 + 33);
+  // Generar contraseña segura basada en el número de documento
+  private generarContraseñaSegura(numeroDocumento: string): string {
+    try {
+      // Generar una contraseña más segura que cumpla con el mínimo de 8 caracteres
+      const timestamp = Date.now().toString();
+      const randomPart = Math.random().toString(36).substring(2, 6);
+      const docPart = numeroDocumento.substring(-4); // Últimos 4 dígitos del documento
+      
+      // Combinar partes y asegurar al menos 8 caracteres
+      const password = `${docPart}${randomPart}${timestamp.slice(-2)}`;
+      
+      return password.length >= 8 ? password : password + '123';
+    } catch (error) {
+      console.error('Error generando contraseña:', error);
+      return numeroDocumento + '12345678'; // Fallback que garantiza 8+ caracteres
     }
-    
-    // Convertir a base64 para simular encriptación
-    return btoa(hash).substring(0, 16);
   }
 
-  // Validación del formulario
+  // Validación del formulario según las reglas de la API
   validarFormulario(): boolean {
+    // Campos obligatorios según la validación de la API
     const camposObligatorios = [
       'nombre',
-      'tipo_documento', 
       'numero_documento',
       'correo_electronico',
-      'pais',
-      'direccion'
+      'password'
     ];
 
     for (const campo of camposObligatorios) {
-      if (!this.clienteForm[campo as keyof NuevoClienteForm]?.trim()) {
+      const valor = this.clienteForm[campo as keyof NuevoClienteForm];
+      if (!valor || valor.toString().trim() === '') {
         this.mostrarAlerta(`El campo ${this.getNombreCampo(campo)} es obligatorio`, 'error');
         return false;
       }
     }
 
-    // Validar email
+    // Validar longitud del nombre (máx 100 caracteres)
+    if (this.clienteForm.nombre.trim().length > 100) {
+      this.mostrarAlerta('El nombre no puede exceder 100 caracteres', 'error');
+      return false;
+    }
+
+    // Validar longitud del número de documento (máx 50 caracteres)
+    if (this.clienteForm.numero_documento.trim().length > 50) {
+      this.mostrarAlerta('El número de documento no puede exceder 50 caracteres', 'error');
+      return false;
+    }
+
+    // Validar email y su longitud (máx 150 caracteres)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(this.clienteForm.correo_electronico)) {
       this.mostrarAlerta('El correo electrónico no tiene un formato válido', 'error');
+      return false;
+    }
+    if (this.clienteForm.correo_electronico.length > 150) {
+      this.mostrarAlerta('El correo electrónico no puede exceder 150 caracteres', 'error');
+      return false;
+    }
+
+    // Validar contraseña (mínimo 8 caracteres)
+    if (this.clienteForm.password.length < 8) {
+      this.mostrarAlerta('La contraseña debe tener al menos 8 caracteres', 'error');
+      return false;
+    }
+
+    // Validaciones opcionales con longitudes máximas
+    if (this.clienteForm.direccion && this.clienteForm.direccion.length > 150) {
+      this.mostrarAlerta('La dirección no puede exceder 150 caracteres', 'error');
+      return false;
+    }
+
+    if (this.clienteForm.pais && this.clienteForm.pais.length > 100) {
+      this.mostrarAlerta('El país no puede exceder 100 caracteres', 'error');
+      return false;
+    }
+
+    if (this.clienteForm.descripcion && this.clienteForm.descripcion.length > 250) {
+      this.mostrarAlerta('La descripción no puede exceder 250 caracteres', 'error');
+      return false;
+    }
+
+    if (this.clienteForm.telefono && this.clienteForm.telefono.length > 20) {
+      this.mostrarAlerta('El teléfono no puede exceder 20 caracteres', 'error');
       return false;
     }
 
@@ -128,6 +180,7 @@ export class NuevoCliente implements OnInit {
       'tipo_documento': 'Tipo de Documento',
       'numero_documento': 'Número de Documento',
       'correo_electronico': 'Correo Electrónico',
+      'password': 'Contraseña',
       'pais': 'País',
       'direccion': 'Dirección'
     };
@@ -143,31 +196,29 @@ export class NuevoCliente implements OnInit {
     this.isLoading = true;
     this.mostrarAlerta('Registrando cliente...', 'info');
 
-    // Generar campos automáticos
-    const role_id = 2; // Rol cliente (asumiendo que 2 es el ID del rol cliente)
-    const company_id = Math.floor(Math.random() * 50) + 1; // ID aleatorio del 1 al 50
-    const estado = 'Activo'; // Estado por defecto
-
-    // Preparar datos para la API
+    // Preparar datos para la API según la validación requerida
     const clienteData = {
-      nombre: this.clienteForm.nombre,
-      tipo_documento: this.clienteForm.tipo_documento,
-      numero_documento: this.clienteForm.numero_documento,
-      direccion: this.clienteForm.direccion,
-      pais: this.clienteForm.pais,
-      descripcion: this.clienteForm.descripcion,
-      contrasena: this.clienteForm.contrasena,
-      correo_electronico: this.clienteForm.correo_electronico,
-      telefono: this.clienteForm.telefono,
-      role_id: role_id,
-      company_id: company_id,
-      estado: estado
+      nombre: this.clienteForm.nombre.trim(),
+      numero_documento: this.clienteForm.numero_documento.trim(),
+      correo_electronico: this.clienteForm.correo_electronico.trim(),
+      password: this.clienteForm.password,
+      role_id: 4, // ID del rol cliente según tu especificación
+      estado: 'Activo',
+      // Campos opcionales solo si tienen valor
+      ...(this.clienteForm.tipo_documento && { tipo_documento: this.clienteForm.tipo_documento }),
+      ...(this.clienteForm.direccion?.trim() && { direccion: this.clienteForm.direccion.trim() }),
+      ...(this.clienteForm.pais?.trim() && { pais: this.clienteForm.pais.trim() }),
+      ...(this.clienteForm.descripcion?.trim() && { descripcion: this.clienteForm.descripcion.trim() }),
+      ...(this.clienteForm.telefono?.trim() && { telefono: this.clienteForm.telefono.trim() })
     };
+
+    console.log('Datos a enviar:', clienteData); // Para depuración
 
     // Llamar al servicio para crear el cliente
     this.clientService.createCliente(clienteData).subscribe({
       next: (response) => {
         this.isLoading = false;
+        console.log('Cliente creado exitosamente:', response);
         this.mostrarAlerta('Cliente registrado exitosamente', 'success');
         this.limpiarFormulario();
         
@@ -179,14 +230,27 @@ export class NuevoCliente implements OnInit {
       error: (error) => {
         this.isLoading = false;
         console.error('Error al registrar cliente:', error);
-        this.mostrarAlerta('Error al registrar el cliente. Inténtelo de nuevo.', 'error');
+        
+        // Mostrar error específico
+        let mensajeError = 'Error al registrar el cliente. Inténtelo de nuevo.';
+        
+        // Manejar errores específicos de validación
+        if (error.includes('422')) {
+          mensajeError = 'Datos inválidos. Verifique que el número de documento y correo no estén ya registrados.';
+        } else if (error.includes('unique')) {
+          mensajeError = 'El número de documento o correo electrónico ya están registrados.';
+        }
+        
+        this.mostrarAlerta(mensajeError, 'error');
       }
     });
   }
 
   // Cancelar y volver a la lista
   cancelar(): void {
-    this.router.navigate(['/clientes']);
+    if (confirm('¿Está seguro de que desea cancelar? Se perderán los datos ingresados.')) {
+      this.router.navigate(['/clientes']);
+    }
   }
 
   // Limpiar formulario
@@ -198,7 +262,7 @@ export class NuevoCliente implements OnInit {
       direccion: '',
       pais: '',
       descripcion: '',
-      contrasena: '',
+      password: '',
       correo_electronico: '',
       telefono: ''
     };
@@ -210,10 +274,11 @@ export class NuevoCliente implements OnInit {
     this.alertType = tipo;
     this.showAlert = true;
 
-    // Auto-ocultar alerta después de 5 segundos
+    // Auto-ocultar alerta después de 5 segundos (excepto errores)
+    const timeout = tipo === 'error' ? 8000 : 5000;
     setTimeout(() => {
       this.showAlert = false;
-    }, 5000);
+    }, timeout);
   }
 
   // Cerrar alerta manualmente

@@ -80,5 +80,7 @@ export class RegistrarProductoComponent implements OnInit {
     });
   }
 
-  
+  cancelar() {
+    this.router.navigate(['/productos-servicios']);
+  }
 }

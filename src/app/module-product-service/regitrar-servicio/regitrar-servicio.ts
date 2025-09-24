@@ -75,4 +75,8 @@ export class RegitrarServicio {
       }
     });
   }
+
+  cancelar() {
+    this.router.navigate(['/productos-servicios']);
+  }
 }

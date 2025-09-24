@@ -387,15 +387,15 @@ export class FacturasNotas implements OnInit {
   getAvailableActions(estado: string): string[] {
     switch (estado) {
       case 'Borrador':
-        return ['Ver Detalles', 'Editar', 'Eliminar', 'Emitir'];
+        return ['Ver Detalles'];
       case 'Emitida':
-        return ['Ver Detalles', 'Firmar y Enviar a DIAN', 'Anular'];
+        return ['Ver Detalles'];
       case 'Enviada':
-        return ['Ver Detalles', 'Reintentar Envío', 'Anular'];
+        return ['Ver Detalles'];
       case 'Aceptada':
-        return ['Ver Detalles', 'Anular'];
+        return ['Ver Detalles'];
       case 'Rechazada':
-        return ['Ver Detalles', 'Editar y Reenviar'];
+        return ['Ver Detalles'];
       case 'Anulada':
         return ['Ver Detalles'];
       default:
@@ -408,26 +408,8 @@ export class FacturasNotas implements OnInit {
       case 'Ver Detalles':
         this.router.navigate(['/detalle-facturas', invoice.id]);
         break;
-      case 'Editar':
-        this.router.navigate(['/editar-facturas', invoice.id]);
-        break;
       case 'Eliminar':
         this.eliminarFactura(invoice);
-        break;
-      case 'Emitir':
-        this.emitirFactura(invoice);
-        break;
-      case 'Firmar y Enviar a DIAN':
-        this.firmarYEnviar(invoice);
-        break;
-      case 'Anular':
-        this.anularFactura(invoice);
-        break;
-      case 'Reintentar Envío':
-        this.reintentarEnvio(invoice);
-        break;
-      case 'Editar y Reenviar':
-        this.editarYReenviar(invoice);
         break;
     }
     this.closeAllMenus();
