@@ -1,5 +1,4 @@
 <main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
-
     <div class="-mt-4 mb-2">
         <h2 class="text-4xl font-semibold mb-10 mt-4">
             Reporte de facturas
@@ -7,6 +6,8 @@
     </div>
 
     <div class="border-b-2 border-gray-300 w-full mb-8"></div>
+
+    <!-- 🔹 Filtros -->
     <div class="bg-white rounded-xl shadow-md p-6">
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
             <div class="md:col-span-2">
@@ -24,16 +25,8 @@
             <div>
                 <label class="text-sm font-medium text-black block mb-1">Estado</label>
                 <select class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black bg-white"
-                    [(ngModel)]="status">
-                    <option>Todos</option>
-                    <option>Emitidas</option>
-                    <option>Aceptadas</option>
-                    <option>Rechazadas</option>
-                    <option>Pendientes</option>
-                    <option>Anuladas</option>
-                    <option>Contingencia</option>
-                    <option>Con Nota Débito</option>
-                    <option>Con Nota Crédito</option>
+                    [(ngModel)]="status" (change)="applyFilters()">
+                    <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
                 </select>
             </div>
 
@@ -53,7 +46,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             <div>
                 <label class="text-sm font-medium text-black block mb-1">Cliente</label>
-                <input type="text" placeholder="Nombre o razón social" [(ngModel)]="clientName"
+                <input type="text" placeholder="Nombre" [(ngModel)]="clientName"
                     class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black placeholder-gray-400" />
             </div>
 
@@ -66,60 +59,67 @@
             <div>
                 <label class="text-sm font-medium text-black block mb-1">Tipo de documento</label>
                 <select class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black bg-white"
-                    [(ngModel)]="documentType">
-                    <option value="">Todos</option>
-                    <option value="factura">Factura Electrónica</option>
-                    <option value="nota_credito">Nota Crédito</option>
-                    <option value="nota_debito">Nota Débito</option>
-                    <option value="ajuste">Factura de ajuste</option>
+                    [(ngModel)]="documentType" (change)="applyFilters()">
+                    <option *ngFor="let d of documentOptions" [value]="d">{{ d }}</option>
                 </select>
             </div>
         </div>
 
-        <div class="flex justify-end mt-6">
+        <div class="flex justify-end mt-6 space-x-4">
+            <button (click)="resetFilters()" class="bg-gray-400 text-white text-sm px-12 py-2 rounded-xl hover:bg-gray-600 transition mr-3">
+                Limpiar filtros
+            </button>
             <button (click)="applyFilters()"
-                class="bg-cyan-600 text-white text-sm px-12 py-2 rounded-xl hover:bg-cyan-700 transition">
+                class="bg-cyan-600 text-white text-sm px-12 py-2 rounded-xl hover:bg-cyan-700 transition mr-3">
                 Buscar
+            </button>
+            <button (click)="exportExcel()"
+                class="bg-green-600 text-white text-sm px-12 py-2 rounded-xl hover:bg-green-700 transition mr-3">
+                Exportar Excel
+            </button>
+            <button (click)="exportPDF()"
+                class="bg-red-600 text-white text-sm px-12 py-2 rounded-xl hover:bg-red-700 transition mr-3">
+                Exportar PDF
             </button>
         </div>
     </div>
 
-    <div class="mt-6 bg-white rounded-xl shadow-md overflow-x-auto">
-        <table class="min-w-full text-sm text-left">
-            <thead class="bg-gray-100 text-gray-800">
-                <tr>
-                    <th class="px-4 py-3">Fecha</th>
-                    <th class="px-4 py-3">Tipo de documento</th>
-                    <th class="px-4 py-3">Factura / Número</th>
-                    <th class="px-4 py-3">Cliente</th>
-                    <th class="px-4 py-3">NIT</th>
-                    <th class="px-4 py-3">Responsable</th>
-                    <th class="px-4 py-3">Valor total</th>
-                    <th class="px-4 py-3">Estado</th>
-                    <th class="px-4 py-3 text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody class="text-black">
-                <tr *ngFor="let invoice of filteredInvoices" class="border-t border-gray-200">
-                    <td class="px-4 py-2">{{ invoice.date }}</td>
-                    <td class="px-4 py-2">{{ invoice.documentType }}</td>
-                    <td class="px-4 py-2">{{ invoice.invoiceNumber }}</td>
-                    <td class="px-4 py-2">{{ invoice.client }}</td>
-                    <td class="px-4 py-2">{{ invoice.nit }}</td>
-                    <td class="px-4 py-2">{{ invoice.responsible }}</td>
-                    <td class="px-4 py-2">{{ invoice.totalValue }}</td>
-                    <td class="px-4 py-2 "
-                        [ngClass]="{ 'text-green-600': invoice.status === 'Aceptada', 'text-yellow-600': invoice.status === 'Pendiente' || invoice.status === 'Emitida', 'text-red-600': invoice.status === 'Rechazada' }">
-                        {{ invoice.status }}
-                    </td>
-                    <td class="px-4 py-2 text-center">
-                        <button (click)="downloadReport(invoice)"
-                            class=" text-blue-500 text-xs px-3 py-1.5 rounded-lg hover:text-blue-700 transition">
-                            Descargar
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- 🔹 Tabla -->
+    <div class="mt-6 bg-white rounded-2xl shadow overflow-hidden">
+        <div
+            class="overflow-x-auto overflow-y-auto max-h-[400px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+            <table class="min-w-full text-sm text-left">
+                <thead class="bg-gray-100 text-gray-800">
+                    <tr>
+                        <th class="px-4 py-3">Fecha</th>
+                        <th class="px-4 py-3">Tipo de documento</th>
+                        <th class="px-4 py-3">Factura / Número</th>
+                        <th class="px-4 py-3">Cliente</th>
+                        <th class="px-4 py-3">NIT</th>
+                        <th class="px-4 py-3">Responsable</th>
+                        <th class="px-4 py-3">Valor total</th>
+                        <th class="px-4 py-3">Estado</th>
+                    </tr>
+                </thead>
+                <tbody class="text-black">
+                    <tr *ngFor="let invoice of filteredInvoices" class="border-t border-gray-200">
+                        <td class="px-4 py-2">{{ invoice.date }}</td>
+                        <td class="px-4 py-2">{{ invoice.documentType }}</td>
+                        <td class="px-4 py-2">{{ invoice.invoiceNumber }}</td>
+                        <td class="px-4 py-2">{{ invoice.client }}</td>
+                        <td class="px-4 py-2">{{ invoice.nit }}</td>
+                        <td class="px-4 py-2">{{ invoice.responsible }}</td>
+                        <td class="px-4 py-2">{{ invoice.totalValue }}</td>
+                        <td class="px-4 py-2" [ngClass]="{
+                        'text-green-600': invoice.status === 'Aceptada',
+                        'text-yellow-600': invoice.status === 'Pendiente' || invoice.status === 'Emitida',
+                        'text-red-600': invoice.status === 'Rechazada'
+            }">
+                            {{ invoice.status }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>

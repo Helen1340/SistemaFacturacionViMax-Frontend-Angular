@@ -23,3 +23,23 @@
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Scrollbar fino */
+::-webkit-scrollbar {
+    width: 6px;              /* ancho del scroll vertical */
+    height: 6px;             /* alto del scroll horizontal */
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;     /* fondo */
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #9da6a8b7;     /* color del scroll */
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #718096;     /* color al pasar el mouse */
+  }

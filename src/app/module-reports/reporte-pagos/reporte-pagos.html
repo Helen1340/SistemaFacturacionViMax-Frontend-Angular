@@ -45,13 +45,12 @@
             </div>
 
             <div>
-                <label class="text-sm font-medium text-black block mb-1">Método de Pago</label>
-                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black bg-white"
-                    [(ngModel)]="paymentMethod">
-                    <option value="">Todos</option>
-                    <option>Transferencia</option>
-                    <option>Efectivo</option>
-                    <option>Tarjeta</option>
+                <label class="text-sm font-medium text-black block mb-1" for="paymentMethod">Método de Pago</label>
+                <select id="paymentMethod" [(ngModel)]="paymentMethod" (change)="applyFilters()"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black bg-white">
+                    <option *ngFor="let method of paymentMethods" [value]="method">
+                        {{ method }}
+                    </option>
                 </select>
             </div>
 
@@ -63,72 +62,62 @@
         </div>
 
         <div class="flex justify-end mt-6">
+            <button (click)="clearFilters()"
+                class="bg-gray-500 text-white text-sm px-6 py-2 rounded-xl hover:bg-gray-600 transition mr-3">
+                Limpiar filtros
+            </button>
             <button (click)="applyFilters()"
-                class="bg-cyan-600 text-white text-sm px-6 py-2 rounded-xl hover:bg-cyan-700 transition">
+                class="bg-cyan-600 text-white text-sm px-6 py-2 rounded-xl hover:bg-cyan-700 transition mr-3">
                 Buscar
+            </button>
+            <button (click)="exportToExcel()"
+                class="bg-green-600 text-white text-sm px-6 py-2 rounded-xl hover:bg-green-700 transition mr-3">
+                Exportar Excel
+            </button>
+            <button (click)="exportToPDF()"
+                class="bg-red-600 text-white text-sm px-6 py-2 rounded-xl hover:bg-green-700 transition mr-3">
+                Exportar PDF
             </button>
         </div>
     </div>
 
     <div class="mt-6 bg-white rounded-xl shadow-md overflow-x-auto">
-        <table class="min-w-full text-sm text-left">
-            <thead class="bg-gray-100 text-gray-800">
-                <tr>
-                    <th class="px-4 py-3">Fecha</th>
-                    <th class="px-4 py-3">Cliente</th>
-                    <th class="px-4 py-3">NIT</th>
-                    <th class="px-4 py-3">N° Factura</th>
-                    <th class="px-4 py-3">Valor Pagado</th>
-                    <th class="px-4 py-3">Método</th>
-                    <th class="px-4 py-3">Estado</th>
-                    <th class="px-4 py-3">Responsable</th>
-                    <th class="px-4 py-3 text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody class="text-black">
-                <tr *ngFor="let payment of filteredPayments" class="border-t border-gray-200">
-                    <td class="px-4 py-2">{{ payment.date }}</td>
-                    <td class="px-4 py-2">{{ payment.client }}</td>
-                    <td class="px-4 py-2">{{ payment.nit }}</td>
-                    <td class="px-4 py-2">{{ payment.invoiceNumber }}</td>
-                    <td class="px-4 py-2">{{ payment.value }}</td>
-                    <td class="px-4 py-2">{{ payment.method }}</td>
-                    <td class="px-4 py-2 font-medium" [ngClass]="getStatusColor(payment.status)">
-                        {{ payment.status }}
-                    </td>
-                    <td class="px-4 py-2">{{ payment.responsible }}</td>
-                    <td class="px-4 py-2 text-center">
-                        <div class="relative inline-block text-left">
-                            <button (click)="toggleMenu($event)" class="p-3 rounded">
-                                <svg width="19" height="19" viewBox="0 0 22 30" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M13.4136 15.0078C13.4193 13.558 12.5425 12.3793 11.4552 12.375C10.3679 12.3707 9.48184 13.5425 9.47612 14.9922C9.4704 16.4419 10.3472 17.6207 11.4345 17.625C12.5218 17.6293 13.4079 16.4575 13.4136 15.0078Z"
-                                        fill="black" />
-                                    <path
-                                        d="M19.976 15.0337C19.9818 13.584 19.105 12.4052 18.0177 12.4009C16.9304 12.3966 16.0443 13.5684 16.0386 15.0181C16.0328 16.4679 16.9096 17.6466 17.9969 17.6509C19.0842 17.6552 19.9703 16.4834 19.976 15.0337Z"
-                                        fill="black" />
-                                    <path
-                                        d="M6.85109 14.9819C6.85681 13.5321 5.98002 12.3534 4.89272 12.3491C3.80542 12.3448 2.91934 13.5166 2.91362 14.9663C2.9079 16.4161 3.78469 17.5948 4.87199 17.5991C5.9593 17.6034 6.84537 16.4316 6.85109 14.9819Z"
-                                        fill="black" />
-                                </svg>
-                            </button>
-                            <div
-                                class="dropdown absolute right-3 mt-1 w-40 bg-white border border-gray-300 rounded-2xl shadow hidden z-10">
-                                <a href="#" class="block px-4 py-2 text-sm hover:bg-blue-100"
-                                    (click)="downloadReport(payment)">Exportar PDF</a>
-                                <a href="#" class="block px-4 py-2 text-sm hover:bg-blue-100"
-                                    (click)="downloadReport(payment)">Exportar Excel</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr *ngIf="filteredPayments.length === 0">
-                    <td colspan="9" class="text-center px-4 py-4 text-gray-500">
-                        No se encontraron pagos que coincidan con los filtros.
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div
+            class="overflow-x-auto overflow-y-auto max-h-[400px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+            <table class="min-w-full text-sm text-left">
+                <thead class="bg-gray-100 text-gray-800">
+                    <tr>
+                        <th class="px-4 py-3">Fecha</th>
+                        <th class="px-4 py-3">Cliente</th>
+                        <th class="px-4 py-3">NIT</th>
+                        <th class="px-4 py-3">N° Factura</th>
+                        <th class="px-4 py-3">Valor Pagado</th>
+                        <th class="px-4 py-3">Método</th>
+                        <th class="px-4 py-3">Estado</th>
+                        <th class="px-4 py-3">Responsable</th>
+                    </tr>
+                </thead>
+                <tbody class="text-black">
+                    <tr *ngFor="let payment of filteredPayments" class="border-t border-gray-200">
+                        <td class="px-4 py-2">{{ payment.date }}</td>
+                        <td class="px-4 py-2">{{ payment.client }}</td>
+                        <td class="px-4 py-2">{{ payment.nit }}</td>
+                        <td class="px-4 py-2">{{ payment.invoiceNumber }}</td>
+                        <td class="px-4 py-2">{{ payment.value }}</td>
+                        <td class="px-4 py-2">{{ payment.method }}</td>
+                        <td class="px-4 py-2 font-medium" [ngClass]="getStatusColor(payment.status)">
+                            {{ payment.status }}
+                        </td>
+                        <td class="px-4 py-2">{{ payment.responsible }}</td>
+
+                    </tr>
+                    <tr *ngIf="filteredPayments.length === 0">
+                        <td colspan="9" class="text-center px-4 py-4 text-gray-500">
+                            No se encontraron pagos que coincidan con los filtros.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>
