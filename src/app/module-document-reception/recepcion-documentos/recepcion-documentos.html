@@ -51,12 +51,12 @@
       <table class="w-full table-auto">
         <thead class="bg-gray-100 text-black text-left sticky top-0 z-10">
           <tr>
-            <th class="px-4 py-3 font-semibold min-w-[150px] rounded-tl-2xl">Tipo de documento</th>
+            <th class="px-2 py-3 font-semibold min-w-[120px] rounded-tl-2xl">Tipo de documento</th>
             <th class="px-4 py-3 font-semibold min-w-[120px]">Ambiente</th>
-            <th class="px-4 py-3 font-semibold min-w-[150px]">Modo emisi&oacute;n</th>
+            <th class="px-4 py-3 font-semibold min-w-[120px]">Modo emisi&oacute;n</th>
             <th class="px-4 py-3 font-semibold min-w-[120px]">Fecha validaci&oacute;n</th>
             <th class="px-4 py-3 font-semibold min-w-[120px]">Estado DIAN</th>
-            <th class="px-4 py-3 font-semibold min-w-[100px] rounded-tr-2xl">Acciones</th>
+            <th class="px-4 py-3 font-semibold min-w-[120px] rounded-tr-2xl">Acciones</th>
           </tr>
         </thead>
       </table>
@@ -66,10 +66,10 @@
       <table class="w-full table-auto">
         <tbody>
           <tr *ngFor="let doc of paginatedDocuments; trackBy: trackByFn" class="border-t border-t-gray-200 hover:bg-gray-50">
-            <td class="px-4 py-3 text-gray-600 text-sm min-w-[150px]">{{ doc.tipo_documento }}</td>
+            <td class="px-4 py-3 text-gray-600 text-sm min-w-[120px]">{{ doc.tipo_documento }}</td>
             <td class="px-4 py-3 text-gray-600 text-sm min-w-[120px]">{{ doc.ambiente }}</td>
-            <td class="px-4 py-3 text-gray-600 text-sm min-w-[150px]">{{ doc.modo_emision }}</td>
-            <td class="px-4 py-3 text-gray-600 text-sm min-w-[120px]">{{ doc.fecha_validacion | date }}</td>
+            <td class="px-4 py-3 text-gray-600 text-sm min-w-[120px]">{{ doc.modo_emision }}</td>
+            <td class="px-4 py-3 text-gray-600 text-sm min-w-[140px]">{{ doc.fecha_validacion | date }}</td>
             <td class="px-4 py-3 text-gray-600 text-sm min-w-[120px]">
               <span [ngClass]="doc.estado_dian === 'V&aacute;lido' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" class="text-xs px-2 py-1 rounded-full">{{ doc.estado_dian }}</span>
             </td>
@@ -101,14 +101,14 @@
     </div>
   </div>
 
-  <div *ngIf="totalItems > 0" class="bg-white p-4 rounded-2xl shadow mt-4 flex items-center justify-between">
-    <div class="text-sm text-gray-600">
+  <div *ngIf="totalItems > 0" class="bg-white p-4 rounded-2xl shadow mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div class="text-xs sm:text-sm text-gray-600 w-full sm:w-auto text-center sm:text-left">
       Mostrando {{ startItem }} - {{ endItem }} de {{ totalItems }} documentos
     </div>
-    <div class="flex items-center space-x-2">
+    <div class="flex items-center gap-2 w-full sm:w-auto justify-center sm:flex-nowrap flex-wrap">
       <button (click)="previousPage()" [disabled]="currentPage === 1"
         [ngClass]="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
-        class="px-3 py-1 border border-gray-300 rounded-lg">
+        class="px-3 py-1 h-8 border border-gray-300 rounded-lg text-xs sm:text-sm flex-shrink-0">
         Anterior
       </button>
       <span class="px-3 py-1 bg-cyan-600 text-white rounded-lg">
@@ -116,7 +116,7 @@
       </span>
       <button (click)="nextPage()" [disabled]="currentPage === totalPages"
         [ngClass]="currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
-        class="px-3 py-1 border border-gray-300 rounded-lg">
+        class="px-3 py-1 h-8 border border-gray-300 rounded-lg text-xs sm:text-sm flex-shrink-0">
         Siguiente
       </button>
     </div>

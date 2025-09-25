@@ -41,6 +41,6 @@ export class Configuracion {
   }
 
   navigateVideos() {
-    this.router.navigate(['/videos']);
+    this.router.navigate(['https://youtu.be/FsWTeKsdgzE']);
   }
 }

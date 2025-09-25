@@ -69,9 +69,11 @@
                         <textarea class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none min-h-[100px]" placeholder="Observaciones"></textarea>
                     </div>
                 </div>
-                <div class="flex justify-end gap-4 mt-8">
-                    <button type="submit" onclick="guardarResolucion()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-8 py-3 text-lg rounded-xl shadow-lg">Guardar resolución</button>
-                    <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-8 py-3 text-lg rounded-xl shadow-lg">Cancelar</button>
+                <div class="col-span-full flex flex-col sm:flex-row justify-end gap-4 mt-6">
+                    <button type="submit" onclick="guardarResolucion()" class="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-400 
+                        text-white font-medium py-2 px-6 sm:px-10 rounded-md shadow-sm 
+                        focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 text-center">Guardar resolución</button>
+                    <button type="button" class="w-full sm:w-auto bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500 text-center">Cancelar</button>
                 </div>
             </form>
         </div>
