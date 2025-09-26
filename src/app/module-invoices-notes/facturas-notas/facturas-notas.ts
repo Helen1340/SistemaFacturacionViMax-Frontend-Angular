@@ -387,7 +387,7 @@ export class FacturasNotas implements OnInit {
   getAvailableActions(estado: string): string[] {
     switch (estado) {
       case 'Borrador':
-        return ['Ver Detalles', 'Editar', 'Eliminar', 'Emitir'];
+        return ['Ver Detalles', 'Editar', 'Emitir'];
       case 'Emitida':
         return ['Ver Detalles', 'Firmar y Enviar a DIAN', 'Anular'];
       case 'Enviada':
@@ -411,9 +411,6 @@ export class FacturasNotas implements OnInit {
       case 'Editar':
         this.router.navigate(['/editar-facturas', invoice.id]);
         break;
-      case 'Eliminar':
-        this.eliminarFactura(invoice);
-        break;
       case 'Emitir':
         this.emitirFactura(invoice);
         break;
@@ -433,23 +430,6 @@ export class FacturasNotas implements OnInit {
     this.closeAllMenus();
   }
 
-  private eliminarFactura(invoice: any): void {
-    this.mostrarConfirmacion(
-      `¿Está seguro de eliminar la factura ${invoice.numero}?`,
-      () => {
-        this.invoicesNotesService.deleteInvoiceNote(invoice.id).subscribe({
-          next: () => {
-            this.mostrarAlerta(`Factura ${invoice.numero} eliminada exitosamente`, 'success');
-            this.loadInvoices();
-          },
-          error: (error) => {
-            this.mostrarAlerta('Error al eliminar la factura', 'error');
-            console.error(error);
-          }
-        });
-      }
-    );
-  }
 
   private emitirFactura(invoice: any): void {
     invoice.estado = 'Emitida';
@@ -537,57 +517,7 @@ export class FacturasNotas implements OnInit {
     }, 4000);
   }
 
-  // Conectividad API
-  testApiConnection() {
-    this.mostrarAlerta('Probando conexión con la API...', 'info');
-    
-    this.invoicesNotesService.testApiConnection().subscribe({
-      next: (response) => {
-        this.mostrarAlerta('API conectada correctamente. Recargando datos...', 'success');
-        console.log('Respuesta de la API:', response);
-        this.loadInvoices();
-      },
-      error: (error) => {
-        console.error('Error de conectividad:', error);
-        this.mostrarAlerta(`Error de conectividad: ${error.message}`, 'error');
-        this.showDiagnosticInfo();
-      }
-    });
-  }
 
-  // Probar múltiples endpoints
-  testMultipleEndpoints() {
-    this.mostrarAlerta('Probando múltiples endpoints...', 'info');
-    
-    this.invoicesNotesService.testMultipleEndpoints().subscribe({
-      next: (response) => {
-        this.mostrarAlerta('Endpoint alternativo encontrado. Recargando datos...', 'success');
-        console.log('Respuesta del endpoint alternativo:', response);
-        this.loadInvoices();
-      },
-      error: (error) => {
-        console.error('Todos los endpoints fallaron:', error);
-        this.mostrarAlerta('Todos los endpoints probados fallaron. Verifica la configuración.', 'error');
-        this.showDiagnosticInfo();
-      }
-    });
-  }
-
-  // Mostrar información de diagnóstico
-  private showDiagnosticInfo() {
-    const diagnosticInfo = this.invoicesNotesService.getDiagnosticInfo();
-    console.log('Información de diagnóstico:', diagnosticInfo);
-    
-    // Mostrar información en la consola y en una alerta
-    const infoMessage = `
-URL Base: ${diagnosticInfo.baseUrl}
-URL API: ${diagnosticInfo.apiUrl}
-Timestamp: ${diagnosticInfo.timestamp}
-    `.trim();
-    
-    console.log('Diagnóstico completo:', infoMessage);
-    this.mostrarAlerta('Revisa la consola del navegador para más detalles de diagnóstico', 'warning');
-  }
 
   // Paginación
   get paginatedInvoices(): InvoiceNote[] {

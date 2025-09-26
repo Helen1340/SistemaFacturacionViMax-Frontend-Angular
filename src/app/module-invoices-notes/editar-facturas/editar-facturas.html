@@ -25,10 +25,7 @@
             <select [(ngModel)]="factura.tipoDocumento" name="tipoDocumento" class="appearance-none border border-gray-300 rounded-md px-4 py-2 text-gray-700 pr-10 w-full text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
               <option value="13" class="text-sm">Cédula de Ciudadanía</option>
               <option value="31" class="text-sm">NIT</option>
-              <option value="12" class="text-sm">Tarjeta de Identidad</option>
               <option value="22" class="text-sm">Cédula de Extranjería</option>
-              <option value="41" class="text-sm">Pasaporte</option>
-              <option value="42" class="text-sm">Documento Extranjero</option>
             </select>
             <div class="pointer-events-none absolute top-[36px] right-3 flex items-center text-gray-700">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -140,38 +137,18 @@
             <label class="block text-sm font-medium text-black mb-1">Total</label>
             <p class="text-sm font-semibold">${{ (factura.cantidad * factura.valorUnitario) | number:'1.2-2' }}</p>
           </div>
-          <div class="flex flex-wrap mt-4 justify-end">
-            <button class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-md w-full sm:w-auto text-sm">+ Agregar item</button>
-          </div>
+        </div>
+        
+        <!-- Botón agregar item -->
+        <div class="flex justify-end mt-4">
+          <button class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-md text-sm">+ Agregar item</button>
         </div>
       </section>
 
-      <!-- Resumen contable e impuestos -->
-      <section>
-        <h3 class="text-lg font-semibold mb-4">Resumen contable e impuestos</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-black mb-1">Subtotal antes de impuestos:</label>
-            <p class="text-sm font-semibold">${{ factura.subtotal | number:'1.2-2' }}</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-black mb-1">Total impuestos:</label>
-            <p class="text-sm font-semibold">${{ factura.totalImpuestos | number:'1.2-2' }}</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-black mb-2">Descuento:</label>
-            <input type="number" [(ngModel)]="factura.descuento" name="descuento" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-black mb-1">Valor total a pagar:</label>
-            <p class="text-sm font-semibold">${{ factura.total | number:'1.2-2' }}</p>
-          </div>
-        </div>
-      </section>
 
       <!-- Botones -->
       <div class="pt-2 flex flex-wrap gap-4 justify-end">
-        <button (click)="guardarCambios()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2 px-6 rounded-md shadow-sm text-sm">Guardar cambios</button>
+        <button (click)="guardarCambios()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2 px-6 rounded-md shadow-sm text-sm">Actualizar factura</button>
         <button (click)="cancelar()" class="bg-gray-200 hover:bg-gray-300 text-black font-medium py-2 px-6 rounded-md shadow-sm text-sm">Cancelar</button>
       </div>
 
