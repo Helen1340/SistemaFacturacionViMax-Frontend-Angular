@@ -1,142 +1,178 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ReportServices } from '../services/report.service';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
+interface Invoice {
+  date: string;
+  documentType: string;
+  invoiceNumber: string;
+  client: string;
+  nit: string;
+  responsible: string;
+  totalValue: string;
+  status: string;
+}
 
 @Component({
   selector: 'app-reporte-facturas',
-  imports: [ CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './reporte-facturas.html',
-  styleUrl: './reporte-facturas.css'
+  styleUrl: './reporte-facturas.css',
 })
 export class ReporteFacturas implements OnInit {
-  invoices: any[] = [];
-  filteredInvoices: any[] = [];
-  
-  // Propiedades para los filtros
-  invoiceNumber: string = '';
-  status: string = 'Todos';
-  startDate: string = '';
-  endDate: string = '';
-  clientName: string = '';
-  responsible: string = '';
-  documentType: string = '';
+  invoices: Invoice[] = [];
+  filteredInvoices: Invoice[] = [];
 
-  constructor() { }
+  // filtros
+  invoiceNumber = '';
+  status = 'Todos';
+  startDate = '';
+  endDate = '';
+  clientName = '';
+  responsible = '';
+  documentType = 'Todos';
+
+  // opciones para selects
+  statusOptions = ['Todos', 'Borrador', 'Emitida', 'Anulada'];
+  documentOptions = ['Todos', 'Factura Electrónica', 'Nota Crédito', 'Nota Débito'];
+
+  constructor(private invoiceService: ReportServices) {}
 
   ngOnInit(): void {
-    this.loadSimulatedData();
-    this.applyFilters(); // Muestra todos los datos al cargar la página
-  }
+    this.invoiceService.getInvoices().subscribe({
+      next: (data) => {
+        this.invoices = data.map((item: any) => ({
+          date: item.fecha_emision,
+          documentType: item.tipo_documento || 'Factura Electrónica',
+          invoiceNumber: item.numero_factura,
+          client: item.cliente_nombre,
+          nit: item.cliente_nit,
+          responsible: item.user?.nombre || '',
+          totalValue: item.payment?.valor_pagado || '0',
+          status: this.mapEstado(item.estado_interno),
+        }));
 
-  loadSimulatedData(): void {
-    // Datos simulados. En un entorno real, estos vendrían de un servicio.
-    this.invoices = [
-      {
-        date: '2025-07-01',
-        documentType: 'Factura Electrónica',
-        invoiceNumber: 'FV-00123',
-        client: 'Comercial XYZ S.A.S',
-        nit: '900123456-7',
-        responsible: 'admin_vimax',
-        totalValue: '$450.000',
-        status: 'Aceptada'
+        this.filteredInvoices = [...this.invoices];
       },
-      {
-        date: '2025-07-02',
-        documentType: 'Nota Crédito',
-        invoiceNumber: 'NC-00456',
-        client: 'Servicios ABC Ltda',
-        nit: '800555333-2',
-        responsible: 'user_juan',
-        totalValue: '$-50.000',
-        status: 'Emitida'
-      },
-      {
-        date: '2025-07-03',
-        documentType: 'Factura Electrónica',
-        invoiceNumber: 'FV-00124',
-        client: 'Manufacturas PQR S.A.',
-        nit: '900987654-1',
-        responsible: 'admin_vimax',
-        totalValue: '$1.200.000',
-        status: 'Pendiente'
-      },
-      {
-        date: '2025-07-04',
-        documentType: 'Factura Electrónica',
-        invoiceNumber: 'FV-00125',
-        client: 'Distribuidora LMN',
-        nit: '860444777-0',
-        responsible: 'user_ana',
-        totalValue: '$75.000',
-        status: 'Rechazada'
-      },
-      {
-        date: '2025-07-05',
-        documentType: 'Nota Débito',
-        invoiceNumber: 'ND-00789',
-        client: 'Comercial XYZ S.A.S',
-        nit: '900123456-7',
-        responsible: 'user_juan',
-        totalValue: '$15.000',
-        status: 'Aceptada'
-      },
-      {
-        date: '2025-07-06',
-        documentType: 'Factura Electrónica',
-        invoiceNumber: 'FV-00126',
-        client: 'Industrias GHI',
-        nit: '890111222-3',
-        responsible: 'admin_vimax',
-        totalValue: '$875.500',
-        status: 'Aceptada'
-      }
-    ];
-  }
-
-  applyFilters(): void {
-    this.filteredInvoices = this.invoices.filter(invoice => {
-      // Filtrar por número de factura
-      const matchesInvoiceNumber = !this.invoiceNumber || invoice.invoiceNumber.toLowerCase().includes(this.invoiceNumber.toLowerCase());
-
-      // Filtrar por estado
-      const matchesStatus = this.status === 'Todos' || invoice.status === this.status;
-
-      // Filtrar por cliente
-      const matchesClient = !this.clientName || invoice.client.toLowerCase().includes(this.clientName.toLowerCase());
-
-      // Filtrar por responsable
-      const matchesResponsible = !this.responsible || invoice.responsible.toLowerCase().includes(this.responsible.toLowerCase());
-
-      // Filtrar por tipo de documento
-      const matchesDocumentType = !this.documentType || this.mapDocumentType(invoice.documentType) === this.documentType;
-      
-      // Filtrar por rango de fechas
-      const invoiceDate = new Date(invoice.date);
-      const start = this.startDate ? new Date(this.startDate + 'T00:00:00') : null;
-      const end = this.endDate ? new Date(this.endDate + 'T23:59:59') : null;
-      const matchesDateRange = (!start || invoiceDate >= start) && (!end || invoiceDate <= end);
-
-      return matchesInvoiceNumber && matchesStatus && matchesClient && matchesResponsible && matchesDocumentType && matchesDateRange;
+      error: (err) => console.error(err),
     });
   }
 
-  downloadReport(invoice: any): void {
-    alert(`Simulando la descarga del reporte para la factura: ${invoice.invoiceNumber}`);
+  mapEstado(estado: string): string {
+    switch (estado.toLowerCase()) {
+      case 'borrador':
+        return 'Borrador';
+      case 'emitida':
+        return 'Emitida';
+      case 'anulada':
+        return 'Anulada';
+      default:
+        return estado;
+    }
   }
 
-  private mapDocumentType(type: string): string {
-    switch (type) {
-      case 'Factura Electrónica':
-        return 'factura';
-      case 'Nota Crédito':
-        return 'nota_credito';
-      case 'Nota Débito':
-        return 'nota_debito';
-      case 'Factura de ajuste':
-        return 'ajuste';
-      default:
-        return '';
-    }
+  applyFilters(): void {
+    this.filteredInvoices = this.invoices.filter((inv) => {
+      const matchesInvoice =
+        !this.invoiceNumber ||
+        inv.invoiceNumber.toLowerCase() === this.invoiceNumber.toLowerCase();
+
+      const matchesClient =
+        !this.clientName ||
+        inv.client.toLowerCase().includes(this.clientName.toLowerCase());
+
+      const matchesResponsible =
+        !this.responsible ||
+        inv.responsible.toLowerCase().includes(this.responsible.toLowerCase());
+
+      const matchesStatus =
+        this.status === 'Todos' ||
+        inv.status.toLowerCase() === this.status.toLowerCase();
+
+      const matchesDocument =
+        this.documentType === 'Todos' ||
+        inv.documentType.toLowerCase() === this.documentType.toLowerCase();
+
+      const matchesStartDate =
+        !this.startDate || new Date(inv.date) >= new Date(this.startDate);
+
+      const matchesEndDate =
+        !this.endDate || new Date(inv.date) <= new Date(this.endDate);
+
+      return (
+        matchesInvoice &&
+        matchesClient &&
+        matchesResponsible &&
+        matchesStatus &&
+        matchesDocument &&
+        matchesStartDate &&
+        matchesEndDate
+      );
+    });
+  }
+
+  // 🔹 limpiar filtros
+  resetFilters(): void {
+    this.invoiceNumber = '';
+    this.status = 'Todos';
+    this.startDate = '';
+    this.endDate = '';
+    this.clientName = '';
+    this.responsible = '';
+    this.documentType = 'Todos';
+    this.filteredInvoices = [...this.invoices];
+  }
+
+  // 🔹 Exportar Excel (solo filtradas)
+  exportExcel(): void {
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.filteredInvoices);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Facturas');
+    const excelBuffer: any = XLSX.write(wb, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+    const data: Blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+    });
+    saveAs(data, `Reporte_Facturas_${new Date().getTime()}.xlsx`);
+  }
+
+  // 🔹 Exportar PDF (solo filtradas)
+  exportPDF(): void {
+    const doc = new jsPDF();
+    doc.text('Reporte de Facturas', 14, 10);
+
+    autoTable(doc, {
+      head: [
+        [
+          'Fecha',
+          'Tipo Doc',
+          'No. Factura',
+          'Cliente',
+          'NIT',
+          'Responsable',
+          'Valor',
+          'Estado',
+        ],
+      ],
+      body: this.filteredInvoices.map((f) => [
+        f.date,
+        f.documentType,
+        f.invoiceNumber,
+        f.client,
+        f.nit,
+        f.responsible,
+        f.totalValue,
+        f.status,
+      ]),
+    });
+
+    doc.save(`Reporte_Facturas_${new Date().getTime()}.pdf`);
   }
 }
