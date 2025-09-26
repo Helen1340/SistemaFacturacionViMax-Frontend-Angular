@@ -47,9 +47,7 @@ export class NuevoCliente implements OnInit {
   tiposDocumento = [
     { value: 'CC', label: 'Cédula de Ciudadanía' },
     { value: 'CE', label: 'Cédula de Extranjería' },
-    { value: 'NIT', label: 'NIT' },
-    { value: 'PP', label: 'Pasaporte' },
-    { value: 'RC', label: 'Registro Civil' }
+    { value: 'NIT', label: 'NIT' }
   ];
 
   regimenesTributarios = [

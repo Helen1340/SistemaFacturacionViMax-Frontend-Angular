@@ -30,17 +30,13 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
             <div>
-                <label class="block text-sm text-black">Nombre/Razón Social</label>
-                <p class="font-medium text-sm text-gray-900">{{ clienteData.nombreRazon }}</p>
+                <label class="block text-sm font-medium text-black">Nombre/Razón Social</label>
+                <p class="text-sm text-gray-900">{{ clienteData.nombreRazon }}</p>
             </div>
 
-            <div>
-                <label class="block text-sm text-black">ID de Cliente</label>
-                <p class="font-medium text-sm text-gray-900">{{ clienteData.id }}</p>
-            </div>
 
             <div>
-                <label class="block text-sm text-black">Documento</label>
+                <label class="block text-sm font-medium text-black">Documento</label>
                 <div class="flex items-center">
                     <span class="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800">
                         {{ clienteData.documento }}
@@ -49,22 +45,22 @@
             </div>
 
             <div>
-                <label class="block text-sm text-black">País</label>
-                <p class="font-medium text-sm text-gray-900">{{ clienteData.pais }}</p>
+                <label class="block text-sm font-medium text-black">País</label>
+                <p class="text-sm text-gray-900">{{ clienteData.pais }}</p>
             </div>
 
             <div>
-                <label class="block text-sm text-black">Correo Electrónico</label>
-                <p class="font-medium text-sm text-gray-900">{{ clienteData.email }}</p>
+                <label class="block text-sm font-medium text-black">Correo Electrónico</label>
+                <p class="text-sm text-gray-900">{{ clienteData.email }}</p>
             </div>
 
             <div>
-                <label class="block text-sm text-black">Teléfono</label>
-                <p class="font-medium text-sm text-gray-900">{{ clienteData.telefono || 'No disponible' }}</p>
+                <label class="block text-sm font-medium text-black">Teléfono</label>
+                <p class="text-sm text-gray-900">{{ clienteData.telefono || 'No disponible' }}</p>
             </div>
 
             <div>
-                <label class="block text-sm text-black">Estado</label>
+                <label class="block text-sm font-medium text-black">Estado</label>
                 <div class="flex items-center">
                     <span [ngClass]="getStatusClass(clienteData.estado || 'Activo')" 
                           class="text-xs px-2 py-1 rounded-full">
@@ -74,26 +70,16 @@
             </div>
 
             <div class="md:col-span-2">
-                <label class="block text-sm text-black">Dirección</label>
-                <p class="font-medium text-sm text-gray-900">{{ clienteData.direccion }}</p>
+                <label class="block text-sm font-medium text-black">Dirección</label>
+                <p class="text-sm text-gray-900">{{ clienteData.direccion }}</p>
             </div>
 
             <div class="md:col-span-2" *ngIf="clienteData.descripcion">
-                <label class="block text-sm text-black">Descripción</label>
-                <p class="font-medium text-sm text-gray-900">{{ clienteData.descripcion }}</p>
+                <label class="block text-sm font-medium text-black">Descripción</label>
+                <p class="text-sm text-gray-900">{{ clienteData.descripcion }}</p>
             </div>
         </div>
 
-        <!-- Información del Sistema -->
-        <div class="mt-6 pt-6 border-t border-gray-200">
-            <h3 class="text-lg font-semibold text-black mb-4">Información del Sistema</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm text-black">Tipo de Usuario</label>
-                    <p class="font-medium text-sm text-gray-900">Cliente</p>
-                </div>
-            </div>
-        </div>
 
         <!-- Botones de Acción -->
         <div class="flex justify-end mt-6 gap-4">
