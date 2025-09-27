@@ -11,7 +11,7 @@ table {
 		position: sticky;
 		top: 0;
 		background-color: #f3f4f6;
-		z-index: 1;
+		z-index: 10;
 	}
 }
 
@@ -27,6 +27,27 @@ table {
 		}
 	}
 }
+
+/* Scrollbar fino igual a nuevo-usuario */
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #9da6a8b7;
+  border-radius: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
 
 @keyframes fadeIn {
 	from {
@@ -63,6 +84,27 @@ table {
 			padding: 0.5rem;
 		}
 	}
+	
+	/* Mantener separación entre Estado y Acciones en móviles */
+	table th:nth-child(6), table td:nth-child(6) {
+		/* Columna Estado */
+		min-width: 80px;
+		width: 16% !important;
+	}
+	
+	table th:nth-child(7), table td:nth-child(7) {
+		/* Columna Acciones */
+		min-width: 60px;
+		width: 8% !important;
+		margin-left: 8px;
+	}
+	
+	/* Asegurar que la columna Email no sea demasiado ancha */
+	table th:nth-child(5), table td:nth-child(5) {
+		/* Columna Email */
+		max-width: 120px;
+		width: 10% !important;
+	}
 }
 
 input[type="text"], select {
@@ -86,22 +128,24 @@ button {
 	}
 }
 
-/* Scrollbar fino */
-::-webkit-scrollbar {
-    width: 6px;              /* ancho del scroll vertical */
-    height: 6px;             /* alto del scroll horizontal */
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: #f1f1f1;     /* fondo */
-    border-radius: 4px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: #9da6a8b7;     /* color del scroll */
-    border-radius: 4px;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: #718096;     /* color al pasar el mouse */
-  }
+/* Scroll personalizado para textarea de descripción */
+textarea {
+	&::-webkit-scrollbar {
+		width: 6px;
+		height: 6px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: #f1f1f1;
+		border-radius: 4px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #9da6a8b7;
+		border-radius: 4px;
+	}
+
+	&::-webkit-scrollbar-thumb:hover {
+		background: #718096;
+	}
+}

@@ -67,21 +67,25 @@ export class NuevaFactura implements AfterViewInit, OnDestroy {
     }
   }
 
-  // Método para buscar cliente cuando se ingresa nombre y documento
+  // Método para buscar cliente cuando se ingresa solo el número de documento
   onClienteChange(): void {
+    console.log('🔄 onClienteChange ejecutado. Número de documento:', this.clienteForm.numeroDocumento);
+    
     // Limpiar timer anterior si existe
     if (this.searchTimer) {
       clearTimeout(this.searchTimer);
     }
     
-    // Si se borró el número de documento o el nombre, limpiar campos automáticos
-    if (this.clienteForm.numeroDocumento.trim() === '' || this.clienteForm.nombre.trim() === '') {
+    // Si se borró el número de documento, limpiar campos automáticos
+    if (this.clienteForm.numeroDocumento.trim() === '') {
+      console.log('Número de documento vacío, limpiando campos...');
       this.limpiarCamposAutomaticos();
       return;
     }
     
-    // Solo buscar si ambos campos tienen al menos 3 caracteres
-    if (this.clienteForm.nombre.trim().length >= 3 && this.clienteForm.numeroDocumento.trim().length >= 3) {
+    // Solo buscar si el número de documento tiene al menos 5 caracteres
+    if (this.clienteForm.numeroDocumento.trim().length >= 5) {
+      console.log('Número de documento válido, iniciando búsqueda...');
       // Usar debounce para esperar a que el usuario termine de escribir
       this.searchTimer = setTimeout(() => {
         this.buscarCliente();
@@ -97,8 +101,7 @@ export class NuevaFactura implements AfterViewInit, OnDestroy {
     }
     
     // Validar que el número de documento tenga al menos 5 dígitos
-    if (this.clienteForm.nombre.trim() && 
-        this.clienteForm.numeroDocumento.trim() && 
+    if (this.clienteForm.numeroDocumento.trim() && 
         this.clienteForm.numeroDocumento.trim().length >= 5) {
       this.buscarCliente();
     }
@@ -107,13 +110,12 @@ export class NuevaFactura implements AfterViewInit, OnDestroy {
   // Método para buscar cliente en la API
   private buscarCliente(): void {
     this.isLoadingCliente = true;
-    console.log('🔍 Iniciando búsqueda de cliente:', {
-      nombre: this.clienteForm.nombre.trim(),
+    console.log('Iniciando búsqueda de cliente por documento:', {
       documento: this.clienteForm.numeroDocumento.trim()
     });
     
     this.invoicesNotesService.searchUsersRobust(
-      this.clienteForm.nombre.trim(),
+      '', // No enviar nombre, solo documento
       this.clienteForm.numeroDocumento.trim()
     ).subscribe({
       next: (clientes) => {
@@ -121,34 +123,23 @@ export class NuevaFactura implements AfterViewInit, OnDestroy {
         console.log('📋 Resultados de búsqueda:', clientes);
         
         if (clientes && clientes.length > 0) {
-          // Buscar SOLO coincidencia exacta de nombre Y documento
+          // Buscar SOLO coincidencia exacta de documento
           const clienteEncontrado = clientes.find(cliente => {
-            const nombreCoincide = cliente.nombre && cliente.nombre.toLowerCase().trim() === this.clienteForm.nombre.toLowerCase().trim();
             const documentoCoincide = cliente.numero_documento && cliente.numero_documento.trim() === this.clienteForm.numeroDocumento.trim();
-            return nombreCoincide && documentoCoincide;
+            return documentoCoincide;
           });
           
           if (clienteEncontrado) {
-            console.log('✅ Cliente encontrado con coincidencia exacta:', clienteEncontrado);
+            console.log('✅ Cliente encontrado con coincidencia exacta de documento:', clienteEncontrado);
             this.autocompletarDatosCliente(clienteEncontrado);
             this.mostrarAlerta('Cliente encontrado y datos autocompletados', 'success');
           } else {
-            console.log('❌ No se encontró coincidencia exacta de nombre y documento');
-            
-            // Verificar si existe el nombre pero con diferente documento
-            const clienteConMismoNombre = clientes.find(cliente => 
-              cliente.nombre && cliente.nombre.toLowerCase().trim() === this.clienteForm.nombre.toLowerCase().trim()
-            );
-            
-            if (clienteConMismoNombre) {
-              this.mostrarAlerta(`El nombre "${this.clienteForm.nombre}" existe pero no coincide con el número de documento "${this.clienteForm.numeroDocumento}". Verifique los datos.`, 'warning');
-            } else {
-              this.mostrarAlerta(`No se encontró un cliente con el nombre "${this.clienteForm.nombre}" y documento "${this.clienteForm.numeroDocumento}". Verifique que los datos sean correctos.`, 'warning');
-            }
+            console.log('❌ No se encontró coincidencia exacta de documento');
+            this.mostrarAlerta(`No se encontró un cliente con el documento "${this.clienteForm.numeroDocumento}". Verifique que el número de documento sea correcto.`, 'warning');
           }
         } else {
           console.log('❌ No se encontraron clientes');
-          this.mostrarAlerta('No se encontró un cliente con esos datos', 'warning');
+          this.mostrarAlerta('No se encontró un cliente con ese número de documento', 'warning');
         }
       },
       error: (error) => {
@@ -161,51 +152,36 @@ export class NuevaFactura implements AfterViewInit, OnDestroy {
 
   // Método para autocompletar los datos del cliente
   private autocompletarDatosCliente(cliente: any): void {
-    // Solo autocompletar campos que están vacíos o que el usuario no ha modificado
-    // Preservar nombre y documento que el usuario ingresó
-    const nombreUsuario = this.clienteForm.nombre;
-    const documentoUsuario = this.clienteForm.numeroDocumento;
+    // Autocompletar todos los campos con los datos del cliente encontrado
+    // Incluyendo el nombre que se llenará automáticamente
+    this.clienteForm.nombre = cliente.nombre || '';
+    this.clienteForm.tipoDocumento = cliente.tipo_documento || '';
+    this.clienteForm.correoElectronico = cliente.correo_electronico || '';
+    this.clienteForm.pais = cliente.pais || '';
+    this.clienteForm.direccion = cliente.direccion || '';
+    this.clienteForm.telefono = cliente.telefono || '';
     
-    // Solo llenar campos que están vacíos
-    if (!this.clienteForm.tipoDocumento) {
-      this.clienteForm.tipoDocumento = cliente.tipo_documento || '';
-    }
-    
-    if (!this.clienteForm.correoElectronico) {
-      this.clienteForm.correoElectronico = cliente.correo_electronico || '';
-    }
-    
-    if (!this.clienteForm.pais) {
-      this.clienteForm.pais = cliente.pais || '';
-    }
-    
-    if (!this.clienteForm.direccion) {
-      this.clienteForm.direccion = cliente.direccion || '';
-    }
-    
-    if (!this.clienteForm.telefono) {
-      this.clienteForm.telefono = cliente.telefono || '';
-    }
-    
-    // Mantener los valores que el usuario ingresó
-    this.clienteForm.nombre = nombreUsuario;
-    this.clienteForm.numeroDocumento = documentoUsuario;
+    // Mantener el número de documento que el usuario ingresó
+    this.clienteForm.numeroDocumento = this.clienteForm.numeroDocumento;
   }
 
   // Método para limpiar campos que se llenaron automáticamente
   private limpiarCamposAutomaticos(): void {
-    console.log('🧹 Limpiando campos automáticos porque se borró el documento o nombre');
+    console.log('Limpiando campos automáticos porque se borró el documento');
+    console.log('Estado antes de limpiar:', this.clienteForm);
     
-    // Limpiar solo los campos que se llenan automáticamente
-    // Mantener nombre y documento (que son los que ingresa el usuario)
+    // Limpiar todos los campos automáticos
+    this.clienteForm.nombre = '';
     this.clienteForm.tipoDocumento = '';
     this.clienteForm.correoElectronico = '';
     this.clienteForm.pais = '';
     this.clienteForm.direccion = '';
     this.clienteForm.telefono = '';
     
+    console.log('📋 Estado después de limpiar:', this.clienteForm);
+    
     // Mostrar mensaje informativo
-    this.mostrarAlerta('Campos automáticos limpiados. Ingrese nombre y número de documento válidos para autocompletar.', 'info');
+    this.mostrarAlerta('Campos automáticos limpiados. Ingrese un número de documento válido para autocompletar.', 'info');
   }
 
   cancelar(): void {

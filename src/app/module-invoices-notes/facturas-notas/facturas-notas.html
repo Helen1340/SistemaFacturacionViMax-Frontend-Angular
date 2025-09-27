@@ -74,8 +74,6 @@
 
     <!-- Botones de acción -->
     <div class="relative flex justify-end mb-4 gap-3">
-
-
         <!-- Botón para crear nuevo documento -->
         <div class="relative">
             <button (click)="toggleDropdown($event)"
@@ -134,8 +132,8 @@
 
     <!-- Tabla de facturas con encabezado sticky y columnas alineadas -->
     <div class="bg-white rounded-2xl shadow overflow-hidden">
-        <div class="overflow-x-auto overflow-y-auto max-h-[400px] relative custom-scroll">
-            <table class="w-full min-w-[800px] table-fixed text-xs sm:text-sm">
+        <div class="overflow-x-auto overflow-y-auto max-h-[400px] relative custom-scroll" id="table-container">
+            <table class="w-full min-w-[800px] text-xs sm:text-sm">
                 <thead class="bg-gray-100 text-gray-800 text-left sticky top-0 z-10">
                     <tr>
                         <th class="px-4 py-3 font-semibold sm:w-28">No. Factura</th>

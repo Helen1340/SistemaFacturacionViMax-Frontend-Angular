@@ -301,10 +301,17 @@ export class EditarFactura implements OnInit, OnDestroy {
     // Los datos del cliente están en data.user (como se ve en detalle-facturas.ts)
     const cliente = data?.user;
     
+    console.log('🔍 Datos del cliente recibidos:', cliente);
+    console.log('📋 Tipo de documento del cliente:', cliente?.tipo_documento);
+    
+    // Mapear el tipo de documento de la base de datos a los valores del select
+    const tipoDocumentoMapeado = this.mapearTipoDocumento(cliente?.tipo_documento);
+    console.log('🔄 Tipo de documento mapeado:', tipoDocumentoMapeado);
+    
     // Mapear datos del cliente a clienteForm (para funcionalidad de búsqueda)
     this.clienteForm = {
       nombre: String(cliente?.nombre ?? ''),
-      tipoDocumento: String(cliente?.tipo_documento ?? ''),
+      tipoDocumento: tipoDocumentoMapeado,
       numeroDocumento: String(cliente?.numero_documento ?? ''),
       correoElectronico: String(cliente?.correo_electronico ?? ''),
       pais: String(cliente?.pais ?? ''),
@@ -314,12 +321,14 @@ export class EditarFactura implements OnInit, OnDestroy {
     
     // También mapear a los campos directos de factura (para el formulario)
     this.factura.cliente = String(cliente?.nombre ?? '');
-    this.factura.tipoDocumento = String(cliente?.tipo_documento ?? '');
+    this.factura.tipoDocumento = tipoDocumentoMapeado;
     this.factura.documento = String(cliente?.numero_documento ?? '');
     this.factura.email = String(cliente?.correo_electronico ?? '');
     this.factura.telefono = String(cliente?.telefono ?? '');
     this.factura.pais = String(cliente?.pais ?? '');
     this.factura.direccion = String(cliente?.direccion ?? '');
+    
+    console.log('✅ Tipo de documento asignado a factura:', this.factura.tipoDocumento);
     
     // Actualizar cliente_data también
     this.factura.cliente_data = {
@@ -331,6 +340,20 @@ export class EditarFactura implements OnInit, OnDestroy {
       direccion: String(cliente?.direccion ?? ''),
       telefono: String(cliente?.telefono ?? '')
     };
+  }
+
+  // Método para mapear tipos de documento de la base de datos a los valores del select
+  private mapearTipoDocumento(tipoDB: string): string {
+    const mapeo: { [key: string]: string } = {
+      'CC': '13',        // Cédula de Ciudadanía
+      'CE': '22',        // Cédula de Extranjería
+      'NIT': '31',       // NIT
+      'TI': '12',        // Tarjeta de Identidad
+      'PP': '41',        // Pasaporte
+      'RC': '42'         // Documento Extranjero (usando RC como fallback)
+    };
+    
+    return mapeo[tipoDB] || '';
   }
 
 
