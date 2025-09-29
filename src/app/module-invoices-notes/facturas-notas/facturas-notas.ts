@@ -210,7 +210,6 @@ export class FacturasNotas implements OnInit {
         this.filteredInvoices = [];
         this.totalInvoices = 0;
         this.isLoading = false;
-        this.mostrarAlerta(`Error al cargar los datos: ${error.message}`, 'error');
       }
     });
   }

@@ -14,7 +14,6 @@ import { NuevoImpuesto } from './module-settings/impuestos-retenciones/nuevo-imp
 
 import { FacturasNotas } from './module-invoices-notes/facturas-notas/facturas-notas';
 import { NuevaFactura } from './module-invoices-notes/nueva-factura/nueva-factura';
-import { EditarFactura } from './module-invoices-notes/editar-facturas/editar-facturas';
 import { NuevaNotaComponent } from './module-invoices-notes/nueva-nota/nueva-nota';
 import { DetalleFacturas } from './module-invoices-notes/detalle-facturas/detalle-facturas';
 import { NuevoUsuario } from './module-users/nuevo-usuario/nuevo-usuario';
@@ -112,7 +111,6 @@ export const routes: Routes = [
   { path: 'clientes', component: Clientes },
   { path: 'nueva-factura', component: NuevaFactura },
   { path: 'nueva-nota', component: NuevaNotaComponent },
-  { path: 'editar-facturas/:id', component: EditarFactura },
   { path: 'detalle-facturas/:id', component: DetalleFacturas },
   { path: 'nuevo-cliente', component: NuevoCliente },
   { path: 'editar-cliente/:id', component: EditarCliente },

@@ -1,19 +1,22 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError, timeout } from 'rxjs/operators';
+import { Observable, throwError, forkJoin } from 'rxjs';
+import { catchError, timeout, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InvoicesNotesService {
   // URLs de la API - configura estas según tu servidor
-  private baseUrl = 'http://localhost'; // Cambia por tu URL correcta
+  private baseUrl = 'http://facturacion-vimax-api'; // Cambia por tu URL correcta
   private apiUrl = `${this.baseUrl}/api/electronicInvoices`;
   private notesApiUrl = `${this.baseUrl}/api/creditDebitNotes`;
   private usersApiUrl = `${this.baseUrl}/api/users`;
   private radianEventsApiUrl = `${this.baseUrl}/api/radianEvents`;
   private electronicDocumentsApiUrl = `${this.baseUrl}/api/electronicDocuments`;
+  private productsApiUrl = `${this.baseUrl}/api/products`;
+  private servicesApiUrl = `${this.baseUrl}/api/services`;
+  private measurementUnitsApiUrl = `${this.baseUrl}/api/measurementUnints`;
 
   constructor(private http: HttpClient) {}
 
@@ -128,6 +131,66 @@ export class InvoicesNotesService {
       );
   }
 
+  getProducts(): Observable<any[]> {
+    return this.http.get<any[]>(this.productsApiUrl)
+      .pipe(
+        timeout(10000),
+        catchError(this.handleError)
+      );
+  }
+
+  getServices(): Observable<any[]> {
+    return this.http.get<any[]>(this.servicesApiUrl)
+      .pipe(
+        timeout(10000),
+        catchError(this.handleError)
+      );
+  }
+
+  // Obtener todas las unidades de medida
+  getMeasurementUnits(): Observable<any[]> {
+    return this.http.get<any[]>(this.measurementUnitsApiUrl)
+      .pipe(
+        timeout(10000),
+        catchError(this.handleError)
+      );
+  }
+
+  // Método que carga productos, servicios y unidades de medida de una vez (igual que en productos-servicios)
+  getAllItemsWithUnits(): Observable<any> {
+    const productos$ = this.http.get<any[]>(`${this.productsApiUrl}`);
+    const servicios$ = this.http.get<any[]>(`${this.servicesApiUrl}`);
+    const measurementUnits$ = this.http.get<any[]>(`${this.measurementUnitsApiUrl}`);
+
+    return forkJoin([productos$, servicios$, measurementUnits$]).pipe(
+      map(([productos, servicios, measurementUnits]) => {
+        const unitsMap = new Map(measurementUnits.map(unit => [unit.id, unit]));
+
+        // Agregar la unidad de medida a cada producto
+        const productosConUnidades = productos.map(p => ({
+          ...p,
+          measure_unit: p.measurement_unit_id ? unitsMap.get(p.measurement_unit_id)?.codigo_dian : undefined
+        }));
+
+        // Agregar la unidad de medida a cada servicio
+        const serviciosConUnidades = servicios.map(s => ({
+          ...s,
+          measure_unit: s.measurement_unit_id ? unitsMap.get(s.measurement_unit_id)?.codigo_dian : undefined
+        }));
+
+        return {
+          productos: productosConUnidades,
+          servicios: serviciosConUnidades,
+          measurementUnits: measurementUnits
+        };
+      }),
+      timeout(10000),
+      catchError(this.handleError)
+    );
+  }
+
+
+
   getElectronicDocumentById(id: number): Observable<any> {
     return this.http.get<any>(`${this.electronicDocumentsApiUrl}/${id}`)
       .pipe(
@@ -156,14 +219,14 @@ export class InvoicesNotesService {
 
   // Método para buscar usuarios por nombre y número de documento
   searchUsersByNameAndDocument(nombre: string, numeroDocumento: string): Observable<any[]> {
-    console.log('🔍 Buscando cliente con:', { nombre, numeroDocumento });
-    console.log('🔗 URL de búsqueda:', `${this.usersApiUrl}?nombre=${encodeURIComponent(nombre)}&numero_documento=${encodeURIComponent(numeroDocumento)}`);
+    console.log('Buscando cliente con:', { nombre, numeroDocumento });
+    console.log('URL de búsqueda:', `${this.usersApiUrl}?nombre=${encodeURIComponent(nombre)}&numero_documento=${encodeURIComponent(numeroDocumento)}`);
     
     return this.http.get<any[]>(`${this.usersApiUrl}?nombre=${encodeURIComponent(nombre)}&numero_documento=${encodeURIComponent(numeroDocumento)}`)
       .pipe(
         timeout(10000),
         catchError((error) => {
-          console.error('❌ Error en búsqueda por nombre y documento:', error);
+          console.error('Error en búsqueda por nombre y documento:', error);
           return this.handleError(error);
         })
       );
@@ -189,7 +252,7 @@ export class InvoicesNotesService {
 
   // Método de búsqueda estricta que solo busca coincidencias exactas
   searchUsersRobust(nombre: string, numeroDocumento: string): Observable<any[]> {
-    console.log('🔍 Iniciando búsqueda estricta:', { nombre, numeroDocumento });
+    console.log('Iniciando búsqueda estricta:', { nombre, numeroDocumento });
     
     // Obtener todos los usuarios y filtrar localmente para mayor control
     return this.http.get<any[]>(this.usersApiUrl)
@@ -203,33 +266,8 @@ export class InvoicesNotesService {
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'Error desconocido';
-    
-    if (error.error instanceof ErrorEvent) {
-      // Error del lado del cliente
-      errorMessage = `Error: ${error.error.message}`;
-    } else {
-      // Error del lado del servidor
-      switch (error.status) {
-        case 0:
-          errorMessage = 'No se puede conectar con el servidor. Verifica que la API esté ejecutándose.';
-          break;
-        case 404:
-          errorMessage = 'Endpoint no encontrado. Verifica la URL de la API.';
-          break;
-        case 500:
-          errorMessage = 'Error interno del servidor.';
-          break;
-        case 503:
-          errorMessage = 'Servicio no disponible. El servidor puede estar en mantenimiento.';
-          break;
-        default:
-          errorMessage = `Error del servidor: ${error.status} - ${error.message}`;
-      }
-    }
-    
-    console.error('Error en InvoicesNotesService:', errorMessage, error);
-    return throwError(() => new Error(errorMessage));
+    console.error('Error en InvoicesNotesService:', error);
+    return throwError(() => error);
   }
 }
 
