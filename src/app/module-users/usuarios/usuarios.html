@@ -1,11 +1,11 @@
 <!-- Contenido principal -->
-<main class="w-full py-4 flex-1 overflow-y-auto overflow-x-visible">
+<main class="w-full px-4 pb-2 flex-1 overflow-y-auto overflow-x-visible">
 
-  <div class="-mt-4 mb-4">
-    <h2 class="text-4xl font-semibold mb-6 mt-8">Usuarios</h2>
+  <div>
+    <h2 class="text-4xl font-semibold mb-6 mt-2">Usuarios</h2>
   </div>
 
-  <div class="border-b-2 border-gray-300 w-full mb-8"></div>
+  <div class="border-b-2 border-gray-300 w-full mb-4"></div>
 
   <div class="relative flex justify-end mb-4">
     <button class="bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-2 rounded-2xl flex items-center"
@@ -16,7 +16,7 @@
 
   <!-- CONTENEDOR DEL FILTRO + BUSCADOR -->
   <div
-    class="bg-white p-6 rounded-2xl border border-gray-200 mb-6 flex flex-col md:flex-row flex-wrap items-center justify-between gap-4 w-full mx-auto">
+    class="bg-white p-4 rounded-2xl border border-gray-200 mb-4 flex flex-col md:flex-row flex-wrap items-center justify-between gap-4 w-full mx-auto">
     <!-- Buscador -->
     <div class="flex items-center border border-gray-300 rounded-2xl px-4 py-2 w-full md:w-[70%]">
       <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -49,53 +49,50 @@
 
   <!-- CONTENEDOR DE LA TABLA CON SCROLL FIJO -->
   <div class="bg-white rounded-2xl shadow overflow-hidden">
-    <!-- Encabezados fijos -->
-    <div class="overflow-x-auto">
-      <table class="w-full table-auto">
-        <thead class="bg-gray-100 text-black text-left sticky top-0 z-10">
+    <!-- Contenedor del cuerpo con scroll -->
+    <div
+      class="overflow-x-auto overflow-y-auto max-h-[375px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+      <table class="w-full min-w-[800px] table-fixed text-xs sm:text-sm">
+
+        <!-- Encabezados fijos -->
+        <thead class="bg-gray-100 text-gray-800 text-left sticky top-0 z-10">
           <tr>
-            <th class="px-4 py-3 font-semibold min-w-[320px]">Nombre</th>
-            <th class="px-4 py-3 font-semibold min-w-[150px]">Documento</th>
-            <th class="px-4 py-3 font-semibold min-w-[210px]">Correo Electrónico</th>
-            <th class="px-4 py-3 font-semibold min-w-[170px]">Teléfono</th>
-            <th class="px-4 py-3 font-semibold min-w-[100px]">Rol</th>
-            <th class="px-4 py-3 font-semibold min-w-[100px]">Estado</th>
-            <th class="px-4 py-3 text-center font-semibold min-w-[90px]">Acciones</th>
+            <th class="px-4 py-3 font-semibold text-sm sm:w-[22%]">Nombre</th>
+            <th class="px-4 py-3 font-semibold text-sm sm:w-[18%]">Documento</th>
+            <th class="px-4 py-3 font-semibold text-sm sm:w-[20%]">Correo Electrónico</th>
+            <th class="px-4 py-3 font-semibold text-sm sm:w-[10%]">Teléfono</th>
+            <th class="px-4 py-3 font-semibold text-sm sm:w-[20%]">Rol</th>
+            <th class="px-4 py-3 font-semibold text-sm sm:w-[8%]">Estado</th>
+            <th class="px-4 py-3 text-center font-semibold text-sm sm:w-[8%]">Acciones</th>
           </tr>
         </thead>
-      </table>
-    </div>
 
-    <!-- Contenedor del cuerpo con scroll -->
-    <div class="overflow-x-auto overflow-y-auto max-h-[400px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-      <table class="w-full table-auto">
         <tbody>
           <!-- CAMBIO PRINCIPAL: Usar paginatedUsers en lugar de filteredUsers -->
           <tr *ngFor="let user of paginatedUsers; trackBy: trackByFn; let i = index"
             class="border-t border-t-gray-200 hover:bg-gray-50">
-            <td class="px-4 py-3 min-w-[140px]">
+            <td class="px-4 py-3 min-w-[22%]">
               <div class="font-medium text-gray-900">{{ user.nombre }}</div>
             </td>
-            <td class="px-4 py-3 min-w-[120px]">
+            <td class="px-4 py-3 sm:w-[18%]">
               <div class="text-sm">
                 <span [ngClass]="getDocumentTypeClass(user.tipo_documento)" class="text-xs px-2 py-1 rounded">{{
                   user.tipo_documento }}</span>
                 <div class="mt-1 text-gray-600">{{ user.numero_documento }}</div>
               </div>
             </td>
-            <td class="px-4 py-3 text-gray-600 min-w-[170px]">{{ user.correo_electronico }}</td>
-            <td class="px-4 py-3 text-gray-600 min-w-[100px]">{{ user.telefono }}</td>
-            <td class="px-4 py-3 min-w-[100px]">
+            <td class="px-4 py-3 break-words sm:w-[20%]">{{ user.correo_electronico }}</td>
+            <td class="px-4 py-3 break-words sm:w-[10%]">{{ user.telefono }}</td>
+            <td class="px-4 py-3 min-w-[20%]">
               <!-- CORRECCIÓN: Usar getRoleName() para obtener el nombre del rol -->
               <span [ngClass]="getRoleClass(getRoleName(user.role_id))" class="text-xs px-2 py-1 rounded-full">{{
                 getRoleName(user.role_id) }}</span>
             </td>
-            <td class="px-4 py-3 min-w-[100px]">
+            <td class="px-4 py-3 min-w-[8%]">
               <span [ngClass]="getStatusClass(user.estado)" class="text-xs px-2 py-1 rounded-full">{{
                 user.estado }}</span>
             </td>
-            <td class="px-4 py-3 text-center relative min-w-[90px]" style="overflow: visible;">
-              <!-- CORRECCIÓN: Manejar user.id que puede ser undefined -->
+            <td class="px-4 py-3 text-center relative min-w-[8%]">
               <button (click)="toggleDropdown($event, user.id)" class="p-2 rounded hover:bg-gray-100">
                 <svg width="19" height="19" viewBox="0 0 22 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -109,18 +106,22 @@
                     fill="black" />
                 </svg>
               </button>
-              <!-- Dropdown con posicionamiento inteligente MEJORADO -->
-              <div *ngIf="openDropdownId === user.id" [ngClass]="{
-                  'bottom-full mb-1': shouldShowDropdownUp(i),
-                  'top-full mt-1': !shouldShowDropdownUp(i)
-                }" class="absolute right-0 w-40 bg-white border border-gray-300 rounded-2xl shadow-lg z-[999]">
+              <!-- Dropdown con posicionamiento fijo -->
+              <div *ngIf="openDropdownId === user.id" 
+                   class="fixed w-40 bg-white border border-gray-300 rounded-2xl shadow-lg z-[9999]"
+                   [style.top.px]="dropdownTop" 
+                   [style.left.px]="dropdownLeft">
                 <button (click)="viewUser(user)"
-                  class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100 rounded-t-2xl">Ver
-                  Detalles</button>
+                  class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100 rounded-t-2xl">
+                  Ver Detalles
+                </button>
                 <button (click)="editUser(user)"
-                  class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100">Editar</button>
-                <button (click)="deleteUser(user)"
-                  class="block w-full text-left px-4 py-2 text-sm hover:bg-red-100 text-red-600 rounded-b-2xl">
+                  class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100">
+                  Editar
+                </button>
+                <button (click)="UpdateUserStatus(user)"
+                  class="block w-full text-left px-4 py-2 text-sm rounded-b-2xl hover:bg-red-100 transition" 
+                  [ngClass]="user.estado === 'Activo' ? 'text-red-600' : 'text-green-600'">
                   {{ user.estado === 'Activo' ? 'Desactivar' : 'Activar' }}
                 </button>
               </div>
@@ -139,7 +140,8 @@
   </div>
 
   <!-- PAGINACIÓN -->
-  <div *ngIf="totalUsers > 0" class="bg-white p-4 rounded-2xl shadow mt-4 flex flex-col sm:flex-row items-center sm:justify-between space-y-2 sm:space-y-0">
+  <div *ngIf="totalUsers > 0"
+    class="bg-white p-4 rounded-2xl shadow mt-4 flex flex-col sm:flex-row items-center sm:justify-between space-y-2 sm:space-y-0">
     <div class="text-sm text-gray-600 text-center sm:text-left">
       Mostrando {{ startItem }} - {{ endItem }} de {{ totalUsers }} usuarios
     </div>

@@ -1,6 +1,50 @@
+/* Dropdown con posicionamiento inteligente */
 .dropdown {
     position: absolute;
-    z-index: 1000;
+    z-index: 9999;
+    right: 0;
+    min-width: 10rem;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Posicionamiento hacia abajo */
+.dropdown-down {
+    top: 100%;
+    margin-top: 0.25rem;
+}
+
+/* Posicionamiento hacia arriba */
+.dropdown-up {
+    bottom: 100%;
+    margin-bottom: 0.25rem;
+}
+
+/* Asegurar que el dropdown se muestre por encima de otros elementos */
+.dropdown-container {
+    position: relative;
+    overflow: visible;
+}
+
+/* Mejorar la visibilidad del dropdown en contenedores con scroll */
+.overflow-y-auto {
+    overflow-y: auto;
+    overflow-x: visible;
+}
+
+/* Asegurar que el dropdown no se corte en la tabla */
+table {
+    position: relative;
+}
+
+tbody tr {
+    position: relative;
+}
+
+tbody tr td:last-child {
+    overflow: visible;
 }
 
 /* Scrollbar fino */

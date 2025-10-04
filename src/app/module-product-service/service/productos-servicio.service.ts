@@ -161,4 +161,9 @@ export class ProductosServicioService {
   updateService(id: number, data: any) {
     return this.http.put<any>(`${this.apiUrl}/services/${id}`, data);
   }
+
+  // Método alternativo usando PATCH para actualizaciones más flexibles
+  updateServicePatch(id: number, data: any) {
+    return this.http.patch<any>(`${this.apiUrl}/services/${id}`, data);
+  }
 }

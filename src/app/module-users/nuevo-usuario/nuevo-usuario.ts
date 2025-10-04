@@ -67,8 +67,9 @@ export class NuevoUsuario implements OnInit {
 
   cargarRoles() {
     this.userService.getRoles().subscribe({
-      next: (res: any) => { 
-        this.roles = res; 
+      next: (res: any[]) => { 
+        // filtras todos los que NO tengan id = 4
+        this.roles = res.filter(role => role.id !== 4);
       },
       error: (err) => { 
         console.error('Error cargando roles:', err); 
@@ -76,6 +77,7 @@ export class NuevoUsuario implements OnInit {
       }
     });
   }
+  
 
   onSubmit() {
     if (this.usuarioForm.invalid) {

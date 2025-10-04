@@ -1,10 +1,10 @@
-<main class="w-full py-4 flex-1 overflow-y-auto overflow-x-visible">
+<main class="w-full px-4 pb-4 flex-1 overflow-y-auto overflow-x-visible">
 
-  <div class="-mt-4 mb-4">
-    <h2 class="text-4xl font-semibold mb-6 mt-8">Productos / Servicios</h2>
+  <div>
+    <h2 class="text-4xl font-semibold mb-6 mt-2">Productos / Servicios</h2>
   </div>
 
-  <div class="border-b-2 border-gray-300 w-full mb-8"></div>
+  <div class="border-b-2 border-gray-300 w-full mb-4"></div>
 
   <div class="relative flex justify-end mb-4">
     <div class="relative">
@@ -29,7 +29,7 @@
   </div>
 
   <div
-    class="bg-white p-6 rounded-2xl border border-gray-200 mb-6 flex flex-col md:flex-row flex-wrap items-center justify-between gap-4 w-full mx-auto">
+    class="bg-white p-4 rounded-2xl border border-gray-200 mb-4 flex flex-col md:flex-row flex-wrap items-center justify-between gap-4 w-full mx-auto">
     <div class="flex items-center border border-gray-300 rounded-2xl px-4 py-2 w-full md:w-[70%]">
       <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round"
@@ -60,8 +60,13 @@
   </div>
 
   <div class="bg-white rounded-2xl shadow overflow-hidden">
-    <div class="overflow-x-auto">
+
+
+    <div
+      class="overflow-x-auto overflow-y-auto max-h-[375px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+
       <table class="w-full table-auto">
+
         <thead class="bg-gray-100 text-black text-left sticky top-0 z-10">
           <tr>
             <th class="px-4 py-3 font-semibold min-w-[150px]">Código</th>
@@ -73,12 +78,7 @@
             <th class="px-4 py-3 text-center font-semibold min-w-[120px]">Acciones</th>
           </tr>
         </thead>
-      </table>
-    </div>
 
-    <div
-      class="overflow-x-auto overflow-y-auto max-h-[400px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-      <table class="w-full table-auto">
         <tbody>
           <tr *ngFor="let item of paginatedItems; trackBy: trackByFn; let i = index"
             class="border-t border-t-gray-200 hover:bg-gray-50">
@@ -109,15 +109,19 @@
                     fill="black" />
                 </svg>
               </button>
-              <div *ngIf="openDropdownId === item.id" [ngClass]="{
-                  'bottom-full mb-1': shouldShowDropdownUp(i),
-                  'top-full mt-1': !shouldShowDropdownUp(i)
-                }" class="absolute right-0 w-40 bg-white border border-gray-300 rounded-2xl shadow-lg z-50">
+              <!-- Dropdown con posicionamiento fijo -->
+              <div *ngIf="openDropdownId === item.id" 
+                   class="fixed w-40 bg-white border border-gray-300 rounded-2xl shadow-lg z-[9999]"
+                   [style.top.px]="dropdownTop" 
+                   [style.left.px]="dropdownLeft">
                 <button (click)="viewItem(item)"
-                  class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100 rounded-t-2xl">Ver
-                  Detalles</button>
+                  class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100 rounded-t-2xl">
+                  Ver Detalles
+                </button>
                 <button (click)="editItem(item)"
-                  class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100">Editar</button>
+                  class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100">
+                  Editar
+                </button>
                 <button (click)="deleteItem(item)"
                   class="block w-full text-left px-4 py-2 text-sm hover:bg-red-100 text-red-600 rounded-b-2xl">
                   {{ item.estado === 'Activo' ? 'Eliminar' : 'Activar' }}
@@ -137,7 +141,7 @@
   </div>
 
   <div *ngIf="totalItems > 0"
-    class="bg-white p-4 rounded-2xl shadow mt-4 flex flex-col sm:flex-row items-center sm:justify-between space-y-2 sm:space-y-0">
+    class="bg-white p-4 rounded-2xl shadow mt-2 flex flex-col sm:flex-row items-center sm:justify-between space-y-2 sm:space-y-0">
 
     <!-- Texto de elementos -->
     <div class="text-sm text-gray-600 text-center sm:text-left">
