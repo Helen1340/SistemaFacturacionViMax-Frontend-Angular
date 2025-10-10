@@ -38,7 +38,7 @@ export interface ImpuestoFilters {
 })
 export class ImpuestosRetencionesService {
   
-  private baseUrl = 'http://facturacion-vimax-api/api/taxes'; // Cambiar por tu URL de API
+  private baseUrl = 'http://localhost/api/taxes'; // Cambiar por tu URL de API
   private impuestosSubject = new BehaviorSubject<Impuesto[]>([]);
   public impuestos$ = this.impuestosSubject.asObservable();
 

@@ -67,6 +67,13 @@ export class UserService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+  // Método para activar/desactivar usuario (cambiar estado)
+  toggleUserStatus(id: number, newStatus: 'Activo' | 'Inactivo'): Observable<User> {
+    return this.http.patch<User>(`${this.apiUrl}/${id}`, {
+      estado: newStatus
+    });
+  }
+
   // Funciones para manejar el nombre comercial temporal en la descripción
   getTempCommercialName(user: User): string | null {
     if (user.descripcion?.startsWith('TEMP_COMMERCIAL_NAME:')) {

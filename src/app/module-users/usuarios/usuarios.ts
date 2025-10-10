@@ -37,6 +37,8 @@ export class Usuarios implements OnInit {
   searchTerm: string = '';
   filterValue: string = '';
   openDropdownId: number | null = null;
+  dropdownTop: number = 0;
+  dropdownLeft: number = 0;
   isLoading: boolean = false;
   
   // Paginación
@@ -107,15 +109,17 @@ export class Usuarios implements OnInit {
     this.router.navigate(['/editar-usuario', user.id]);
   }
 
-  deleteUser(user: User) {
+  UpdateUserStatus(user: User) {
     if (!confirm(`¿Estás seguro de que deseas ${user.estado === 'Activo' ? 'desactivar' : 'activar'} este usuario?`)) {
       return;
     }
     
     this.openDropdownId = null;
-    this.userService.deleteUser(user.id).subscribe({
+    const newStatus = user.estado === 'Activo' ? 'Inactivo' : 'Activo';
+    
+    this.userService.toggleUserStatus(user.id, newStatus).subscribe({
       next: () => {
-        alert(`Usuario ${user.estado === 'Activo' ? 'desactivado' : 'activado'} correctamente`);
+        alert(`Usuario ${newStatus === 'Inactivo' ? 'desactivado' : 'activado'} correctamente`);
         this.loadUsers();
       },
       error: () => {
@@ -201,40 +205,46 @@ export class Usuarios implements OnInit {
 
   toggleDropdown(event: Event, userId: number) {
     event.stopPropagation();
-    this.openDropdownId = this.openDropdownId === userId ? null : userId;
+    
+    if (this.openDropdownId === userId) {
+      this.openDropdownId = null;
+      return;
+    }
+    
+    // Calcular posición del dropdown
+    const target = event.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const menuWidth = 160; // w-40 = 10rem = 160px
+    const menuHeight = 120; // Altura aproximada del dropdown
+    
+    // Posición horizontal: alineado a la derecha del botón
+    this.dropdownLeft = rect.right - menuWidth;
+    
+    // Posición vertical: debajo del botón, pero ajustada si se sale de pantalla
+    let top = rect.bottom + 4;
+    
+    // Si se sale por abajo, mostrarlo arriba
+    if (top + menuHeight > window.innerHeight) {
+      top = rect.top - menuHeight - 4;
+    }
+    
+    // Asegurar que no se salga por arriba
+    if (top < 8) {
+      top = 8;
+    }
+    
+    // Asegurar que no se salga por los lados
+    if (this.dropdownLeft < 8) {
+      this.dropdownLeft = 8;
+    } else if (this.dropdownLeft + menuWidth > window.innerWidth - 8) {
+      this.dropdownLeft = window.innerWidth - menuWidth - 8;
+    }
+    
+    this.dropdownTop = top;
+    this.openDropdownId = userId;
   }
 
-  shouldShowDropdownUp(index: number): boolean {
-    // Si es uno de los últimos 2 elementos, mostrar el dropdown hacia arriba
-    return index >= this.paginatedUsers.length - 2;
-  }
 
-  shouldShowDropdownUpAdvanced(index: number): boolean {
-    const tableContainer = document.querySelector('.overflow-y-auto.max-h-\\[400px\\]');
-    if (!tableContainer) return false;
-    
-    const containerHeight = tableContainer.clientHeight;
-    const scrollTop = tableContainer.scrollTop;
-    const rowHeight = 60; // Altura aproximada de cada fila
-    const dropdownHeight = 120; // Altura aproximada del dropdown
-    
-    const rowPosition = index * rowHeight - scrollTop;
-    
-    // Si no hay suficiente espacio abajo, mostrar arriba
-    return (containerHeight - rowPosition) < dropdownHeight;
-  }
-
-  testApiConnection() {
-    this.userService.testApiConnection().subscribe({
-      next: () => {
-        alert('API conectada correctamente. Recargando datos...');
-        this.loadUsers();
-      },
-      error: () => {
-        alert('Error de conectividad. Verifica que XAMPP esté ejecutándose.');
-      }
-    });
-  }
 
   get paginatedUsers(): User[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;

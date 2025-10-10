@@ -22,7 +22,11 @@ export class App {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
-        const hiddenRoutes = ['/inicio', '/login', '/register', '/configuracion', '/parametros-generales', '/config-correo', '/eventos', '/historial-notificaciones', '/notificaciones-email', '/certificado-digital'];
+        const hiddenRoutes = ['/inicio', '/login', '/register', '/configuracion',
+                '/parametros-generales', '/config-correo', '/eventos', '/historial-notificaciones',
+                '/notificaciones-email', '/certificado-digital', '/resolucion-facturas',
+                '/retencion-respaldo', '/cambios-normativos', '/impuestos-retenciones',
+                '/nuevo-impuesto', '/nueva-resolucion', '/editar-resolucion/:id',];
         this.showLayout = !hiddenRoutes.includes(event.urlAfterRedirects);
       });
   }

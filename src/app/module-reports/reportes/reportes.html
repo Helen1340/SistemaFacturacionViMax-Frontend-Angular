@@ -1,9 +1,9 @@
-<div id="overlay" class="hidden fixed inset-0 bg-black/50 z-40 md:hidden"></div>
-<!-- Contenido principal -->
-<main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
 
-    <div class="-mt-4 mb-2">
-        <h2 class="text-4xl font-semibold mb-10 mt-4">
+<!-- Contenido principal -->
+<main class="w-full md:ml-0 px-4 flex-1 overflow-auto">
+
+    <div >
+        <h2 class="text-4xl font-semibold mb-6 mt-2">
             Panel de reportes
         </h2>
     </div>
@@ -51,44 +51,8 @@
                 </div>
             </button>
 
-            <!-- Reporte de Impuestos -->
-            <button (click)="navigateReportImpuestos()">
-                <div
-                    class="flex flex-col items-center md:items-start bg-white shadow-lg rounded-2xl p-6 hover:shadow-xl transition">
-                    <div class="flex-shrink-0 bg-cyan-100 text-cyan-600 p-4 rounded-full mb-4">
-                        <!-- Icono Calculadora -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 17h6m-6-4h6M9 9h6M5 5h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
-                        </svg>
-                    </div>
-                    <div class="text-center md:text-left">
-                        <h3 class="text-lg font-semibold text-gray-800">Reporte de Impuestos</h3>
-                        <p class="text-sm text-gray-500">Detalle de impuestos aplicados (IVA, INC, ICA).</p>
-                    </div>
-                </div>
-            </button>
+    
 
-            <!-- Reporte de Clientes -->
-            <button (click)="navigateReportClientes()">
-                <div
-                    class="flex flex-col items-center md:items-start bg-white shadow-lg rounded-2xl p-6 hover:shadow-xl transition">
-                    <div class="flex-shrink-0 bg-cyan-100 text-cyan-600 p-4 rounded-full mb-4">
-                        <!-- Icono Usuarios -->
-                        <svg width="33" height="31" viewBox="0 0 33 31" fill="none" xmlns="http://www.w3.org/2000/svg"
-                            class="mr-1">
-                            <path
-                                d="M22 27.125V24.5417C22 23.1714 21.4205 21.8572 20.3891 20.8883C19.3576 19.9193 17.9587 19.375 16.5 19.375H8.25C6.79131 19.375 5.39236 19.9193 4.36091 20.8883C3.32946 21.8572 2.75 23.1714 2.75 24.5417V27.125M22 4.04033C23.1794 4.32756 24.2239 4.97455 24.9696 5.87975C25.7152 6.78495 26.1198 7.89711 26.1198 9.04167C26.1198 10.1862 25.7152 11.2984 24.9696 12.2036C24.2239 13.1088 23.1794 13.7558 22 14.043M30.25 27.125V24.5417C30.2491 23.3969 29.8435 22.2848 29.0969 21.3801C28.3503 20.4753 27.3049 19.8291 26.125 19.5429M17.875 9.04167C17.875 11.8951 15.4126 14.2083 12.375 14.2083C9.33743 14.2083 6.875 11.8951 6.875 9.04167C6.875 6.1882 9.33743 3.875 12.375 3.875C15.4126 3.875 17.875 6.1882 17.875 9.04167Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </div>
-                    <div class="text-center md:text-left">
-                        <h3 class="text-lg font-semibold text-gray-800">Reporte de Clientes</h3>
-                        <p class="text-sm text-gray-500">Información de clientes registrados.</p>
-                    </div>
-                </div>
-            </button>
             <!-- Reporte de Usuarios -->
             <button (click)="navigateReportUsers()">
                 <div

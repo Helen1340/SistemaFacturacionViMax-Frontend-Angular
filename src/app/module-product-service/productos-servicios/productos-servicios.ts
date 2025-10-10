@@ -17,6 +17,8 @@ export class ProductosServicios implements OnInit {
   searchTerm: string = '';
   filterValue: string = '';
   openDropdownId: number | null = null;
+  dropdownTop: number = 0;
+  dropdownLeft: number = 0;
   isLoading: boolean = false;
   isDropdownOpen: boolean = false;
   
@@ -195,13 +197,43 @@ export class ProductosServicios implements OnInit {
 
   toggleDropdown(event: Event, itemId: number) {
     event.stopPropagation();
-    this.openDropdownId = this.openDropdownId === itemId ? null : itemId;
-  }
-
-  shouldShowDropdownUp(index: number): boolean {
-    const threshold = 3;
-    const totalItemsOnPage = this.paginatedItems.length;
-    return index >= totalItemsOnPage - threshold;
+    
+    if (this.openDropdownId === itemId) {
+      this.openDropdownId = null;
+      return;
+    }
+    
+    // Calcular posición del dropdown
+    const target = event.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const menuWidth = 160; // w-40 = 10rem = 160px
+    const menuHeight = 120; // Altura aproximada del dropdown
+    
+    // Posición horizontal: alineado a la derecha del botón
+    this.dropdownLeft = rect.right - menuWidth;
+    
+    // Posición vertical: debajo del botón, pero ajustada si se sale de pantalla
+    let top = rect.bottom + 4;
+    
+    // Si se sale por abajo, mostrarlo arriba
+    if (top + menuHeight > window.innerHeight) {
+      top = rect.top - menuHeight - 4;
+    }
+    
+    // Asegurar que no se salga por arriba
+    if (top < 8) {
+      top = 8;
+    }
+    
+    // Asegurar que no se salga por los lados
+    if (this.dropdownLeft < 8) {
+      this.dropdownLeft = 8;
+    } else if (this.dropdownLeft + menuWidth > window.innerWidth - 8) {
+      this.dropdownLeft = window.innerWidth - menuWidth - 8;
+    }
+    
+    this.dropdownTop = top;
+    this.openDropdownId = itemId;
   }
 
   trackByFn(index: number, item: ItemTabla): number {

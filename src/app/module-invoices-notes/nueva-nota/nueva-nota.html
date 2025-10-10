@@ -1,137 +1,155 @@
-<main class="w-full p-4 flex-1">
-    <!-- Contenido de la página -->
-    <div class="sticky top-0 bg-white z-10 pb-4 mt-6">
-      <h2 class="text-3xl sm:text-4xl font-semibold mb-4 mt-2">
-        Datos Técnicos de la Nota
-      </h2>
-      <div class="border-b-2 border-gray-300 w-full"></div>
+<main class="w-full px-4 flex-1">
+  <!-- Contenido de la página -->
+  <div class="sticky top-0 bg-white z-10 pb-4 ">
+    <h2 class="text-3xl sm:text-4xl font-semibold mb-6 mt-2">
+      Datos Técnicos de la Nota
+    </h2>
+    <div class="border-b-2 border-gray-300 w-full"></div>
+  </div>
+
+  <div
+    class="bg-white rounded-lg shadow-xl p-4 sm:p-6 lg:p-8 max-h-[75vh] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 space-y-8 text-sm sm:text-base">
+    <!-- Botones de tipo de nota -->
+    <div class="flex justify-end gap-4">
+      <button class="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-6 py-2 rounded-lg">Crédito</button>
+      <button class="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-6 py-2 rounded-lg">Débito</button>
     </div>
 
-    <div class="bg-white rounded-lg shadow-xl p-4 sm:p-6 lg:p-8 max-h-[75vh] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 space-y-8 text-sm sm:text-base">
-      <!-- Botones de tipo de nota -->
-      <div class="flex justify-end gap-4">
-        <button class="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-6 py-2 rounded-lg">Crédito</button>
-        <button class="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-6 py-2 rounded-lg">Débito</button>
+    <!-- Prefijo, fecha, hora -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div>
+        <label class="block text-sm">Prefijo y número de nota</label>
+        <input type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
       </div>
-
-      <!-- Prefijo, fecha, hora -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div>
-          <label class="block text-sm">Prefijo y número de nota</label>
-          <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
-        </div>
-        <div>
-          <label class="block text-sm">Fecha de emisión</label>
-          <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm" />
-        </div>
-        <div>
-          <label class="block text-sm">Hora de emisión</label>
-          <input type="time" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
-        </div>
+      <div>
+        <label class="block text-sm">Fecha de emisión</label>
+        <input type="date"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm" />
       </div>
-
-      <!-- CUFE y resolución -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-        <div>
-          <label class="block text-sm">CUFE factura origen</label>
-          <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
-        </div>
-        <div>
-          <label class="block text-sm">Resolución activa de nota</label>
-          <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
-        </div>
+      <div>
+        <label class="block text-sm">Hora de emisión</label>
+        <input type="time"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
       </div>
+    </div>
 
-      <!-- Buscar factura origen -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 items-end">
-        <div class="md:col-span-3">
-          <label class="block text-sm">Buscar número de factura origen</label>
-          <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
-        </div>
-        <div>
-          <button class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg w-full">Buscar</button>
-        </div>
+    <!-- CUFE y resolución -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+      <div>
+        <label class="block text-sm">CUFE factura origen</label>
+        <input type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
       </div>
-
-      <!-- Info factura origen -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-        <div>
-          <label class="block text-sm">Fecha factura origen</label>
-          <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
-        </div>
-        <div>
-          <label class="block text-sm">Cliente asociado</label>
-          <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
-        </div>
-        <div>
-          <label class="block text-sm">Total factura original</label>
-          <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
-        </div>
-        <div>
-          <label class="block text-sm">Estado factura</label>
-          <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value="Validada" />
-        </div>
+      <div>
+        <label class="block text-sm">Resolución activa de nota</label>
+        <input type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
       </div>
+    </div>
 
-      <!-- Motivo y ajustes -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Buscar factura origen -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 items-end">
+      <div class="md:col-span-3">
+        <label class="block text-sm">Buscar número de factura origen</label>
+        <input type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
+      </div>
+      <div>
+        <button class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg w-full">Buscar</button>
+      </div>
+    </div>
+
+    <!-- Info factura origen -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+      <div>
+        <label class="block text-sm">Fecha factura origen</label>
+        <input type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
+      </div>
+      <div>
+        <label class="block text-sm">Cliente asociado</label>
+        <input type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
+      </div>
+      <div>
+        <label class="block text-sm">Total factura original</label>
+        <input type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
+      </div>
+      <div>
+        <label class="block text-sm">Estado factura</label>
+        <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value="Validada" />
+      </div>
+    </div>
+
+    <!-- Motivo y ajustes -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm">Motivo de la nota</label>
+        <input type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
+      </div>
+      <div>
+        <label class="block text-sm">Descripción del ajuste</label>
+        <input type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
+      </div>
+    </div>
+
+    <!-- Tabla producto/servicio -->
+    <div class="border border-gray-300 rounded-xl p-4 shadow-lg">
+      <h4 class="font-semibold mb-4">Producto/Servicio</h4>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-center">
         <div>
-          <label class="block text-sm">Motivo de la nota</label>
-          <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
+          <label class="block text-sm">Producto/Servicio</label>
+          <p class="text-sm text-gray-400 mt-3">Producto ejemplo</p>
         </div>
         <div>
-          <label class="block text-sm">Descripción del ajuste</label>
-          <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
+          <label class="block text-sm">Tipo de ajuste</label>
+          <input type="text"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
         </div>
-      </div>
-
-      <!-- Tabla producto/servicio -->
-      <div class="border border-gray-300 rounded-xl p-4 shadow-lg">
-        <h4 class="font-semibold mb-4">Producto/Servicio</h4>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-center">
-          <div>
-            <label class="block text-sm">Producto/Servicio</label>
-            <p class="text-sm text-gray-400 mt-3">Producto ejemplo</p>
-          </div>
-          <div>
-            <label class="block text-sm">Tipo de ajuste</label>
-            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
-          </div>
-          <div>
-            <label class="block text-sm">Nuevo valor</label>
-            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
-          </div>
-          <div>
-            <label class="block text-sm">Total ajuste</label>
-            <p class="text-sm">$0.00</p>
-          </div>
+        <div>
+          <label class="block text-sm">Nuevo valor</label>
+          <input type="text"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
         </div>
-      </div>
-
-      <!-- Total del ajuste -->
-      <div class="flex justify-end text-sm font-semibold">
-        <p>Valor total del ajuste: <span class="text-gray-700">$0.00</span></p>
-      </div>
-
-      <!-- Botones -->
-      <div class="flex flex-wrap gap-4 justify-end">
-        <button (click)="visualizarNota()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full sm:w-auto">Visualizar nota</button>
-        <button (click)="firmarYEnviar()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg w-full sm:w-auto">Firmar y enviar a
-          DIAN</button>
-        <button (click)="descargarDocumentos()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg w-full sm:w-auto">Descargar
-          XML/PDF</button>
-        <button (click)="cancelar()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg w-full sm:w-auto">Cancelar</button>
-      </div>
-
-      <!-- Notificaciones -->
-      <div id="notificacion" class="hidden fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50">
-        <div class="flex items-center space-x-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          <span id="mensaje"></span>
+        <div>
+          <label class="block text-sm">Total ajuste</label>
+          <p class="text-sm">$0.00</p>
         </div>
       </div>
     </div>
 
-  </main>
+    <!-- Total del ajuste -->
+    <div class="flex justify-end text-sm font-semibold">
+      <p>Valor total del ajuste: <span class="text-gray-700">$0.00</span></p>
+    </div>
+
+    <!-- Botones -->
+    <div class="flex flex-wrap gap-4 justify-end">
+      <button (click)="visualizarNota()"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full sm:w-auto">Visualizar nota</button>
+      <button (click)="firmarYEnviar()"
+        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg w-full sm:w-auto">Firmar y enviar a
+        DIAN</button>
+      <button (click)="descargarDocumentos()"
+        class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg w-full sm:w-auto">Descargar
+        XML/PDF</button>
+      <button (click)="cancelar()"
+        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg w-full sm:w-auto">Cancelar</button>
+    </div>
+
+    <!-- Notificaciones -->
+    <div id="notificacion" class="hidden fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50">
+      <div class="flex items-center space-x-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span id="mensaje"></span>
+      </div>
+    </div>
+  </div>
+
+</main>

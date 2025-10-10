@@ -1,10 +1,10 @@
-<aside  class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg p-4 flex flex-col transform transition-transform duration-300 -translate-x-full md:relative md:translate-x-0 md:flex md:h-full overflow-y-auto"
-[class.translate-x-0]="isOpen"
-  [class.-translate-x-full]="!isOpen">
-    <div class="p-4 flex items-center space-x-1 mb-2">
+<aside
+    class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg p-4 flex flex-col transform transition-transform duration-300 -translate-x-full md:relative md:translate-x-0 md:flex md:h-full overflow-y-auto"
+    [class.translate-x-0]="isOpen" [class.-translate-x-full]="!isOpen">
+    <div class="pb-2 flex items-center space-x-1 mb-3">
 
         <!-- Logo -->
-        <img src="/logo vimax 2.png" alt="Logo VIMAX" class="h-14">
+        <img src="/logo vimax 2.png" alt="Logo VIMAX" class="h-12">
 
         <!-- Título -->
         <div>
@@ -17,11 +17,13 @@
 
     <!-- Línea centrada debajo -->
     <div class="border-b-2 border-gray-300 w-4/5 mx-auto my-0"></div>
-<div class="flex mt-1 p-1"></div>
+    <div class="flex mt-1 p-1"></div>
     <!-- Navegación -->
-    <nav class="flex flex-col space-y-4">
+    <nav class="flex flex-col justify-between h-full  ">
+
+        <div class="flex flex-col space-y-4">
         <!-- Facturas y notas -->
-        <a  routerLink="/facturas-notas" routerLinkActive="bg-cyan-200" class="flex p-2 hover:bg-cyan-200 rounded">
+        <a routerLink="/facturas-notas" routerLinkActive="bg-cyan-200" class="flex p-2 hover:bg-cyan-200 rounded">
             <svg width="26" height="32" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink" class="mr-1">
                 <rect width="29" height="29" fill="url(#pattern0_14_11)" />
@@ -32,7 +34,7 @@
                     <image id="image0_14_11" width="96" height="96" preserveAspectRatio="none"
                         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAADKElEQVR4nO2dPWsUQRjHfyokoBILIRgEyUdIEysDGtj7FL40vqAmQbiA1WnS+T1crARr+2jURtHGyiZdCt9yqVKsDDwHh+xddrO3M3s7/x88zbLz7Dz7z+zM/G/vAkIIIYQQQgghhBBCiFazANwGngJ3gMWS7c8AK8ATixU7VoZFu7brwy3rU+u5AbwGjoDsv3gH3APmxrQ/C6wBP3Lau2OP7ZxRXLBrvM9pf2R9u07LOAc8AL7lFJ3lxCHwEkiA05bjIvAM2C/Qft/OdW2wHInlPCzYh6/Afev7VHHNhrSLbeBNiaKznNgDXgH9E7TtW9u9CtfvWw3bQ3W5GhvLVoVisykJV2NjkQBTJMBvIK34iPhkUeURl1pfohkB34GHwPkKk+RbYHXouqt27KSTvOvLI+tbKwXoDxV9akz7OeAusDNimegm1aUx7ZfsnLxl7o7lHrfMdYJ0rK/9Ngnw/AS5rgxt1m4C8yXazlubwSbL5ZpULdEIEBoJEBgJEBgJEBgJEBgJEBgJEBgJEBgJEBgJEBgJEJhoBegAm0OfQE0qNi131VpaLUBawdsvGmnFWlorQMfDzR9EUqGW1grQ9ShAt0ItrRUg0QgIK4BDc0ADVkEJ0ANeTDh6BZ/90T6CmoYECIwECIwECIwECEy0AnQKekFFvJ0Fe81cXlCN+4B0RK6rwK8S5xP7COhM2Ntx37iRF+TJC+rm5PsrL8ifF5RoBITzgtIRuZaBn5oD6vOCegW8nUv2rUh5QUwfW7GtgpqGBAiMBAiMBAhMtAJ0xnhBZd/tkRdU0z4gLZBLXlDNXlByTD55QTV7Qd1j8skLqtkLSjQCmj0HLMsLmrwX1Cv5bo+8IFkRfpEXFBgJEBgJ4JFZYAP4UOBH9dpkR2cWfat93e6FVy4DX0qs2dsoQDYUn+2eeGG25M2PQYDMRPAyEjZKdiwWATL7Vd/a+SgBGCXArg8BDiQAowQ4aKoAscSfpj6CYoldHwKsN6DQrKHhZRKetSVX6GKzhoW7JzN4wm06JAJhNmIDZmzI7UY6MR/Yf+JY8/mXL4QQQgghhBBCCCGEEEJQnn9QQjgYDZs6QgAAAABJRU5ErkJggg==" />
                 </defs>
-                
+
             </svg>
             Facturas y Notas</a>
         <!-- Clientes -->
@@ -44,7 +46,7 @@
             </svg>
             Clientes</a>
         <!-- Productos / Servicios -->
-        <a routerLink="/productos-servicios" routerLinkActive="bg-cyan-200"  class="flex p-2 hover:bg-cyan-200 rounded">
+        <a routerLink="/productos-servicios" routerLinkActive="bg-cyan-200" class="flex p-2 hover:bg-cyan-200 rounded">
             <svg width="33" height="31" viewBox="0 0 33 31" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-1">
                 <path
                     d="M16.5 28.4167V15.5M16.5 15.5L4.52375 9.04168M16.5 15.5L28.4762 9.04168M10.3125 5.51543L22.6875 12.1675M15.125 28.0679C15.5431 28.2947 16.0173 28.414 16.5 28.414C16.9827 28.414 17.4569 28.2947 17.875 28.0679L27.5 22.9013C27.9176 22.6748 28.2645 22.3491 28.5059 21.9568C28.7472 21.5646 28.8745 21.1197 28.875 20.6667V10.3333C28.8745 9.88033 28.7472 9.4354 28.5059 9.04318C28.2645 8.65097 27.9176 8.32528 27.5 8.09877L17.875 2.9321C17.4569 2.70536 16.9827 2.586 16.5 2.586C16.0173 2.586 15.5431 2.70536 15.125 2.9321L5.5 8.09877C5.08236 8.32528 4.73547 8.65097 4.49413 9.04318C4.2528 9.4354 4.12549 9.88033 4.125 10.3333V20.6667C4.12549 21.1197 4.2528 21.5646 4.49413 21.9568C4.73547 22.3491 5.08236 22.6748 5.5 22.9013L15.125 28.0679Z"
@@ -60,7 +62,7 @@
             </svg>
             Reportes</a>
         <!-- Usuarios -->
-        <a  routerLink="/usuarios" routerLinkActive="bg-cyan-200" class="flex p-2 hover:bg-cyan-200 rounded">
+        <a routerLink="/usuarios" routerLinkActive="bg-cyan-200" class="flex p-2 hover:bg-cyan-200 rounded">
             <svg width="26" height="27" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-1">
                 <path
                     d="M13 14.625C15.9915 14.625 18.4166 12.1066 18.4166 9C18.4166 5.8934 15.9915 3.375 13 3.375C10.0084 3.375 7.58331 5.8934 7.58331 9C7.58331 12.1066 10.0084 14.625 13 14.625ZM13 14.625C15.2985 14.625 17.5029 15.5732 19.1282 17.261C20.7536 18.9489 21.6666 21.2381 21.6666 23.625M13 14.625C10.7014 14.625 8.49704 15.5732 6.87172 17.261C5.24641 18.9489 4.33331 21.2381 4.33331 23.625"
@@ -76,7 +78,7 @@
             </svg>
             Contingencia</a> -->
         <!-- Recepción de Documentos -->
-        <a routerLink="/recepción-documentos" routerLinkActive="bg-cyan-200"  class="flex p-2 hover:bg-cyan-200 rounded">
+        <a routerLink="/recepción-documentos" routerLinkActive="bg-cyan-200" class="flex p-2 hover:bg-cyan-200 rounded">
             <svg width="25" height="32" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg"
                 class="mr-1 mt-2">
                 <path
@@ -85,41 +87,49 @@
             </svg>
             Recepción de <br> Documentos</a>
         <!-- Notificaciones -->
-        <a routerLink="/notificaciones" routerLinkActive="bg-cyan-200"  class="flex p-2 hover:bg-cyan-200 rounded">
+        <a routerLink="/notificaciones" routerLinkActive="bg-cyan-200" class="flex p-2 hover:bg-cyan-200 rounded">
             <svg width="25" height="23" viewBox="0 0 25 23" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-1">
                 <path
                     d="M10.7292 20.125C10.9035 20.4168 11.1598 20.6601 11.4713 20.8296C11.7828 20.9991 12.1381 21.0885 12.5 21.0885C12.8619 21.0885 13.2172 20.9991 13.5287 20.8296C13.8402 20.6601 14.0965 20.4168 14.2708 20.125M6.25 7.66669C6.25 6.14169 6.90848 4.67916 8.08058 3.60082C9.25268 2.52249 10.8424 1.91669 12.5 1.91669C14.1576 1.91669 15.7473 2.52249 16.9194 3.60082C18.0915 4.67916 18.75 6.14169 18.75 7.66669C18.75 14.375 21.875 16.2917 21.875 16.2917H3.125C3.125 16.2917 6.25 14.375 6.25 7.66669Z"
                     stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             Notificaciones</a>
-        <!-- Div espaciador -->
-        <div class="flex mt-6 p-6">
-            <!-- Este es un duv para poner el espacio entre notificacion y configuracion, acomodan el espacio corde a la pantalla que hagan -->
+
+
         </div>
-        <!-- Configuracion -->
-        <a routerLink="/configuracion"  routerLinkActive="bg-cyan-200"class="flex p-2 hover:bg-cyan-200 rounded">
-            <svg width="26" height="27" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-1">
-                <path
-                    d="M13.2383 2.25H12.7617C12.187 2.25 11.6359 2.48705 11.2296 2.90901C10.8233 3.33097 10.595 3.90326 10.595 4.5V4.7025C10.5946 5.09707 10.4943 5.48459 10.3042 5.82619C10.114 6.1678 9.84072 6.45147 9.51167 6.64875L9.04584 6.93C8.71646 7.12748 8.34283 7.23144 7.9625 7.23144C7.58217 7.23144 7.20854 7.12748 6.87917 6.93L6.71667 6.84C6.21949 6.54217 5.62883 6.46137 5.07434 6.61535C4.51985 6.76932 4.04685 7.14548 3.75917 7.66125L3.52084 8.08875C3.23404 8.60505 3.15623 9.21843 3.3045 9.79425C3.45277 10.3701 3.815 10.8613 4.31167 11.16L4.47417 11.2725C4.80163 11.4688 5.07392 11.7507 5.26397 12.0902C5.45402 12.4296 5.55522 12.8148 5.5575 13.2075V13.7812C5.55902 14.1777 5.45962 14.5676 5.26938 14.9113C5.07914 15.2551 4.80481 15.5405 4.47417 15.7387L4.31167 15.84C3.815 16.1387 3.45277 16.6299 3.3045 17.2058C3.15623 17.7816 3.23404 18.3949 3.52084 18.9112L3.75917 19.3388C4.04685 19.8545 4.51985 20.2307 5.07434 20.3847C5.62883 20.5386 6.21949 20.4578 6.71667 20.16L6.87917 20.07C7.20854 19.8725 7.58217 19.7686 7.9625 19.7686C8.34283 19.7686 8.71646 19.8725 9.04584 20.07L9.51167 20.3513C9.84072 20.5485 10.114 20.8322 10.3042 21.1738C10.4943 21.5154 10.5946 21.9029 10.595 22.2975V22.5C10.595 23.0967 10.8233 23.669 11.2296 24.091C11.6359 24.5129 12.187 24.75 12.7617 24.75H13.2383C13.813 24.75 14.3641 24.5129 14.7704 24.091C15.1767 23.669 15.405 23.0967 15.405 22.5V22.2975C15.4054 21.9029 15.5057 21.5154 15.6958 21.1738C15.886 20.8322 16.1593 20.5485 16.4883 20.3513L16.9542 20.07C17.2835 19.8725 17.6572 19.7686 18.0375 19.7686C18.4178 19.7686 18.7915 19.8725 19.1208 20.07L19.2833 20.16C19.7805 20.4578 20.3712 20.5386 20.9257 20.3847C21.4802 20.2307 21.9532 19.8545 22.2408 19.3388L22.4792 18.9C22.766 18.3837 22.8438 17.7703 22.6955 17.1945C22.5472 16.6187 22.185 16.1275 21.6883 15.8287L21.5258 15.7387C21.1952 15.5405 20.9209 15.2551 20.7306 14.9113C20.5404 14.5676 20.441 14.1777 20.4425 13.7812V13.2188C20.441 12.8223 20.5404 12.4324 20.7306 12.0887C20.9209 11.7449 21.1952 11.4595 21.5258 11.2613L21.6883 11.16C22.185 10.8613 22.5472 10.3701 22.6955 9.79425C22.8438 9.21843 22.766 8.60505 22.4792 8.08875L22.2408 7.66125C21.9532 7.14548 21.4802 6.76932 20.9257 6.61535C20.3712 6.46137 19.7805 6.54217 19.2833 6.84L19.1208 6.93C18.7915 7.12748 18.4178 7.23144 18.0375 7.23144C17.6572 7.23144 17.2835 7.12748 16.9542 6.93L16.4883 6.64875C16.1593 6.45147 15.886 6.1678 15.6958 5.82619C15.5057 5.48459 15.4054 5.09707 15.405 4.7025V4.5C15.405 3.90326 15.1767 3.33097 14.7704 2.90901C14.3641 2.48705 13.813 2.25 13.2383 2.25Z"
-                    stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                <path
-                    d="M13 16.875C14.7949 16.875 16.25 15.364 16.25 13.5C16.25 11.636 14.7949 10.125 13 10.125C11.2051 10.125 9.75 11.636 9.75 13.5C9.75 15.364 11.2051 16.875 13 16.875Z"
-                    stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            Configuración</a>
+        <!-- Div espaciador -->
+        <div class="flex flex-col">
+            <!-- Este es un duv para poner el espacio entre notificacion y configuracion, acomodan el espacio corde a la pantalla que hagan -->
+
+            <!-- Configuracion -->
+            <a routerLink="/configuracion" routerLinkActive="bg-cyan-200" class="flex p-2 hover:bg-cyan-200 rounded">
+                <svg width="26" height="27" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    class="mr-1">
+                    <path
+                        d="M13.2383 2.25H12.7617C12.187 2.25 11.6359 2.48705 11.2296 2.90901C10.8233 3.33097 10.595 3.90326 10.595 4.5V4.7025C10.5946 5.09707 10.4943 5.48459 10.3042 5.82619C10.114 6.1678 9.84072 6.45147 9.51167 6.64875L9.04584 6.93C8.71646 7.12748 8.34283 7.23144 7.9625 7.23144C7.58217 7.23144 7.20854 7.12748 6.87917 6.93L6.71667 6.84C6.21949 6.54217 5.62883 6.46137 5.07434 6.61535C4.51985 6.76932 4.04685 7.14548 3.75917 7.66125L3.52084 8.08875C3.23404 8.60505 3.15623 9.21843 3.3045 9.79425C3.45277 10.3701 3.815 10.8613 4.31167 11.16L4.47417 11.2725C4.80163 11.4688 5.07392 11.7507 5.26397 12.0902C5.45402 12.4296 5.55522 12.8148 5.5575 13.2075V13.7812C5.55902 14.1777 5.45962 14.5676 5.26938 14.9113C5.07914 15.2551 4.80481 15.5405 4.47417 15.7387L4.31167 15.84C3.815 16.1387 3.45277 16.6299 3.3045 17.2058C3.15623 17.7816 3.23404 18.3949 3.52084 18.9112L3.75917 19.3388C4.04685 19.8545 4.51985 20.2307 5.07434 20.3847C5.62883 20.5386 6.21949 20.4578 6.71667 20.16L6.87917 20.07C7.20854 19.8725 7.58217 19.7686 7.9625 19.7686C8.34283 19.7686 8.71646 19.8725 9.04584 20.07L9.51167 20.3513C9.84072 20.5485 10.114 20.8322 10.3042 21.1738C10.4943 21.5154 10.5946 21.9029 10.595 22.2975V22.5C10.595 23.0967 10.8233 23.669 11.2296 24.091C11.6359 24.5129 12.187 24.75 12.7617 24.75H13.2383C13.813 24.75 14.3641 24.5129 14.7704 24.091C15.1767 23.669 15.405 23.0967 15.405 22.5V22.2975C15.4054 21.9029 15.5057 21.5154 15.6958 21.1738C15.886 20.8322 16.1593 20.5485 16.4883 20.3513L16.9542 20.07C17.2835 19.8725 17.6572 19.7686 18.0375 19.7686C18.4178 19.7686 18.7915 19.8725 19.1208 20.07L19.2833 20.16C19.7805 20.4578 20.3712 20.5386 20.9257 20.3847C21.4802 20.2307 21.9532 19.8545 22.2408 19.3388L22.4792 18.9C22.766 18.3837 22.8438 17.7703 22.6955 17.1945C22.5472 16.6187 22.185 16.1275 21.6883 15.8287L21.5258 15.7387C21.1952 15.5405 20.9209 15.2551 20.7306 14.9113C20.5404 14.5676 20.441 14.1777 20.4425 13.7812V13.2188C20.441 12.8223 20.5404 12.4324 20.7306 12.0887C20.9209 11.7449 21.1952 11.4595 21.5258 11.2613L21.6883 11.16C22.185 10.8613 22.5472 10.3701 22.6955 9.79425C22.8438 9.21843 22.766 8.60505 22.4792 8.08875L22.2408 7.66125C21.9532 7.14548 21.4802 6.76932 20.9257 6.61535C20.3712 6.46137 19.7805 6.54217 19.2833 6.84L19.1208 6.93C18.7915 7.12748 18.4178 7.23144 18.0375 7.23144C17.6572 7.23144 17.2835 7.12748 16.9542 6.93L16.4883 6.64875C16.1593 6.45147 15.886 6.1678 15.6958 5.82619C15.5057 5.48459 15.4054 5.09707 15.405 4.7025V4.5C15.405 3.90326 15.1767 3.33097 14.7704 2.90901C14.3641 2.48705 13.813 2.25 13.2383 2.25Z"
+                        stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path
+                        d="M13 16.875C14.7949 16.875 16.25 15.364 16.25 13.5C16.25 11.636 14.7949 10.125 13 10.125C11.2051 10.125 9.75 11.636 9.75 13.5C9.75 15.364 11.2051 16.875 13 16.875Z"
+                        stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Configuración</a>
+
+            <div>
+                <a routerLink="/logout" routerLinkActive="bg-cyan-200" class="flex p-2 hover:bg-cyan-200 rounded">
+                    <svg width="26" height="26" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        class="mr-1">
+                        <path
+                            d="M16.6666 12.5H8.33331M8.33331 12.5L12.5 8.33331M8.33331 12.5L12.5 16.6666M22.9166 12.5C22.9166 18.2529 18.2529 22.9166 12.5 22.9166C6.74701 22.9166 2.08331 18.2529 2.08331 12.5C2.08331 6.74701 6.74701 2.08331 12.5 2.08331C18.2529 2.08331 22.9166 6.74701 22.9166 12.5Z"
+                            stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Salir</a>
+
+
+
+            </div>
+        </div>
     </nav>
 
     <!-- Salir -->
-    <div >
-        <a routerLink="/logout" routerLinkActive="bg-cyan-200" class="flex p-2 hover:bg-cyan-200 rounded">
-            <svg width="26" height="26" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-1">
-                <path
-                    d="M16.6666 12.5H8.33331M8.33331 12.5L12.5 8.33331M8.33331 12.5L12.5 16.6666M22.9166 12.5C22.9166 18.2529 18.2529 22.9166 12.5 22.9166C6.74701 22.9166 2.08331 18.2529 2.08331 12.5C2.08331 6.74701 6.74701 2.08331 12.5 2.08331C18.2529 2.08331 22.9166 6.74701 22.9166 12.5Z"
-                    stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            Salir</a>
 
-
-
-    </div>
 </aside>
