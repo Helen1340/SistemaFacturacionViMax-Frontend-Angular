@@ -41,7 +41,7 @@ export class NuevoUsuario implements OnInit {
 
   initForm() {
     this.usuarioForm = this.fb.group({
-      company_id: [5], // nullable - coincide con API
+      //company_id: [''], // nullable - coincide con API
       role_id: [null, Validators.required], // required en el template, nullable en API
       nombre: ['', [Validators.required, Validators.maxLength(100)]], // ✓ coincide
       tipo_documento: ['', Validators.required], // ✓ required en template, nullable en API pero requerido en UI

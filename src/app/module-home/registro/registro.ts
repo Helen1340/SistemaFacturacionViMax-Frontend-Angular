@@ -17,10 +17,10 @@ export class Registro {
   showConfirmPassword = false;
   isLoading = false;
 
-  notification: { show: boolean; message: string; type: 'success' | 'error' } = {
+  notification = {
     show: false,
     message: '',
-    type: 'success'
+    type: 'success' as 'success' | 'error'
   };
 
   constructor(
@@ -46,7 +46,7 @@ export class Registro {
     }, { validators: this.passwordMatchValidator });
   }
 
-  // 🔹 Validadores
+  // 🧩 VALIDADORES PERSONALIZADOS
   noOnlySpacesValidator(control: AbstractControl): ValidationErrors | null {
     return control.value && control.value.trim() === '' ? { onlySpaces: true } : null;
   }
@@ -75,7 +75,7 @@ export class Registro {
     return password && confirm && password !== confirm ? { passwordMismatch: true } : null;
   }
 
-  // 🔹 Acciones
+  // 🧠 MÉTODOS AUXILIARES
   togglePasswordVisibility() { this.showPassword = !this.showPassword; }
   toggleConfirmPasswordVisibility() { this.showConfirmPassword = !this.showConfirmPassword; }
 
@@ -109,23 +109,22 @@ export class Registro {
     return messages[firstErrorKey] || 'Error en el campo';
   }
 
-  // 🔹 Enviar al backend con AuthService
-onSubmit() {
-  if (this.registerForm.invalid) {
-    this.registerForm.markAllAsTouched();
-    return;
-  }
+  // ✅ REGISTRO + LOGIN AUTOMÁTICO
+  onSubmit() {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
 
-  this.isLoading = true;
-  const formValue = this.registerForm.value;
+    this.isLoading = true;
+    const formValue = this.registerForm.value;
 
-    //Mapeo corregido según AuthController
     const dataToSend = {
       razon_social: formValue.businessName,
       nit: formValue.nit,
-      correo_empresa: formValue.companyEmail,     // 🔹 Laravel espera este nombre
+      correo_empresa: formValue.companyEmail,
       nombre: formValue.firstName,
-      correo_electronico: formValue.adminEmail,   // 🔹 login admin
+      correo_electronico: formValue.adminEmail,
       tipo_documento: formValue.documentType,
       numero_documento: formValue.documentNumber,
       password: formValue.password,
@@ -133,21 +132,31 @@ onSubmit() {
     };
 
     this.authService.register(dataToSend).subscribe({
-      next: () => {
-        this.showNotification('Registro exitoso', 'success');
+      next: (res) => {
+        console.log('Registro exitoso:', res);
+
+        if (res.access_token) {
+          // 🔹 Guarda token y marca usuario como autenticado
+          this.authService.setToken(res.access_token);
+          this.authService.setUser(res.user);
+          this.showNotification('Registro exitoso. Autenticando...', 'success');
+
+          setTimeout(() => {
+            this.router.navigate(['/parametros-generales']);
+          }, 1500);
+        } else {
+          this.showNotification('Registro exitoso, pero no se recibió token.', 'error');
+        }
+
         this.isLoading = false;
-        setTimeout(() => {
-          this.router.navigate(['/configuracion']);
-        }, 1500);
       },
       error: (err) => {
         console.error('Error en registro:', err);
         let errorMessage = 'Error en el registro';
 
         if (err.error) {
-          if (err.error.message) {
-            errorMessage = err.error.message;
-          } else if (err.error.errors) {
+          if (err.error.message) errorMessage = err.error.message;
+          else if (err.error.errors) {
             const firstField = Object.keys(err.error.errors)[0];
             errorMessage = err.error.errors[firstField][0];
           }
@@ -161,7 +170,7 @@ onSubmit() {
 
   private showNotification(message: string, type: 'success' | 'error') {
     this.notification = { show: true, message, type };
-    setTimeout(() => { this.notification.show = false; }, 4000);
+    setTimeout(() => (this.notification.show = false), 4000);
   }
 
   navigateToLogin() { this.router.navigate(['/login']); }

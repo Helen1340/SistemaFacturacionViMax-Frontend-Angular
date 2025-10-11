@@ -59,6 +59,8 @@ export class Acceder {
           this.authService.setToken(res.access_token);
 
           this.showNotification('Inicio de sesión exitoso 🚀', 'success');
+          console.log(res);
+          console.log(loginData);
 
           // Redirigir a facturas-notas
           this.router.navigate(['/facturas-notas']);

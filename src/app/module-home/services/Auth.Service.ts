@@ -6,42 +6,62 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost/api'; // Ajusta si usas /v1
+  private apiUrl = 'http://localhost/api'; // cambia según tu ruta real
+  private userKey = 'auth_user';
 
   constructor(private http: HttpClient) {}
 
-  // Registro
+  // 🔹 Registro
   register(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, data);
   }
 
-  // Login
+  // 🔹 Login
   login(data: { correo_electronico: string; password: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, data);
   }
 
-  // Perfil actual
+  // 🔹 Perfil actual (requiere token)
   me(): Observable<any> {
     return this.http.get(`${this.apiUrl}/me`);
   }
 
-  // Logout (backend)
+  // 🔹 Logout
   logout(): Observable<any> {
+    this.clearToken();
+    this.clearUser();
     return this.http.post(`${this.apiUrl}/logout`, {});
   }
 
-  // Guardar token
+  // 🧠 TOKEN
   setToken(token: string): void {
     localStorage.setItem('token', token);
   }
 
-  // Obtener token
   getToken(): string | null {
     return localStorage.getItem('token');
   }
 
-  // Eliminar token
   clearToken(): void {
     localStorage.removeItem('token');
+  }
+
+  // 🧠 USUARIO ACTUAL
+  setUser(user: any): void {
+    localStorage.setItem(this.userKey, JSON.stringify(user));
+  }
+
+  getUser(): any {
+    const data = localStorage.getItem(this.userKey);
+    return data ? JSON.parse(data) : null;
+  }
+
+  clearUser(): void {
+    localStorage.removeItem(this.userKey);
+  }
+
+  // 🔹 Verifica si hay sesión activa
+  isAuthenticated(): boolean {
+    return !!this.getToken();
   }
 }
