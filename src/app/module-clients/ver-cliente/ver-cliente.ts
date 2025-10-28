@@ -51,14 +51,14 @@ export class VerCliente implements OnInit {
           // Transformar los datos de la API al formato esperado usando los campos reales de la BD
           this.clienteData = {
             id: clienteEncontrado.id,
-            nombreRazon: clienteEncontrado.nombre || '',
-            documento: `${clienteEncontrado.tipo_documento || ''} - ${clienteEncontrado.numero_documento || ''}`,
-            direccion: clienteEncontrado.direccion || '-',
-            pais: clienteEncontrado.pais || '',
-            email: clienteEncontrado.correo_electronico || '',
-            telefono: clienteEncontrado.telefono || '',
-            descripcion: clienteEncontrado.descripcion || '',
-            estado: clienteEncontrado.estado || 'Activo'
+            nombreRazon: clienteEncontrado.first_name || '',
+            documento: `${clienteEncontrado.document_type || ''} - ${clienteEncontrado.document_number || ''}`,
+            direccion: clienteEncontrado.address || '-',
+            pais: clienteEncontrado.country || '',
+            email: clienteEncontrado.email || '',
+            telefono: clienteEncontrado.phone || '',
+            descripcion: clienteEncontrado.description || '',
+            estado: clienteEncontrado.status === 'Active' ? 'Activo' : 'Inactivo'
           };
         } else {
           this.showNotification = true;

@@ -51,43 +51,43 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
                 <label class="block text-sm">Nombre <span class="text-red-500">*</span></label>
-                <input type="text" [(ngModel)]="clienteForm.nombre" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                <input type="text" [(ngModel)]="clienteForm.first_name" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
             </div>
             <div>
                 <label class="block text-sm">Tipo de documento <span class="text-red-500">*</span></label>
-                <select [(ngModel)]="clienteForm.tipo_documento" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <select [(ngModel)]="clienteForm.document_type" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
                     <option value="">Seleccione...</option>
                     <option *ngFor="let tipo of tiposDocumento" [value]="tipo.value">{{ tipo.label }}</option>
                 </select>
             </div>
             <div>
                 <label class="block text-sm">Número de documento <span class="text-red-500">*</span></label>
-                <input type="text" [(ngModel)]="clienteForm.numero_documento" (input)="onNumeroDocumentoChange()" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                <input type="text" [(ngModel)]="clienteForm.document_number" (input)="onNumeroDocumentoChange()" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
             </div>
             <div class="password-field">
                 <label class="block text-sm">Contraseña</label>
-                <input type="password" [(ngModel)]="clienteForm.contrasena" readonly class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100" />
+                <input type="password" [(ngModel)]="clienteForm.password" readonly class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100" />
                 <small class="text-gray-500 text-xs">La contraseña se genera automáticamente al ingresar el número de documento</small>
             </div>
             <div>
                 <label class="block text-sm">Correo electrónico <span class="text-red-500">*</span></label>
-                <input type="email" [(ngModel)]="clienteForm.correo_electronico" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                <input type="email" [(ngModel)]="clienteForm.email" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
             </div>
             <div>
                 <label class="block text-sm">País <span class="text-red-500">*</span></label>
-                <input type="text" [(ngModel)]="clienteForm.pais" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                <input type="text" [(ngModel)]="clienteForm.country" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
             </div>
             <div class="md:col-span-2">
                 <label class="block text-sm">Dirección <span class="text-red-500">*</span></label>
-                <input type="text" [(ngModel)]="clienteForm.direccion" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                <input type="text" [(ngModel)]="clienteForm.address" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
             </div>
             <div class="md:col-span-3">
                 <label class="block text-sm">Descripción</label>
-                <textarea [(ngModel)]="clienteForm.descripcion" class="w-full border border-gray-300 rounded-lg px-3 py-2" rows="3"></textarea>
+                <textarea [(ngModel)]="clienteForm.description" class="w-full border border-gray-300 rounded-lg px-3 py-2" rows="3"></textarea>
             </div>
             <div class="md:col-span-3">
                 <label class="block text-sm">Teléfono (opcional)</label>
-                <input type="text" [(ngModel)]="clienteForm.telefono" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                <input type="text" [(ngModel)]="clienteForm.phone" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
             </div>
         </div>
         <div class="flex justify-end gap-4 mt-6">
