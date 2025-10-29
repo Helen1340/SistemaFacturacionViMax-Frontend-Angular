@@ -18,12 +18,14 @@
       </button>
       <div *ngIf="isDropdownOpen"
         class="absolute right-0 mt-2 w-56 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
-        <button (click)="navigateToRegistrarProducto()"
-          class="block px-4 py-2 text-sm w-full text-gray-800 hover:bg-blue-100 rounded-lg cursor-pointer">Registrar
-          Producto</button>
-        <button (click)="navigateToRegistrarServicio()"
-          class="block px-4 py-2 text-sm w-full text-gray-800 hover:bg-blue-100 rounded-lg cursor-pointer">Registrar
-          Servicio</button>
+        <button (click)="navigateToRegisterProduct()"
+          class="block px-4 py-2 text-sm w-full text-gray-800 hover:bg-blue-100 rounded-lg cursor-pointer">
+          Registrar Producto
+        </button>
+        <button (click)="navigateToRegisterService()"
+          class="block px-4 py-2 text-sm w-full text-gray-800 hover:bg-blue-100 rounded-lg cursor-pointer">
+          Registrar Servicio
+        </button>
       </div>
     </div>
   </div>
@@ -40,15 +42,15 @@
     </div>
 
     <div class="flex items-center space-x-2 w-full md:w-[200px]">
-      <label class="text-base font-semibold text-gray-900">Filtro</label>
+      <label class="text-base font-semibold text-gray-900">Filtrar</label>
       <div class="relative w-full">
         <select [(ngModel)]="filterValue" (change)="onFilter()"
           class="appearance-none border border-gray-300 rounded-2xl px-4 py-2 text-gray-700 pr-10 w-full">
           <option value="">Todos</option>
-          <option value="producto">Producto</option>
-          <option value="servicio">Servicio</option>
-          <option value="activo">Estado Activo</option>
-          <option value="inactivo">Estado Inactivo</option>
+          <option value="product">Producto</option>
+          <option value="service">Servicio</option>
+          <option value="active">Estado Activo</option>
+          <option value="inactive">Estado Inactivo</option>
         </select>
         <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -60,13 +62,10 @@
   </div>
 
   <div class="bg-white rounded-2xl shadow overflow-hidden">
-
-
     <div
       class="overflow-x-auto overflow-y-auto max-h-[375px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
 
       <table class="w-full table-auto">
-
         <thead class="bg-gray-100 text-black text-left sticky top-0 z-10">
           <tr>
             <th class="px-4 py-3 font-semibold min-w-[150px]">Código</th>
@@ -80,23 +79,23 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let item of paginatedItems; trackBy: trackByFn; let i = index"
+          <tr *ngFor="let item of paginatedItems; trackBy: trackByFn"
             class="border-t border-t-gray-200 hover:bg-gray-50">
-            <td class="px-4 py-3 text-gray-600 min-w-[150px]">{{ item.codigo || '-' }}</td>
-            <td class="px-4 py-3 text-gray-600 min-w-[200px]">{{ item.nombre }}</td>
-            <td class="px-4 py-3 text-gray-600 min-w-[120px]">
-              <span [ngClass]="item.tipo === 'Producto' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'"
-                class="text-xs px-2 py-1 rounded-full">{{ item.tipo }}</span>
+            <td class="px-4 py-3 text-gray-600">{{ item.code || '-' }}</td>
+            <td class="px-4 py-3 text-gray-600">{{ item.name }}</td>
+            <td class="px-4 py-3 text-gray-600">
+              <span [ngClass]="item.type === 'Product' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'"
+                class="text-xs px-2 py-1 rounded-full">{{ item.type }}</span>
             </td>
-            <td class="px-4 py-3 text-gray-600 min-w-[100px]">{{ item.measure_unit || '-' }}</td>
-            <td class="px-4 py-3 text-gray-600 min-w-[120px]">{{ formatPrice(item.precio_unitario) }}</td>
+            <td class="px-4 py-3 text-gray-600">{{ item.measure_unit || '-' }}</td>
+            <td class="px-4 py-3 text-gray-600">{{ formatPrice(item.unit_price) }}</td>
+            <td class="px-4 py-3">
+              <span [ngClass]="item.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                class="text-xs px-2 py-1 rounded-full">{{ item.status }}</span>
+            </td>
 
-            <td class="px-4 py-3 min-w-[100px]">
-              <span [ngClass]="item.estado === 'Activo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                class="text-xs px-2 py-1 rounded-full">{{ item.estado }}</span>
-            </td>
-            <td class="px-4 py-3 text-center relative min-w-[120px]">
-              <button (click)="toggleDropdown($event, item.id!)" class="p-2 rounded hover:bg-gray-100">
+            <td class="px-4 py-3 text-center relative">
+              <button (click)="toggleDropdown($event, item.id)" class="p-2 rounded hover:bg-gray-100">
                 <svg width="19" height="19" viewBox="0 0 22 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M13.4136 15.0078C13.4193 13.558 12.5425 12.3793 11.4552 12.375C10.3679 12.3707 9.48184 13.5425 9.47612 14.9922C9.4704 16.4419 10.3472 17.6207 11.4345 17.625C12.5218 17.6293 13.4079 16.4575 13.4136 15.0078Z"
@@ -109,22 +108,20 @@
                     fill="black" />
                 </svg>
               </button>
-              <!-- Dropdown con posicionamiento fijo -->
-              <div *ngIf="openDropdownId === item.id" 
-                   class="fixed w-40 bg-white border border-gray-300 rounded-2xl shadow-lg z-[9999]"
-                   [style.top.px]="dropdownTop" 
-                   [style.left.px]="dropdownLeft">
+
+              <div *ngIf="openDropdownId === item.id"
+                class="fixed w-40 bg-white border border-gray-300 rounded-2xl shadow-lg z-[9999]"
+                [style.top.px]="dropdownTop" [style.left.px]="dropdownLeft">
                 <button (click)="viewItem(item)"
                   class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100 rounded-t-2xl">
                   Ver Detalles
                 </button>
-                <button (click)="editItem(item)"
-                  class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100">
+                <button (click)="editItem(item)" class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100">
                   Editar
                 </button>
                 <button (click)="deleteItem(item)"
                   class="block w-full text-left px-4 py-2 text-sm hover:bg-red-100 text-red-600 rounded-b-2xl">
-                  {{ item.estado === 'Activo' ? 'Eliminar' : 'Activar' }}
+                  {{ item.status === 'Active' ? 'Eliminar' : 'Activar' }}
                 </button>
               </div>
             </td>
@@ -143,12 +140,10 @@
   <div *ngIf="totalItems > 0"
     class="bg-white p-4 rounded-2xl shadow mt-2 flex flex-col sm:flex-row items-center sm:justify-between space-y-2 sm:space-y-0">
 
-    <!-- Texto de elementos -->
     <div class="text-sm text-gray-600 text-center sm:text-left">
       Mostrando {{ startItem }} - {{ endItem }} de {{ totalItems }} elementos
     </div>
 
-    <!-- Botones de paginación -->
     <div class="flex items-center justify-center sm:justify-end space-x-2">
       <button (click)="previousPage()" [disabled]="currentPage === 1"
         [ngClass]="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"

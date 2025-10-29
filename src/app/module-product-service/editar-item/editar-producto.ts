@@ -26,13 +26,13 @@ export class EditarProducto implements OnInit {
   ngOnInit(): void {
     // Inicializar formulario vacío
     this.productoForm = this.fb.group({
-      nombre: ['', Validators.required],
-      descripcion: [''],
-      codigo_estandar: ['', Validators.required],
-      codigo_producto: ['', Validators.required],
-      precio_unitario: ['', Validators.required],
+      name: ['', Validators.required],
+      description: [''],
+      standard_code: [''],
+      product_code: ['', Validators.required],
+      unit_price: ['', Validators.required],
       measurement_unit_id: ['', Validators.required],
-      estado: ['Activo', Validators.required]
+      status: ['Active', Validators.required]
     });
 
     // Obtener ID de la ruta
@@ -48,24 +48,15 @@ export class EditarProducto implements OnInit {
   cargarProducto(id: number) {
     this.productosServicio.getProductById(id).subscribe({
       next: (producto: any) => {
-        console.log('Producto cargado:', producto);
-
-        // Asegurar que precio sea número
-        const precio = producto.precio_unitario
-          ? parseFloat(producto.precio_unitario)
-          : 0;
-
         this.productoForm.patchValue({
-          nombre: producto.nombre ?? '',
-          descripcion: producto.descripcion ?? '',
-          codigo_estandar: producto.codigo_estandar ?? '',
-          codigo_producto: producto.codigo_producto ?? '',
-          precio_unitario: precio,
+          name: producto.name ?? '',
+          description: producto.description ?? '',
+          standard_code: producto.standard_code ?? '',
+          product_code: producto.product_code ?? '',
+          unit_price: producto.unit_price ?? 0,
           measurement_unit_id: producto.measurement_unit_id ?? '',
-          estado: producto.estado ?? 'Activo'
+          status: producto.status ?? 'Active'
         });
-
-        console.log('Form values after patch:', this.productoForm.value);
       },
       error: (err) => {
         console.error('Error al cargar producto:', err);

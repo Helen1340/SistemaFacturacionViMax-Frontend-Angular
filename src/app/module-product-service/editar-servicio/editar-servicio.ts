@@ -25,12 +25,12 @@ export class EditarServicio implements OnInit {
   ngOnInit(): void {
     // Inicializar formulario vacío
     this.serviceForm = this.fb.group({
-      nombre: ['', Validators.required],
-      descripcion: [''],
-      codigo_servicio: ['', Validators.required],
-      precio_unitario: ['', Validators.required],
+      name: ['', Validators.required],
+      description: [''],
+      service_code: ['', Validators.required],
+      unit_price: ['', Validators.required],
       measurement_unit_id: ['', Validators.required],
-      estado: ['Activo', Validators.required]
+      status: ['Active', Validators.required]
     });
 
     // Obtener ID de la ruta
@@ -55,14 +55,19 @@ export class EditarServicio implements OnInit {
   }
 
   cargarUnidades(): void {
+    console.log('Cargando unidades de medida para editar servicio...');
     this.productosServicio.getMeasurementUnits().subscribe({
       next: (res) => {
+        console.log('Unidades recibidas:', res);
         const codigosServicio = ['HUR', 'DAY', 'MON', 'E48', 'CNT']; 
         this.measurementUnits = res.filter((u: any) =>
-          codigosServicio.includes(u.codigo_dian)
+          codigosServicio.includes(u.dian_code)
         );
+        console.log('Unidades filtradas para servicios:', this.measurementUnits);
       },
-      error: (err) => console.error('Error cargando unidades:', err),
+      error: (err) => {
+        console.error('Error cargando unidades:', err);
+      },
     });
   }
   

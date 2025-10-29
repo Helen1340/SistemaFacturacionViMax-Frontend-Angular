@@ -34,9 +34,9 @@
         <select [(ngModel)]="filterValue" (change)="onFilter()"
           class="appearance-none border border-gray-300 rounded-2xl px-4 py-2 text-gray-700 pr-10 w-full">
           <option value="">Todos</option>
-          <option value="activo">Estado Activo</option>
-          <option value="inactivo">Estado Inactivo</option>
-          <option *ngFor="let role of roles" [value]="'rol_' + role.id">{{ role.nombre }}</option>
+          <option value="active">Estado Activo</option>
+          <option value="inactive">Estado Inactivo</option>
+          <option *ngFor="let role of roles" [value]="'rol_' + role.id">{{ role.role_name }}</option>
         </select>
         <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -72,25 +72,25 @@
           <tr *ngFor="let user of paginatedUsers; trackBy: trackByFn; let i = index"
             class="border-t border-t-gray-200 hover:bg-gray-50">
             <td class="px-4 py-3 min-w-[22%]">
-              <div class="font-medium text-gray-900">{{ user.nombre }}</div>
+              <div class="font-medium text-gray-900">{{ user.first_name }}</div>
             </td>
             <td class="px-4 py-3 sm:w-[18%]">
               <div class="text-sm">
-                <span [ngClass]="getDocumentTypeClass(user.tipo_documento)" class="text-xs px-2 py-1 rounded">{{
-                  user.tipo_documento }}</span>
-                <div class="mt-1 text-gray-600">{{ user.numero_documento }}</div>
+                <span [ngClass]="getDocumentTypeClass(user.document_type)" class="text-xs px-2 py-1 rounded">{{
+                  user.document_type }}</span>
+                <div class="mt-1 text-gray-600">{{ user.document_number }}</div>
               </div>
             </td>
-            <td class="px-4 py-3 break-words sm:w-[20%]">{{ user.correo_electronico }}</td>
-            <td class="px-4 py-3 break-words sm:w-[10%]">{{ user.telefono }}</td>
+            <td class="px-4 py-3 break-words sm:w-[20%]">{{ user.email }}</td>
+            <td class="px-4 py-3 break-words sm:w-[10%]">{{ user.phone }}</td>
             <td class="px-4 py-3 min-w-[20%]">
               <!-- CORRECCIÓN: Usar getRoleName() para obtener el nombre del rol -->
               <span [ngClass]="getRoleClass(getRoleName(user.role_id))" class="text-xs px-2 py-1 rounded-full">{{
                 getRoleName(user.role_id) }}</span>
             </td>
             <td class="px-4 py-3 min-w-[8%]">
-              <span [ngClass]="getStatusClass(user.estado)" class="text-xs px-2 py-1 rounded-full">{{
-                user.estado }}</span>
+              <span [ngClass]="getStatusClass(user.status)" class="text-xs px-2 py-1 rounded-full">{{
+                user.status }}</span>
             </td>
             <td class="px-4 py-3 text-center relative min-w-[8%]">
               <button (click)="toggleDropdown($event, user.id)" class="p-2 rounded hover:bg-gray-100">
@@ -121,8 +121,8 @@
                 </button>
                 <button (click)="UpdateUserStatus(user)"
                   class="block w-full text-left px-4 py-2 text-sm rounded-b-2xl hover:bg-red-100 transition" 
-                  [ngClass]="user.estado === 'Activo' ? 'text-red-600' : 'text-green-600'">
-                  {{ user.estado === 'Activo' ? 'Desactivar' : 'Activar' }}
+                  [ngClass]="user.status === 'Active' ? 'text-red-600' : 'text-green-600'">
+                  {{ user.status === 'Active' ? 'Desactivar' : 'Activar' }}
                 </button>
               </div>
             </td>

@@ -15,7 +15,7 @@ interface Policy {
   templateUrl: './retencion-respaldo.html',
   styleUrls: ['./retencion-respaldo.css']  
 }) 
-export class PoliticaRetencionComponent implements OnInit {
+export class PoliticaRetencion implements OnInit {
 
   // Objeto para almacenar la configuración de la política
   policy: Policy = {

@@ -31,7 +31,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
             <div>
                 <label class="block text-sm text-black">Nombre Completo</label>
-                <p class="font-medium text-sm text-gray-900">{{ usuarioData.nombre }}</p>
+                <p class="font-medium text-sm text-gray-900">{{ usuarioData.first_name }}</p>
             </div>
 
             <div>
@@ -42,29 +42,29 @@
             <div>
                 <label class="block text-sm text-black">Tipo de Documento</label>
                 <div class="flex items-center">
-                    <span [ngClass]="getDocumentTypeClass(usuarioData.tipo_documento)"
-                        class="text-xs px-2 py-1 rounded mr-2">{{ usuarioData.tipo_documento }}</span>
+                    <span [ngClass]="getDocumentTypeClass(usuarioData.document_type)"
+                        class="text-xs px-2 py-1 rounded mr-2">{{ usuarioData.document_type }}</span>
                 </div>
             </div>
 
             <div>
                 <label class="block text-sm text-black">Número de Documento</label>
-                <p class="font-medium text-sm text-gray-900">{{ usuarioData.numero_documento }}</p>
+                <p class="font-medium text-sm text-gray-900">{{ usuarioData.document_number }}</p>
             </div>
 
             <div>
                 <label class="block text-sm text-black">Correo Electrónico</label>
-                <p class="font-medium text-sm text-gray-900">{{ usuarioData.correo_electronico }}</p>
+                <p class="font-medium text-sm text-gray-900">{{ usuarioData.email }}</p>
             </div>
 
             <div>
                 <label class="block text-sm text-black">Teléfono</label>
-                <p class="font-medium text-sm text-gray-900">{{ usuarioData.telefono }}</p>
+                <p class="font-medium text-sm text-gray-900">{{ usuarioData.phone }}</p>
             </div>
 
             <div>
                 <label class="block text-sm text-black">País</label>
-                <p class="font-medium text-sm text-gray-900">{{ usuarioData.pais }}</p>
+                <p class="font-medium text-sm text-gray-900">{{ usuarioData.country }}</p>
             </div>
 
             <div>
@@ -77,25 +77,25 @@
 
             <div class="md:col-span-2">
                 <label class="block text-sm text-black">Dirección</label>
-                <p class="font-medium text-sm text-gray-900">{{ usuarioData.direccion }}</p>
+                <p class="font-medium text-sm text-gray-900">{{ usuarioData.address }}</p>
             </div>
 
             <div>
                 <label class="block text-sm text-black">Estado</label>
                 <div class="flex items-center">
-                    <span [ngClass]="getStatusClass(usuarioData.estado)" class="text-xs px-2 py-1 rounded-full">{{
-                        usuarioData.estado }}</span>
+                    <span [ngClass]="getStatusClass(usuarioData.status)" class="text-xs px-2 py-1 rounded-full">{{
+                        usuarioData.status }}</span>
                 </div>
             </div>
 
             <div>
                 <label class="block text-sm text-black">Último Acceso</label>
-                <p class="font-medium text-sm text-gray-900">{{ usuarioData.ultimo_acceso || 'No disponible' }}</p>
+                <p class="font-medium text-sm text-gray-900">{{ usuarioData.last_access || 'No disponible' }}</p>
             </div>
 
-            <div class="md:col-span-2" *ngIf="usuarioData.descripcion">
+            <div class="md:col-span-2" *ngIf="usuarioData.description">
                 <label class="block text-sm text-black">Descripción</label>
-                <p class="font-medium text-sm text-gray-900">{{ usuarioData.descripcion }}</p>
+                <p class="font-medium text-sm text-gray-900">{{ usuarioData.description }}</p>
             </div>
         </div>
 

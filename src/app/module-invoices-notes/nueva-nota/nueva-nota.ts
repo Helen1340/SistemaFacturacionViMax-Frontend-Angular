@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './nueva-nota.html',
   styleUrl: './nueva-nota.css'
 })
-export class NuevaNotaComponent {
+export class NuevaNota {
 
   visualizarNota(): void {
     this.showNotification('Vista previa generada');

@@ -30,13 +30,13 @@
                 <!-- Primera fila: Nombre completo y Rol -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
-                        <label for="nombre" class="block text-sm font-medium text-black mb-2">
+                        <label for="first_name" class="block text-sm font-medium text-black mb-2">
                             Nombre completo <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" id="nombre" formControlName="nombre"
+                        <input type="text" id="first_name" formControlName="first_name"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                            [class.border-red-500]="usuarioForm.get('nombre')?.invalid && usuarioForm.get('nombre')?.touched">
-                        <div *ngIf="usuarioForm.get('nombre')?.invalid && usuarioForm.get('nombre')?.touched"
+                            [class.border-red-500]="usuarioForm.get('first_name')?.invalid && usuarioForm.get('first_name')?.touched">
+                        <div *ngIf="usuarioForm.get('first_name')?.invalid && usuarioForm.get('first_name')?.touched"
                             class="text-red-500 text-xs mt-1">
                             El nombre es requerido (máx. 100 caracteres)
                         </div>
@@ -50,7 +50,7 @@
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                             [class.border-red-500]="usuarioForm.get('role_id')?.invalid && usuarioForm.get('role_id')?.touched">
                             <option value="">Seleccionar rol</option>
-                            <option *ngFor="let rol of roles" [value]="rol.id">{{ rol.nombre }}</option>
+                            <option *ngFor="let rol of roles" [value]="rol.id">{{ rol.role_name }}</option>
                         </select>
                         <div *ngIf="usuarioForm.get('role_id')?.invalid && usuarioForm.get('role_id')?.touched"
                             class="text-red-500 text-xs mt-1">
@@ -62,31 +62,31 @@
                 <!-- Segunda fila: Tipo documento y Número documento -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
-                        <label for="tipo_documento" class="block text-sm font-medium text-black mb-2">
+                        <label for="document_type" class="block text-sm font-medium text-black mb-2">
                             Tipo de Documento <span class="text-red-500">*</span>
                         </label>
-                        <select id="tipo_documento" formControlName="tipo_documento"
+                        <select id="document_type" formControlName="document_type"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                            [class.border-red-500]="usuarioForm.get('tipo_documento')?.invalid && usuarioForm.get('tipo_documento')?.touched">
+                            [class.border-red-500]="usuarioForm.get('document_type')?.invalid && usuarioForm.get('document_type')?.touched">
                             <option value="">Seleccionar tipo</option>
                             <option value="NIT">NIT</option>
                             <option value="CC">Cédula de Ciudadanía</option>
                             <option value="CE">Cédula de Extranjería</option>
                         </select>
-                        <div *ngIf="usuarioForm.get('tipo_documento')?.invalid && usuarioForm.get('tipo_documento')?.touched"
+                        <div *ngIf="usuarioForm.get('document_type')?.invalid && usuarioForm.get('document_type')?.touched"
                             class="text-red-500 text-xs mt-1">
                             Seleccione un tipo de documento
                         </div>
                     </div>
 
                     <div>
-                        <label for="numero_documento" class="block text-sm font-medium text-black mb-2">
+                        <label for="document_number" class="block text-sm font-medium text-black mb-2">
                             Número de Documento <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" id="numero_documento" formControlName="numero_documento" maxlength="15"
+                        <input type="text" id="document_number" formControlName="document_number" maxlength="15"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                            [class.border-red-500]="usuarioForm.get('numero_documento')?.invalid && usuarioForm.get('numero_documento')?.touched">
-                        <div *ngIf="usuarioForm.get('numero_documento')?.invalid && usuarioForm.get('numero_documento')?.touched"
+                            [class.border-red-500]="usuarioForm.get('document_number')?.invalid && usuarioForm.get('document_number')?.touched">
+                        <div *ngIf="usuarioForm.get('document_number')?.invalid && usuarioForm.get('document_number')?.touched"
                             class="text-red-500 text-xs mt-1">
                             El número de documento es requerido (máx. 15 caracteres)
                         </div>
@@ -96,29 +96,29 @@
                 <!-- Tercera fila: Correo electrónico y Teléfono -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
-                        <label for="correo_electronico" class="block text-sm font-medium text-black mb-2">
+                        <label for="email" class="block text-sm font-medium text-black mb-2">
                             Correo electrónico <span class="text-red-500">*</span>
                         </label>
-                        <input type="email" id="correo_electronico" formControlName="correo_electronico" maxlength="100"
+                        <input type="email" id="email" formControlName="email" maxlength="100"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                            [class.border-red-500]="usuarioForm.get('correo_electronico')?.invalid && usuarioForm.get('correo_electronico')?.touched">
-                        <div *ngIf="usuarioForm.get('correo_electronico')?.invalid && usuarioForm.get('correo_electronico')?.touched"
+                            [class.border-red-500]="usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched">
+                        <div *ngIf="usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched"
                             class="text-red-500 text-xs mt-1">
-                            <span *ngIf="usuarioForm.get('correo_electronico')?.errors?.['required']">El correo es
+                            <span *ngIf="usuarioForm.get('email')?.errors?.['required']">El correo es
                                 requerido</span>
-                            <span *ngIf="usuarioForm.get('correo_electronico')?.errors?.['email']">Formato de correo
+                            <span *ngIf="usuarioForm.get('email')?.errors?.['email']">Formato de correo
                                 inválido</span>
                         </div>
                     </div>
 
                     <div>
-                        <label for="telefono" class="block text-sm font-medium text-black mb-2">
+                        <label for="phone" class="block text-sm font-medium text-black mb-2">
                             Teléfono <span class="text-red-500">*</span>
                         </label>
-                        <input type="tel" id="telefono" formControlName="telefono" maxlength="20"
+                        <input type="tel" id="phone" formControlName="phone" maxlength="20"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                            [class.border-red-500]="usuarioForm.get('telefono')?.invalid && usuarioForm.get('telefono')?.touched">
-                        <div *ngIf="usuarioForm.get('telefono')?.invalid && usuarioForm.get('telefono')?.touched"
+                            [class.border-red-500]="usuarioForm.get('phone')?.invalid && usuarioForm.get('phone')?.touched">
+                        <div *ngIf="usuarioForm.get('phone')?.invalid && usuarioForm.get('phone')?.touched"
                             class="text-red-500 text-xs mt-1">
                             El teléfono es requerido (máx. 20 caracteres)
                         </div>
@@ -128,25 +128,25 @@
                 <!-- Cuarta fila: Dirección y País -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
-                        <label for="direccion" class="block text-sm font-medium text-black mb-2">
+                        <label for="address" class="block text-sm font-medium text-black mb-2">
                             Dirección <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" id="direccion" formControlName="direccion" maxlength="150"
+                        <input type="text" id="address" formControlName="address" maxlength="150"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                            [class.border-red-500]="usuarioForm.get('direccion')?.invalid && usuarioForm.get('direccion')?.touched">
-                        <div *ngIf="usuarioForm.get('direccion')?.invalid && usuarioForm.get('direccion')?.touched"
+                            [class.border-red-500]="usuarioForm.get('address')?.invalid && usuarioForm.get('address')?.touched">
+                        <div *ngIf="usuarioForm.get('address')?.invalid && usuarioForm.get('address')?.touched"
                             class="text-red-500 text-xs mt-1">
                             La dirección es requerida (máx. 150 caracteres)
                         </div>
                     </div>
 
                     <div>
-                        <label for="pais" class="block text-sm font-medium text-black mb-2">
+                        <label for="country" class="block text-sm font-medium text-black mb-2">
                             País <span class="text-red-500">*</span>
                         </label>
-                        <select id="pais" formControlName="pais"
+                        <select id="country" formControlName="country"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                            [class.border-red-500]="usuarioForm.get('pais')?.invalid && usuarioForm.get('pais')?.touched">
+                            [class.border-red-500]="usuarioForm.get('country')?.invalid && usuarioForm.get('country')?.touched">
                             <option value="">Seleccionar país</option>
                             <option value="Colombia">Colombia</option>
                             <option value="Perú">Perú</option>
@@ -155,7 +155,7 @@
                             <option value="Bolivia">Bolivia</option>
                             <option value="Otro">Otro</option>
                         </select>
-                        <div *ngIf="usuarioForm.get('pais')?.invalid && usuarioForm.get('pais')?.touched"
+                        <div *ngIf="usuarioForm.get('country')?.invalid && usuarioForm.get('country')?.touched"
                             class="text-red-500 text-xs mt-1">
                             Seleccione un país
                         </div>
@@ -199,10 +199,10 @@
                 <!-- Sexta fila: Descripción -->
                 <div class="grid grid-cols-1 gap-6">
                     <div>
-                        <label for="descripcion" class="block text-sm font-medium text-black mb-2">
+                        <label for="description" class="block text-sm font-medium text-black mb-2">
                             Descripción
                         </label>
-                        <textarea id="descripcion" formControlName="descripcion" maxlength="250" rows="3"
+                        <textarea id="description" formControlName="description" maxlength="250" rows="3"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 resize-none"
                             placeholder="Descripción opcional del usuario...">
                 </textarea>
@@ -214,7 +214,7 @@
                 <div class="pt-4">
                     <h3 class="text-sm font-medium text-black mb-4">Estado</h3>
                     <div class="flex items-center">
-                        <input type="checkbox" id="usuario-activo" formControlName="estado_activo"
+                        <input type="checkbox" id="usuario-activo" formControlName="status_active"
                             class="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded">
                         <label for="usuario-activo" class="ml-2 text-sm text-black">
                             Usuario activo
@@ -224,10 +224,17 @@
 
                 <!-- Botones de Acción -->
                 <div class="pt-6 flex justify-between">
-                    <button type="button" (click)="onCancel()"
-                        class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-8 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-200">
-                        Cancelar
-                    </button>
+                    <div class="flex space-x-2">
+                        <button type="button" (click)="onCancel()"
+                            class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-8 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-200">
+                            Cancelar
+                        </button>
+                        <!-- Botón temporal para debug -->
+                        <button type="button" (click)="getFormStatus()"
+                            class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition duration-200">
+                            Debug Form
+                        </button>
+                    </div>
 
                     <button type="submit" [disabled]="usuarioForm.invalid || isLoading"
                         class="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-400 text-white font-medium py-2 px-16 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition duration-200">

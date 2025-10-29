@@ -19,7 +19,7 @@ interface Notification {
   templateUrl: './notificaciones.html',
   styleUrls: ['./notificaciones.css']
 })
-export class NotificacionesComponent implements OnInit {
+export class Notificaciones implements OnInit {
 
   // Estado de la búsqueda y filtro
   searchTerm: string = '';

@@ -5,9 +5,9 @@ import { User } from '../usuarios/usuarios';
 
 export interface Role {
   id: number;
-  nombre: string;
-  descripcion: string;
-  estado: string;
+  role_name: string;
+  description: string;
+  status: string;
   created_at: string;
   updated_at: string;
 }
@@ -16,16 +16,16 @@ export interface Role {
 export interface CreateUserPayload {
   company_id?: number | null;
   role_id?: number | null;
-  nombre: string;
-  tipo_documento?: 'NIT' | 'CC' | 'CE' | null;
-  numero_documento: string;
-  direccion?: string | null;
-  pais?: string | null;
-  descripcion?: string | null;
-  correo_electronico: string;
-  telefono?: string | null;
-  estado?: 'Activo' | 'Inactivo' | null;
-  ultimo_acceso?: string | null;
+  first_name: string;
+  document_type?: 'NIT' | 'CC' | 'CE' | null;
+  document_number: string;
+  address?: string | null;
+  country?: string | null;
+  description?: string | null;
+  email: string;
+  phone?: string | null;
+  status?: 'Active' | 'Inactive' | null;
+  last_access?: string | null;
   password: string;
 }
 
@@ -68,23 +68,23 @@ export class UserService {
   }
 
   // Método para activar/desactivar usuario (cambiar estado)
-  toggleUserStatus(id: number, newStatus: 'Activo' | 'Inactivo'): Observable<User> {
+  toggleUserStatus(id: number, newStatus: 'Active' | 'Inactive'): Observable<User> {
     return this.http.patch<User>(`${this.apiUrl}/${id}`, {
-      estado: newStatus
+      status: newStatus
     });
   }
 
   // Funciones para manejar el nombre comercial temporal en la descripción
   getTempCommercialName(user: User): string | null {
-    if (user.descripcion?.startsWith('TEMP_COMMERCIAL_NAME:')) {
-      return user.descripcion.replace('TEMP_COMMERCIAL_NAME:', '');
+    if (user.description?.startsWith('TEMP_COMMERCIAL_NAME:')) {
+      return user.description.replace('TEMP_COMMERCIAL_NAME:', '');
     }
     return null;
   }
 
   clearTempCommercialName(userId: number): Observable<User> {
     return this.http.patch<User>(`${this.apiUrl}/${userId}`, {
-      descripcion: null
+      description: null
     });
   }
 
@@ -94,7 +94,7 @@ export class UserService {
   }
 
   // Método para verificar si un documento ya existe
-  getUserByDocument(numeroDocumento: string): Observable<User[]> {
-    return this.http.get<User[]>(`${this.apiUrl}?documento=${numeroDocumento}`);
+  getUserByDocument(documentNumber: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}?document_number=${documentNumber}`);
   }
 }

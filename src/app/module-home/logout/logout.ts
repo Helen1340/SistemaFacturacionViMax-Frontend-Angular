@@ -7,7 +7,7 @@ import { AuthService } from '../services/Auth.Service';
   selector: 'app-logout',
   template: `<p>Cerrando sesión...</p>`
 })
-export class LogoutComponent implements OnInit {
+export class Logout implements OnInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {

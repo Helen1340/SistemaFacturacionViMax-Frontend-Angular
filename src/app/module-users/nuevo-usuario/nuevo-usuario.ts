@@ -43,15 +43,15 @@ export class NuevoUsuario implements OnInit {
     this.usuarioForm = this.fb.group({
       //company_id: [''], // nullable - coincide con API
       role_id: [null, Validators.required], // required en el template, nullable en API
-      nombre: ['', [Validators.required, Validators.maxLength(100)]], // ✓ coincide
-      tipo_documento: ['', Validators.required], // ✓ required en template, nullable en API pero requerido en UI
-      numero_documento: ['', [Validators.required, Validators.maxLength(50)]], // ✓ corregido maxLength
-      direccion: ['', [Validators.required, Validators.maxLength(150)]], // ✓ required en template, nullable en API
-      pais: ['', Validators.required], // ✓ required en template, nullable en API
-      descripcion: ['', Validators.maxLength(250)], // ✓ coincide
-      correo_electronico: ['', [Validators.required, Validators.email, Validators.maxLength(150)]], // ✓ coincide
-      telefono: ['', [Validators.required, Validators.maxLength(20)]], // ✓ corregido maxLength
-      estado_activo: [true], // ✓ para el checkbox del template
+      first_name: ['', [Validators.required, Validators.maxLength(100)]], // ✓ coincide
+      document_type: ['', Validators.required], // ✓ required en template, nullable en API pero requerido en UI
+      document_number: ['', [Validators.required, Validators.maxLength(50)]], // ✓ corregido maxLength
+      address: ['', [Validators.required, Validators.maxLength(150)]], // ✓ required en template, nullable en API
+      country: ['', Validators.required], // ✓ required en template, nullable en API
+      description: ['', Validators.maxLength(250)], // ✓ coincide
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(150)]], // ✓ coincide
+      phone: ['', [Validators.required, Validators.maxLength(20)]], // ✓ corregido maxLength
+      status_active: [true], // ✓ para el checkbox del template
       contrasena: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/)]], // ✓ coincide con template
       confirmar_contrasena: ['', Validators.required], // ✓ coincide con template
     }, {
@@ -92,17 +92,17 @@ export class NuevoUsuario implements OnInit {
     const payload = {
       company_id: formValue.company_id || null,
       role_id: formValue.role_id || null,
-      nombre: formValue.nombre,
-      tipo_documento: formValue.tipo_documento || null,
-      numero_documento: formValue.numero_documento,
-      direccion: formValue.direccion || null,
-      pais: formValue.pais || null,
-      descripcion: formValue.descripcion || null,
-      correo_electronico: formValue.correo_electronico,
-      telefono: formValue.telefono || null,
-      estado: formValue.estado_activo ? 'Activo' : 'Inactivo', // Mapear checkbox a string
+      first_name: formValue.first_name,
+      document_type: formValue.document_type || null,
+      document_number: formValue.document_number,
+      address: formValue.address || null,
+      country: formValue.country || null,
+      description: formValue.description || null,
+      email: formValue.email,
+      phone: formValue.phone || null,
+      status: formValue.status_active ? 'Active' : 'Inactive', // Mapear checkbox a string
       password: formValue.contrasena, // Mapear nombre del campo
-      ultimo_acceso: null // Campo que espera la API
+      last_access: null // Campo que espera la API
     };
 
     this.isLoading = true;

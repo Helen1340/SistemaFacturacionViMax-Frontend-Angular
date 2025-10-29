@@ -19,7 +19,7 @@ interface NormativeChange {
   templateUrl: './cambios-normativos.html',
   styleUrls: ['./cambios-normativos.css'] 
 })
-export class CambiosNormativosComponent implements OnInit {
+export class CambiosNormativos implements OnInit {
 
   // Variables para la lógica de la pantalla
   searchTerm: string = '';
