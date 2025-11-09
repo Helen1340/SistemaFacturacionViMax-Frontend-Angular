@@ -18,7 +18,7 @@ interface MeasurementUnit {
   templateUrl: './registrar-producto.html',
   styleUrl: './registrar-producto.css'
 })
-export class RegistrarProductoComponent implements OnInit {
+export class RegistrarProducto implements OnInit {
   productoForm!: FormGroup;
   isLoading = false;
   measurementUnits: any[] = [];
@@ -32,13 +32,13 @@ export class RegistrarProductoComponent implements OnInit {
 
   ngOnInit(): void {
     this.productoForm = this.fb.group({
-      codigo_estandar: ['', Validators.required],
-      codigo_producto: ['', Validators.required],
-      nombre: ['', [Validators.required, Validators.maxLength(100)]],
+      standard_code: [''],
+      product_code: ['', Validators.required],
+      name: ['', [Validators.required, Validators.maxLength(100)]],
       measurement_unit_id: ['', Validators.required],
-      precio_unitario: ['', [Validators.required, Validators.min(0.01)]],
-      estado: ['Activo', Validators.required],
-      descripcion: [''],
+      unit_price: ['', [Validators.required, Validators.min(0.01)]],
+      status: ['Active', Validators.required],
+      description: [''],
 
       // impuestos (opcional)
       impuestoIva: [false],
@@ -50,15 +50,20 @@ export class RegistrarProductoComponent implements OnInit {
   }
 
   cargarUnidades(): void {
+    console.log('Cargando unidades de medida para productos...');
     this.productoService.getMeasurementUnits().subscribe({
       next: (res) => {
-        // Filtrar SOLO las unidades válidas para servicios
+        console.log('Unidades recibidas:', res);
+        // Filtrar SOLO las unidades válidas para productos
         const codigosProducto = ['UND', 'KGM', 'GRM', 'LTR', 'BX', 'MLT']; 
         this.measurementUnits = res.filter((u: any) =>
-          codigosProducto.includes(u.codigo_dian)
+          codigosProducto.includes(u.dian_code)
         );
+        console.log('Unidades filtradas para productos:', this.measurementUnits);
       },
-      error: (err) => console.error('Error cargando unidades:', err),
+      error: (err) => {
+        console.error('Error cargando unidades:', err);
+      },
     });
   }
 
@@ -66,7 +71,7 @@ export class RegistrarProductoComponent implements OnInit {
     if (this.productoForm.invalid) return;
     this.isLoading = true;
 
-    this.productoService.createProducto(this.productoForm.value).subscribe({
+    this.productoService.createProduct(this.productoForm.value).subscribe({
       next: () => {
         this.isLoading = false;
         this.router.navigate(['/productos-servicios']);

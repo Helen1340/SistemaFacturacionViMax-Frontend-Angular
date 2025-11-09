@@ -1,6 +1,6 @@
 <main class="w-full md:ml-0 px-4 pb-2 flex-1 overflow-auto">
 
-    <div >
+    <div>
         <h2 class="text-4xl font-semibold mb-6 mt-2">
             Reporte de pagos
         </h2>
@@ -61,23 +61,28 @@
             </div>
         </div>
 
-        <div class="flex justify-end mt-6">
-            <button (click)="clearFilters()"
-                class="bg-gray-500 text-white text-sm px-6 py-2 rounded-xl hover:bg-gray-600 transition mr-3">
-                Limpiar filtros
-            </button>
-            <button (click)="applyFilters()"
-                class="bg-cyan-600 text-white text-sm px-6 py-2 rounded-xl hover:bg-cyan-700 transition mr-3">
-                Buscar
-            </button>
-            <button (click)="exportToExcel()"
-                class="bg-green-600 text-white text-sm px-6 py-2 rounded-xl hover:bg-green-700 transition mr-3">
-                Exportar Excel
-            </button>
-            <button (click)="exportToPDF()"
-                class="bg-red-600 text-white text-sm px-6 py-2 rounded-xl hover:bg-green-700 transition mr-3">
-                Exportar PDF
-            </button>
+        <div class="flex justify-between mt-6">
+            <div>
+                <button (click)="clearFilters()"
+                    class="bg-gray-500 text-white text-sm px-6 py-2 rounded-xl hover:bg-gray-600 transition mr-3">
+                    Limpiar filtros
+                </button>
+                <button (click)="applyFilters()"
+                    class="bg-cyan-600 text-white text-sm px-6 py-2 rounded-xl hover:bg-cyan-700 transition mr-3">
+                    Buscar
+                </button>
+            </div>
+            <div>
+                <button (click)="exportToExcel()"
+                    class="bg-green-600 text-white text-sm px-6 py-2 rounded-xl hover:bg-green-700 transition mr-3">
+                    Exportar Excel
+                </button>
+                <button (click)="exportToPDF()"
+                    class="bg-red-600 text-white text-sm px-6 py-2 rounded-xl hover:bg-green-700 transition mr-3">
+                    Exportar PDF
+                </button>
+            </div>
+
         </div>
     </div>
 

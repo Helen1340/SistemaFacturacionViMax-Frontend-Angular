@@ -46,7 +46,7 @@ export class Acceder {
     this.isLoading = true;
 
     const loginData = {
-      correo_electronico: this.loginForm.get('correo_electronico')?.value,
+      email: this.loginForm.get('correo_electronico')?.value,
       password: this.loginForm.get('password')?.value
     };
 

@@ -11,8 +11,11 @@ export class CompletaRegistroService {
 
     constructor(private http: HttpClient, private auth: AuthService) { }
 
-    completarRegistro(data: any): Observable<any> {
-        return this.http.put(`${this.apiUrl}/completar-registro`, data);
+    completeRegistration(formData: FormData): Observable<any> {
+        // ✅ Agregar _method para simular PUT en POST
+        formData.append('_method', 'PUT');
+        
+        // ✅ Usar POST en lugar de PUT para soportar archivos
+        return this.http.post(`${this.apiUrl}/completeRegistration`, formData);
     }
-
 }

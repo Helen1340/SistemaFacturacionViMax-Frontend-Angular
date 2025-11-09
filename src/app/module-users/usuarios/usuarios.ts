@@ -8,17 +8,17 @@ export interface User {
   id: number;
   company_id: number;
   role_id: number;
-  nombre: string;
-  tipo_documento: 'NIT' | 'CC' | 'CE';
-  numero_documento: string;
-  direccion: string;
-  pais: string;
-  descripcion?: string;
-  contrasena?: string;
-  correo_electronico: string;
-  telefono: string;
-  estado: 'Activo' | 'Inactivo';
-  ultimo_acceso?: string;
+  first_name: string;
+  document_type: 'NIT' | 'CC' | 'CE';
+  document_number: string;
+  address: string;
+  country: string;
+  description?: string;
+  password?: string;
+  email: string;
+  phone: string;
+  status: 'Active' | 'Inactive';
+  last_access?: string;
   remember_token?: string | null;
   created_at: string;
   updated_at: string;
@@ -64,7 +64,7 @@ export class Usuarios implements OnInit {
         // Filtrar usuarios que NO sean clientes usando los roles cargados
         this.users = (users || []).filter(user => {
           const userRole = this.roles.find(role => role.id === user.role_id);
-          return userRole && !userRole.nombre.toLowerCase().includes('cliente');
+          return userRole && !userRole.role_name.toLowerCase().includes('cliente');
         });
         this.filteredUsers = [...this.users];
         this.totalUsers = this.users.length;
@@ -86,7 +86,7 @@ export class Usuarios implements OnInit {
       next: (roles) => {
         // Filtrar roles de cliente/clientes para el módulo de usuarios
         this.roles = (roles || []).filter(role => 
-          !role.nombre.toLowerCase().includes('cliente')
+          !role.role_name.toLowerCase().includes('cliente')
         );
         // Cargar usuarios después de que los roles estén listos
         this.loadUsers();
@@ -110,16 +110,16 @@ export class Usuarios implements OnInit {
   }
 
   UpdateUserStatus(user: User) {
-    if (!confirm(`¿Estás seguro de que deseas ${user.estado === 'Activo' ? 'desactivar' : 'activar'} este usuario?`)) {
+    if (!confirm(`¿Estás seguro de que deseas ${user.status === 'Active' ? 'desactivar' : 'activar'} este usuario?`)) {
       return;
     }
     
     this.openDropdownId = null;
-    const newStatus = user.estado === 'Activo' ? 'Inactivo' : 'Activo';
+    const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
     
     this.userService.toggleUserStatus(user.id, newStatus).subscribe({
       next: () => {
-        alert(`Usuario ${newStatus === 'Inactivo' ? 'desactivado' : 'activado'} correctamente`);
+        alert(`Usuario ${newStatus === 'Inactive' ? 'desactivado' : 'activado'} correctamente`);
         this.loadUsers();
       },
       error: () => {
@@ -143,18 +143,18 @@ export class Usuarios implements OnInit {
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       filtered = filtered.filter(user => 
-        user.nombre.toLowerCase().includes(term) ||
-        user.correo_electronico.toLowerCase().includes(term) ||
-        user.numero_documento.toLowerCase().includes(term)
+        user.first_name.toLowerCase().includes(term) ||
+        user.email.toLowerCase().includes(term) ||
+        user.document_number.toLowerCase().includes(term)
       );
     }
 
     // Filtro por estado o rol
     if (this.filterValue) {
-      if (this.filterValue === 'activo') {
-        filtered = filtered.filter(user => user.estado === 'Activo');
-      } else if (this.filterValue === 'inactivo') {
-        filtered = filtered.filter(user => user.estado === 'Inactivo');
+      if (this.filterValue === 'active') {
+        filtered = filtered.filter(user => user.status === 'Active');
+      } else if (this.filterValue === 'Inactive') {
+        filtered = filtered.filter(user => user.status === 'Inactive');
       } else if (this.filterValue.startsWith('rol_')) {
         const roleId = parseInt(this.filterValue.split('_')[1]);
         filtered = filtered.filter(user => user.role_id === roleId);
@@ -181,7 +181,7 @@ export class Usuarios implements OnInit {
       return 'Sin rol';
     }
     const role = this.roles.find(r => r.id === roleId);
-    return role ? role.nombre : 'Cargando...';
+    return role ? role.role_name : 'Cargando...';
   }
 
   getRoleClass(role: string): string {
@@ -198,7 +198,7 @@ export class Usuarios implements OnInit {
   }
 
   getStatusClass(status: string): string {
-    return status === 'Activo' 
+    return status === 'Active' 
       ? 'bg-green-100 text-green-800' 
       : 'bg-red-100 text-red-800';
   }

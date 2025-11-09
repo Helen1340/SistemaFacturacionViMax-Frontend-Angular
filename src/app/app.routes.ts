@@ -15,7 +15,7 @@ import { NuevoImpuesto } from './module-settings/impuestos-retenciones/nuevo-imp
 import { FacturasNotas } from './module-invoices-notes/facturas-notas/facturas-notas';
 import { NuevaFactura } from './module-invoices-notes/nueva-factura/nueva-factura';
 import { EditarFactura } from './module-invoices-notes/editar-facturas/editar-facturas';
-import { NuevaNotaComponent } from './module-invoices-notes/nueva-nota/nueva-nota';
+import { NuevaNota } from './module-invoices-notes/nueva-nota/nueva-nota';
 import { DetalleFacturas } from './module-invoices-notes/detalle-facturas/detalle-facturas';
 import { NuevoUsuario } from './module-users/nuevo-usuario/nuevo-usuario';
 import { EditUsuario } from './module-users/edit-usuario/edit-usuario';
@@ -41,17 +41,17 @@ import { ConfigCorreo } from './module-settings/notificaciones-emails/config-cor
 
 
 import { Registro } from './module-home/registro/registro';
-import { LogoutComponent } from './module-home/logout/logout';
+import { Logout } from './module-home/logout/logout';
 import { ProductosServicios } from './module-product-service/productos-servicios/productos-servicios';
-import { RegistrarProductoComponent } from './module-product-service/registrar-producto/registrar-producto';
+import { RegistrarProducto } from './module-product-service/registrar-producto/registrar-producto';
 import { RegitrarServicio } from './module-product-service/regitrar-servicio/regitrar-servicio';
 import { EditarProducto } from './module-product-service/editar-item/editar-producto';
 import { EditarServicio } from './module-product-service/editar-servicio/editar-servicio';
 import { DetallesProducto } from './module-product-service/detalles-producto/detalles-producto';
 import { DetallesServicio } from './module-product-service/detalles-servicio/detalles-servicio';
-import { NotificacionesComponent } from './module-notifications/notificaciones/notificaciones';
-import { CambiosNormativosComponent } from './module-settings/cambios-normativos/cambios-normativos';
-import { PoliticaRetencionComponent } from './module-settings/retencion-respaldo/retencion-respaldo';
+import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
+import { CambiosNormativos } from './module-settings/cambios-normativos/cambios-normativos';
+import { PoliticaRetencion } from './module-settings/retencion-respaldo/retencion-respaldo';
 
 
 
@@ -111,7 +111,7 @@ export const routes: Routes = [
   { path: 'facturas-notas', component: FacturasNotas },
   { path: 'clientes', component: Clientes },
   { path: 'nueva-factura', component: NuevaFactura },
-  { path: 'nueva-nota', component: NuevaNotaComponent },
+  { path: 'nueva-nota', component: NuevaNota },
   { path: 'editar-facturas/:id', component: EditarFactura },
   { path: 'detalle-facturas/:id', component: DetalleFacturas },
   { path: 'nuevo-cliente', component: NuevoCliente },
@@ -144,7 +144,7 @@ export const routes: Routes = [
 
   //ESPACIO PARA LAS RUTAS DE HELEN (MODULE PRODUCTOS)
   { path: 'productos-servicios', component: ProductosServicios},
-  { path: 'registrar-producto', component: RegistrarProductoComponent},
+  { path: 'registrar-producto', component: RegistrarProducto},
   { path: 'registrar-servicio', component: RegitrarServicio},
 
   {path: 'editar-producto/:id', component: EditarProducto},
@@ -174,7 +174,7 @@ export const routes: Routes = [
   { path: 'login', component: Acceder },
   { path: 'acceso', component: Acceder },
   { path: 'register', component: Registro },
-  { path: 'logout', component: LogoutComponent },
+  { path: 'logout', component: Logout },
 
 
 
@@ -231,7 +231,7 @@ export const routes: Routes = [
 {path: 'contingencia',component: Contingencia},
 {path: 'facturas-contingencia',component: FacturaContingencia},
 {path: 'recepción-documentos',component: RecepcionDocumentos},
-{path: 'notificaciones',component: NotificacionesComponent},
+{path: 'notificaciones',component: Notificaciones},
 {path: 'historial-tecnico',component: HistorialTecnico},
 
 
@@ -274,10 +274,10 @@ export const routes: Routes = [
   {path: 'editar-resolucion/:id', component: EditarResolucion},
   {path: 'certificado-digital', component: CertificadoDigital},
   {path: 'notificaciones-email',component: NotificacionesEmails},
-  {path: 'retencion-respaldo', component: PoliticaRetencionComponent},
+  {path: 'retencion-respaldo', component: PoliticaRetencion},
   {path: 'configuracion-retencion-documental', component: ConfiguracionRetencionDocumental},
   {path: 'configuracion-respaldo-automatico', component: ConfiguracionRespaldoAutomatico},
-  {path: 'cambios-normativos', component: CambiosNormativosComponent},
+  {path: 'cambios-normativos', component: CambiosNormativos},
   {path: 'impuestos-retenciones',component: ImpuestosRetenciones},
   {path: 'nuevo-impuesto',component: NuevoImpuesto},
 

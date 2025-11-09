@@ -1,8 +1,7 @@
-
 <!-- Contenido principal -->
 <main class="w-full md:ml-0 px-4 flex-1 overflow-auto">
 
-    <div >
+    <div>
         <h2 class="text-4xl font-semibold mb-6 mt-2">
             Panel de reportes
         </h2>
@@ -12,67 +11,56 @@
 
     <main class=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Reporte de Facturas -->
-            <button (click)="navigateReportFacturas()">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <!-- Card genérica -->
+            <button (click)="navigateReportFacturas()"
+                class="group bg-white/60 backdrop-blur-lg border border-gray-100 shadow-md rounded-3xl p-8 flex flex-col items-center justify-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div
-                    class="flex flex-col items-center md:items-start bg-white shadow-lg rounded-2xl p-6 hover:shadow-xl transition">
-                    <div class="flex-shrink-0 bg-cyan-100 text-cyan-600 p-4 rounded-full mb-4">
-                        <!-- Icono Documento -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 7h10M7 11h10M7 15h10M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <div class="text-center md:text-left">
-                        <h3 class="text-lg font-semibold text-gray-800">Reporte de Facturas</h3>
-                        <p class="text-sm text-gray-500">Consulta y descarga facturas emitidas.</p>
-                    </div>
+                    class="bg-gradient-to-tr from-cyan-200 to-cyan-400 text-cyan-600 p-5 rounded-full mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 7h10M7 11h10M7 15h10M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
                 </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-1">Reporte de Facturas</h3>
+                <p class="text-sm text-gray-600 text-center">Consulta y descarga facturas emitidas.</p>
             </button>
 
             <!-- Reporte de Pagos -->
-            <button (click)="navigateReportPagos()">
+            <button (click)="navigateReportPagos()"
+                class="group bg-white/60 backdrop-blur-lg border border-gray-100 shadow-md rounded-3xl p-8 flex flex-col items-center justify-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div
-                    class="flex flex-col items-center md:items-start bg-white shadow-lg rounded-2xl p-6 hover:shadow-xl transition">
-                    <div class="flex-shrink-0 bg-cyan-100 text-cyan-600 p-4 rounded-full mb-4">
-                        <!-- Icono Dinero -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8v8m-6 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <div class="text-center md:text-left">
-                        <h3 class="text-lg font-semibold text-gray-800">Reporte de Pagos</h3>
-                        <p class="text-sm text-gray-500">Control de pagos registrados.</p>
-                    </div>
+                    class="bg-gradient-to-tr from-cyan-200 to-cyan-400 text-cyan-600 p-5 rounded-full mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8v8m-6 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                 </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-1">Reporte de Pagos</h3>
+                <p class="text-sm text-gray-600 text-center">Control de pagos registrados.</p>
             </button>
-
-    
 
             <!-- Reporte de Usuarios -->
-            <button (click)="navigateReportUsers()">
+            <button (click)="navigateReportUsers()"
+                class="group bg-white/60 backdrop-blur-lg border border-gray-100 shadow-md rounded-3xl p-8 flex flex-col items-center justify-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div
-                    class="flex flex-col items-center md:items-start bg-white shadow-lg rounded-2xl p-6 hover:shadow-xl transition">
-                    <div class="flex-shrink-0 bg-cyan-100 text-cyan-600 p-4 rounded-full mb-4">
-                        <!-- Icono Usuario -->
-                        <svg width="26" height="27" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg"
-                            class="mr-1">
-                            <path
-                                d="M13 14.625C15.9915 14.625 18.4166 12.1066 18.4166 9C18.4166 5.8934 15.9915 3.375 13 3.375C10.0084 3.375 7.58331 5.8934 7.58331 9C7.58331 12.1066 10.0084 14.625 13 14.625ZM13 14.625C15.2985 14.625 17.5029 15.5732 19.1282 17.261C20.7536 18.9489 21.6666 21.2381 21.6666 23.625M13 14.625C10.7014 14.625 8.49704 15.5732 6.87172 17.261C5.24641 18.9489 4.33331 21.2381 4.33331 23.625"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </div>
-                    <div class="text-center md:text-left">
-                        <h3 class="text-lg font-semibold text-gray-800">Reporte de Usuarios</h3>
-                        <p class="text-sm text-gray-500">Administración de usuarios del sistema.</p>
-                    </div>
+                    class="bg-gradient-to-tr from-cyan-200 to-cyan-400 text-cyan-600 p-5 rounded-full mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <svg width="26" height="27" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        class="mr-1 h-9 w-9">
+                        <path
+                            d="M13 14.625C15.9915 14.625 18.4166 12.1066 18.4166 9C18.4166 5.8934 15.9915 3.375 13 3.375C10.0084 3.375 7.58331 5.8934 7.58331 9C7.58331 12.1066 10.0084 14.625 13 14.625ZM13 14.625C15.2985 14.625 17.5029 15.5732 19.1282 17.261C20.7536 18.9489 21.6666 21.2381 21.6666 23.625M13 14.625C10.7014 14.625 8.49704 15.5732 6.87172 17.261C5.24641 18.9489 4.33331 21.2381 4.33331 23.625"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                 </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-1">Reporte de Usuarios</h3>
+                <p class="text-sm text-gray-600 text-center">Administración de usuarios del sistema.</p>
             </button>
+
         </div>
+
 
     </main>
 </main>

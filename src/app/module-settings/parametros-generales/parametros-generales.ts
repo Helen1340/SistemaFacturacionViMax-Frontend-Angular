@@ -6,7 +6,7 @@ import { AuthService } from '../../module-home/services/Auth.Service';
 import { CompletaRegistroService } from './company.service';
 
 @Component({
-  selector: 'app-parametros-generales',
+  selector: 'app-company-settings',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './parametros-generales.html',
@@ -16,125 +16,187 @@ export class ParametrosGenerales implements OnInit {
   form!: FormGroup;
   isLoading = false;
   notification = { show: false, message: '', type: 'success' as 'success' | 'error' };
+  selectedFile: File | null = null;
+  imagePreview: string | null = null;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private completaService: CompletaRegistroService,
+    private completeService: CompletaRegistroService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      // 🏢 Datos de la empresa
-      razon_social: ['', Validators.required],
+      // 🏢 Company info
+      business_name: ['', Validators.required],
       nit: ['', Validators.required],
-      nombre_comercial: [''],
-      direccion: [''],
-      ciudad: [''],
-      departamento: [''],
-      pais: ['Colombia'],
-      telefono: [''],
-      correo_electronico: ['', [Validators.required, Validators.email]],
-      regimen: [''],
-      codigo_ciiu: [''],
-      representante_nombre: [''],
-      representante_tipo_documento: [''],
-      representante_numero_documento: [''],
+      trade_name: [''],
+      address: [''],
+      city: [''],
+      department: [''],
+      country: ['Colombia'],
+      phone: [''],
+      email: ['', [Validators.required, Validators.email]],
+      tax_regime: [''],
+      ciiu_code: [''],
+      logo_url: [''],
+      legal_representative_name: [''],
+      legal_representative_document_type: [''],
+      legal_representative_document_number: [''],
 
-      // 👤 Datos del usuario (representante o facturador)
-      nombre: [''],
-      tipo_documento: [''],
-      numero_documento: [''],
-      direccion_usuario: [''],
-      pais_usuario: ['Colombia'],
-      descripcion: [''],
-      correo_usuario: ['', [Validators.required, Validators.email]],
-      telefono_usuario: [''],
-      estado: ['Activo']
+      // 👤 User info
+      first_name: [''],
+      document_type: [''],
+      document_number: [''],
+      user_address: [''],
+      user_country: ['Colombia'],
+      description: [''],
+      user_email: ['', [Validators.required, Validators.email]],
+      user_phone: [''],
+      status: ['Active']
     });
 
-    this.cargarDatosPreregistro();
+    this.loadPreRegistrationData();
   }
 
-  // 🔹 Cargar datos desde /me (empresa + usuario)
-  cargarDatosPreregistro() {
+  // 🔹 Load data from /me (company + user)
+  loadPreRegistrationData() {
     this.authService.me().subscribe({
       next: (userData) => {
-        console.log('Datos recibidos de me():', userData);
+        console.log('Data from me():', userData);
 
         const company = userData?.company;
         const user = userData?.user;
 
-        // Cargar empresa
+        // Company data
         if (company) {
           this.form.patchValue({
-            razon_social: company.razon_social ?? '',
+            business_name: company.business_name ?? '',
             nit: company.nit ?? '',
-            nombre_comercial: company.nombre_comercial ?? '',
-            direccion: company.direccion ?? '',
-            ciudad: company.ciudad ?? '',
-            departamento: company.departamento ?? '',
-            pais: company.pais ?? 'Colombia',
-            telefono: company.telefono ?? '',
-            correo_electronico: company.correo_electronico ?? '',
-            regimen: company.regimen ?? '',
-            codigo_ciiu: company.codigo_ciiu ?? '',
-            representante_nombre: company.representante_nombre ?? '',
-            representante_tipo_documento: company.representante_tipo_documento ?? '',
-            representante_numero_documento: company.representante_numero_documento ?? ''
+            trade_name: company.trade_name ?? '',
+            address: company.address ?? '',
+            city: company.city ?? '',
+            department: company.department ?? '',
+            country: company.country ?? 'Colombia',
+            phone: company.phone ?? '',
+            email: company.email ?? '',
+            tax_regime: company.tax_regime ?? '',
+            ciiu_code: company.ciiu_code ?? '',
+            logo_url: company.logo_url ?? '',
+            legal_representative_name: company.legal_representative_name ?? '',
+            legal_representative_document_type: company.legal_representative_document_type ?? '',
+            legal_representative_document_number: company.legal_representative_document_number ?? ''
           });
-        } else {
-          console.warn('⚠️ No se encontró información de empresa.');
+
+          // Si existe logo_url, mostrar la imagen
+          if (company.logo_url) {
+            this.imagePreview = company.logo_url;
+          }
         }
 
-        // Cargar usuario
+        // User data
         if (user) {
           this.form.patchValue({
-            nombre: user.nombre ?? '',
-            tipo_documento: user.tipo_documento ?? '',
-            numero_documento: user.numero_documento ?? '',
-            direccion_usuario: user.direccion ?? '',
-            pais_usuario: user.pais ?? 'Colombia',
-            descripcion: user.descripcion ?? '',
-            correo_usuario: user.correo_electronico ?? '',
-            telefono_usuario: user.telefono ?? '',
-            estado: user.estado ?? 'Activo'
+            first_name: user.first_name ?? '',
+            document_type: user.document_type ?? '',
+            document_number: user.document_number ?? '',
+            user_address: user.address ?? '',
+            user_country: user.country ?? 'Colombia',
+            description: user.description ?? '',
+            user_email: user.email ?? '',
+            user_phone: user.phone ?? '',
+            status: user.status ?? 'Active'
           });
-        } else {
-          console.warn('⚠️ No se encontró información de usuario.');
         }
       },
-      error: (err) => console.error('❌ Error cargando preregistro:', err)
+      error: (err) => console.error('❌ Error loading preregistration:', err)
     });
   }
 
-  // 🔹 Guardar cambios
-  onSubmit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+  // 🔹 Handle file selection
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
 
-    this.isLoading = true;
-    const formData = this.form.value;
-
-    this.completaService.completarRegistro(formData).subscribe({
-      next: (res) => {
-        this.showNotification('Registro completado correctamente', 'success');
-        console.log('✅ Respuesta del backend:', res);
-        this.isLoading = false;
-        setTimeout(() => this.router.navigate(['/facturas-notas']), 1500);
-      },
-      error: (err) => {
-        console.error('❌ Error al completar registro:', err.error);
-        console.table(err.error?.errors);
-        const msg = err.error?.message || 'Error al completar el registro';
-        this.showNotification(msg, 'error');
-        this.isLoading = false;
+      // Validar tipo de archivo
+      if (!file.type.startsWith('image/')) {
+        this.showNotification('Please select a valid image file', 'error');
+        return;
       }
-    });
+
+      // Validar tamaño (10MB)
+      if (file.size > 10240 * 1024) {
+        this.showNotification('Image size must be less than 10MB', 'error');
+        return;
+      }
+
+      this.selectedFile = file;
+
+      // Crear preview de la imagen
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        this.imagePreview = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
   }
+
+  // 🔹 Submit form
+  // 🔹 Submit form
+onSubmit() {
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
+  }
+
+  this.isLoading = true;
+
+  // Crear FormData para enviar archivo
+  const formData = new FormData();
+
+  // Agregar todos los campos del formulario
+  Object.keys(this.form.value).forEach(key => {
+    const value = this.form.value[key];
+    if (value !== null && value !== undefined) {
+      formData.append(key, value);
+    }
+  });
+
+  // Agregar la imagen si fue seleccionada
+  if (this.selectedFile) {
+    formData.append('imagen', this.selectedFile, this.selectedFile.name);
+    console.log('✅ Imagen agregada a FormData:', this.selectedFile.name, this.selectedFile.type, this.selectedFile.size);
+  } else {
+    console.log('⚠️ No hay imagen seleccionada');
+  }
+
+  // 🔍 Debug: Ver qué se está enviando
+  console.log('📤 FormData contents:');
+  formData.forEach((value, key) => {
+    if (value instanceof File) {
+      console.log(`${key}: [File] ${value.name} (${value.size} bytes)`);
+    } else {
+      console.log(`${key}:`, value);
+    }
+  });
+
+  this.completeService.completeRegistration(formData).subscribe({
+    next: (res) => {
+      this.showNotification('Registration completed successfully', 'success');
+      console.log('✅ Backend response:', res);
+      this.isLoading = false;
+      setTimeout(() => this.router.navigate(['/facturas-notas']), 1500);
+    },
+    error: (err) => {
+      console.error('❌ Error completing registration:', err.error);
+      const msg = err.error?.message || 'Error completing registration';
+      this.showNotification(msg, 'error');
+      this.isLoading = false;
+    }
+  });
+}
 
   private showNotification(message: string, type: 'success' | 'error') {
     this.notification = { show: true, message, type };

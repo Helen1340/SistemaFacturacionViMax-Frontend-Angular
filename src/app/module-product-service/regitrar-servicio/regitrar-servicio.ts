@@ -21,26 +21,31 @@ export class RegitrarServicio {
     private router: Router
   ) {
     this.servicioForm = this.fb.group({
-      codigo_servicio: ['', [Validators.required, Validators.maxLength(50)]],
-      nombre: ['', [Validators.required, Validators.maxLength(100)]],
+      service_code: ['', [Validators.required, Validators.maxLength(50)]],
+      name: ['', [Validators.required, Validators.maxLength(100)]],
       measurement_unit_id: ['', Validators.required],
-      precio_unitario: [0, [Validators.required, Validators.min(0.01)]],
-      estado: ['Activo', Validators.required],
-      descripcion: ['']
+      unit_price: [0, [Validators.required, Validators.min(0.01)]],
+      status: ['Active', Validators.required],
+      description: ['']
     });
 
     this.cargarUnidades();
   }
 
   cargarUnidades(): void {
+    console.log('Cargando unidades de medida para servicios...');
     this.servicioService.getMeasurementUnits().subscribe({
       next: (res) => {
+        console.log('Unidades recibidas:', res);
         const codigosServicio = ['HUR', 'DAY', 'MON', 'E48', 'CNT']; 
         this.measurementUnits = res.filter((u: any) =>
-          codigosServicio.includes(u.codigo_dian)
+          codigosServicio.includes(u.dian_code)
         );
+        console.log('Unidades filtradas para servicios:', this.measurementUnits);
       },
-      error: (err) => console.error('Error cargando unidades:', err),
+      error: (err) => {
+        console.error('Error cargando unidades:', err);
+      },
     });
   }
 
@@ -64,7 +69,7 @@ export class RegitrarServicio {
       impuestos: this.impuestosSeleccionados
     };
 
-    this.servicioService.createtServicio(data).subscribe({
+    this.servicioService.createService(data).subscribe({
       next: () => {
         alert('Servicio registrado con éxito');
         this.router.navigate(['/productos-servicios']);

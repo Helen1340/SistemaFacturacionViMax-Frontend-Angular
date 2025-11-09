@@ -10,28 +10,28 @@
             <!-- Nombre -->
             <div class="col-span-1">
                 <label class="block text-sm font-medium text-black mb-1">Nombre</label>
-                <input type="text" formControlName="nombre"
+                <input type="text" formControlName="name"
                     class="w-full border rounded px-3 py-2 text-sm text-black" />
             </div>
 
             <!-- Código estándar -->
             <div class="col-span-1">
                 <label class="block text-sm font-medium text-black mb-1">Código Estándar</label>
-                <input type="text" formControlName="codigo_estandar"
+                <input type="text" formControlName="standard_code"
                     class="w-full border rounded px-3 py-2 text-sm text-black" />
             </div>
 
             <!-- Código producto -->
             <div class="col-span-1">
                 <label class="block text-sm font-medium text-black mb-1">Código Producto</label>
-                <input type="text" formControlName="codigo_producto"
+                <input type="text" formControlName="product_code"
                     class="w-full border rounded px-3 py-2 text-sm text-black" />
             </div>
 
             <!-- Precio -->
             <div class="col-span-1">
                 <label class="block text-sm font-medium text-black mb-1">Precio Unitario</label>
-                <input type="number" formControlName="precio_unitario" min="0.01" step="0.01"
+                <input type="number" formControlName="unit_price" min="0.01" step="0.01"
                     class="w-full border rounded px-3 py-2 text-sm text-black" />
             </div>
 
@@ -41,7 +41,7 @@
                 <select formControlName="measurement_unit_id"
                     class="w-full border rounded px-3 py-2 text-sm text-black">
                     <option *ngFor="let unit of measurementUnits" [value]="unit.id">
-                        {{ unit.nombre }} ({{ unit.codigo_dian }})
+                        {{ unit.name }} ({{ unit.dian_code }})
                     </option>
                 </select>
             </div>
@@ -49,16 +49,16 @@
             <!-- Estado -->
             <div class="col-span-1">
                 <label class="block text-sm font-medium text-black mb-1">Estado</label>
-                <select formControlName="estado" class="w-full border rounded px-3 py-2 text-sm text-black">
-                    <option value="Activo">Activo</option>
-                    <option value="Inactivo">Inactivo</option>
+                <select formControlName="status" class="w-full border rounded px-3 py-2 text-sm text-black">
+                    <option value="Active">Activo</option>
+                    <option value="Inactive">Inactivo</option>
                 </select>
             </div>
 
             <!-- Descripción -->
             <div class="col-span-full">
                 <label class="block text-sm font-medium text-black mb-1">Descripción</label>
-                <textarea formControlName="descripcion" rows="3"
+                <textarea formControlName="description" rows="3"
                     class="w-full border rounded px-3 py-2 text-sm text-black" placeholder="Opcional"></textarea>
             </div>
 

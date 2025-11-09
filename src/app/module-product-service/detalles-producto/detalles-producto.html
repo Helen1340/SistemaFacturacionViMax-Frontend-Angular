@@ -14,36 +14,36 @@
 
             <div>
                 <p class="text-gray-500 font-medium">Código Estándar</p>
-                <p class="text-lg font-semibold">{{ producto.codigo_estandar }}</p>
+                <p class="text-lg font-semibold">{{ producto.standard_code }}</p>
             </div>
 
             <div>
                 <p class="text-gray-500 font-medium">Código Producto</p>
-                <p class="text-lg font-semibold">{{ producto.codigo_producto }}</p>
+                <p class="text-lg font-semibold">{{ producto.product_code }}</p>
             </div>
 
             <div>
                 <p class="text-gray-500 font-medium">Nombre</p>
-                <p class="text-lg font-semibold">{{ producto.nombre }}</p>
+                <p class="text-lg font-semibold">{{ producto.name }}</p>
             </div>
 
             <div class="sm:col-span-2">
                 <p class="text-gray-500 font-medium">Descripción</p>
-                <p class="text-lg">{{ producto.descripcion }}</p>
+                <p class="text-lg">{{ producto.description }}</p>
             </div>
 
             <div>
                 <p class="text-gray-500 font-medium">Precio Unitario</p>
-                <p class="text-lg font-semibold">{{ producto.precio_unitario | currency:'COP':'symbol':'1.0-0' }}</p>
+                <p class="text-lg font-semibold">{{ producto.unit_price | currency:'COP':'symbol':'1.0-2' }}</p>
             </div>
 
             <div>
                 <p class="text-gray-500 font-medium">Estado</p>
                 <span class="px-3 py-1 text-sm rounded-full" [ngClass]="{
-            'bg-green-100 text-green-800': producto.estado === 'Activo',
-            'bg-red-100 text-red-800': producto.estado === 'Inactivo'
+            'bg-green-100 text-green-800': producto.status === 'Active',
+            'bg-red-100 text-red-800': producto.status === 'Inactive'
             }">
-                    {{ producto.estado }}
+                    {{ producto.status }}
                 </span>
             </div>
 
@@ -65,9 +65,19 @@
             </div>
 
         </div>
+
+        <div class="mt-6">
+            <button (click)="volver()" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">
+                Volver
+            </button>
+        </div>
     </div>
 
-    <div *ngIf="!producto" class="text-center text-gray-600 mt-10">
+    <div *ngIf="loading" class="text-center text-gray-600 mt-10">
         Cargando producto...
+    </div>
+
+    <div *ngIf="error" class="text-center text-red-600 mt-10">
+        {{ error }}
     </div>
 </main>

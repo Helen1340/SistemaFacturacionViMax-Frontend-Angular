@@ -2,59 +2,66 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, map } from 'rxjs';
 
-export interface ItemTabla {
+export interface ItemTable {
   id: number;
-  codigo?: string;
-  nombre: string;
-  descripcion: string;
-  tipo: 'Producto' | 'Servicio';
-  precio_unitario: number;
-  estado: 'Activo' | 'Inactivo';
-  cantidad?: number;
-  impuesto?: string;
+  code?: string;
+  name: string;
+  description: string;
+  type: 'Product' | 'Service';
+  unit_price: number;
+  status: 'Active' | 'Inactive';
+  quantity?: number;
+  tax?: string;
   measure_unit?: string;
   showMenu?: boolean;
 }
 
-interface Producto {
+interface Product {
   id: number;
-  codigo_estandar?: string;
-  codigo_producto?: string;
-  nombre: string;
-  descripcion: string;
-  precio_unitario: string;
-  estado: string;
-  measurement_unit_id?: number;
+  measurement_unit_id: number;
+  standard_code?: string;
+  product_code: string;
+  name: string;
+  description?: string;
+  unit_price: number;
+  status: 'Active' | 'Inactive';
+  created_at?: string;
+  updated_at?: string;
 }
 
-interface Servicio {
+interface Service {
   id: number;
-  nombre: string;
-  descripcion: string;
-  codigo_servicio?: string;
-  precio_unitario: string;
-  estado: string;
-  measurement_unit_id?: number;
+  measurement_unit_id: number;
+  service_code: string;
+  name: string;
+  description?: string;
+  unit_price: number;
+  status: 'Active' | 'Inactive';
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface Tax {
   id: number;
-  nombre: string;
-  descripcion: string;
-  tipo: string;
-  porcentaje_base: string;
-  estado: string;
+  tax_code: string;
+  name: string;
+  description: string;
+  type: string;
+  percentage?: string;
+  fixed_value?: string;
+  application_type: string;
+  status: string;
   created_at?: string;
   updated_at?: string;
 }
 
 interface MeasurementUnit {
   id: number;
-  nombre: string;
-  estado: string;
-  codigo_dian: string;
-  descripcion: string;
-  tipo_aplicacion: string;
+  name: string;
+  status: string;
+  dian_code: string;
+  description: string;
+  application_type: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -67,103 +74,110 @@ export class ProductosServicioService {
 
   constructor(private http: HttpClient) {}
 
-  getAllItems(): Observable<ItemTabla[]> {
-    const productos$ = this.http.get<Producto[]>(`${this.apiUrl}/products`);
-    const servicios$ = this.http.get<Servicio[]>(`${this.apiUrl}/services`);
+  // ✅ Combina productos y servicios en una sola lista
+  getAllItems(): Observable<ItemTable[]> {
+    const products$ = this.http.get<Product[]>(`${this.apiUrl}/products`);
+    const services$ = this.http.get<Service[]>(`${this.apiUrl}/services`);
     const taxes$ = this.http.get<Tax[]>(`${this.apiUrl}/taxes`);
-    const measurementUnits$ = this.http.get<MeasurementUnit[]>(`${this.apiUrl}/measurementUnints`);
+    const measurementUnits$ = this.http.get<MeasurementUnit[]>(`${this.apiUrl}/measurementUnits`);
 
-    return forkJoin([productos$, servicios$, taxes$, measurementUnits$]).pipe(
-      map(([productos, servicios, taxes, measurementUnits]) => {
+    return forkJoin([products$, services$, taxes$, measurementUnits$]).pipe(
+      map(([products, services, taxes, measurementUnits]) => {
         const unitsMap = new Map(measurementUnits.map(unit => [unit.id, unit]));
 
-        const itemsProductos: ItemTabla[] = productos.map(p => ({
+        const productItems: ItemTable[] = products.map(p => ({
           id: p.id,
-          codigo: p.codigo_producto || p.codigo_estandar,
-          nombre: p.nombre,
-          descripcion: p.descripcion,
-          tipo: 'Producto',
-          precio_unitario: parseFloat(p.precio_unitario),
-          estado: p.estado as 'Activo' | 'Inactivo',
-          measure_unit: p.measurement_unit_id ? unitsMap.get(p.measurement_unit_id)?.codigo_dian : undefined
+          code: p.product_code || p.standard_code,
+          name: p.name,
+          description: p.description || '',
+          type: 'Product',
+          unit_price: p.unit_price,
+          status: p.status as 'Active' | 'Inactive',
+          measure_unit: p.measurement_unit_id ? unitsMap.get(p.measurement_unit_id)?.dian_code : undefined
         }));
 
-        const itemsServicios: ItemTabla[] = servicios.map(s => ({
+        const serviceItems: ItemTable[] = services.map(s => ({
           id: s.id,
-          codigo: s.codigo_servicio,
-          nombre: s.nombre,
-          descripcion: s.descripcion,
-          precio_unitario: parseFloat(s.precio_unitario),
-          tipo: 'Servicio',
-          estado: s.estado as 'Activo' | 'Inactivo',
-          measure_unit: s.measurement_unit_id ? unitsMap.get(s.measurement_unit_id)?.codigo_dian : undefined
+          code: s.service_code,
+          name: s.name,
+          description: s.description || '',
+          type: 'Service',
+          unit_price: s.unit_price,
+          status: s.status as 'Active' | 'Inactive',
+          measure_unit: s.measurement_unit_id ? unitsMap.get(s.measurement_unit_id)?.dian_code : undefined
         }));
 
-        return [...itemsProductos, ...itemsServicios];
+        return [...productItems, ...serviceItems];
       })
     );
   }
 
-  deleteItem(id: number, tipo: 'Producto' | 'Servicio'): Observable<any> {
-    const url = tipo === 'Producto' ? `${this.apiUrl}/products/${id}` : `${this.apiUrl}/services/${id}`;
+  // ✅ Eliminar producto o servicio según el tipo
+  deleteItem(id: number, type: 'Product' | 'Service'): Observable<any> {
+    const url = type === 'Product' ? `${this.apiUrl}/products/${id}` : `${this.apiUrl}/services/${id}`;
     return this.http.delete(url);
   }
 
+  // ✅ Obtener todas las unidades de medida
   getMeasurementUnits(): Observable<MeasurementUnit[]> {
-    return this.http.get<MeasurementUnit[]>(`${this.apiUrl}/measurementUnints`);
+    return this.http.get<MeasurementUnit[]>(`${this.apiUrl}/measurementUnits`);
   }
 
+  // ✅ Obtener todos los impuestos
   getTaxes(): Observable<Tax[]> {
     return this.http.get<Tax[]>(`${this.apiUrl}/taxes`);
   }
 
-  getItemById(id: number, tipo: 'Producto' | 'Servicio'): Observable<ItemTabla> {
-    const url = tipo === 'Producto' ? `${this.apiUrl}/products/${id}` : `${this.apiUrl}/services/${id}`;
-    return this.http.get<ItemTabla>(url);
+  // ✅ Obtener un solo producto o servicio
+  getItemById(id: number, type: 'Product' | 'Service'): Observable<ItemTable> {
+    const url = type === 'Product' ? `${this.apiUrl}/products/${id}` : `${this.apiUrl}/services/${id}`;
+    return this.http.get<ItemTable>(url);
   }
 
-  createItem(item: ItemTabla): Observable<ItemTabla> {
-    const url = item.tipo === 'Producto' ? `${this.apiUrl}/products` : `${this.apiUrl}/services`;
-    return this.http.post<ItemTabla>(url, item);
+  // ✅ Crear producto o servicio
+  createItem(item: ItemTable): Observable<ItemTable> {
+    const url = item.type === 'Product' ? `${this.apiUrl}/products` : `${this.apiUrl}/services`;
+    return this.http.post<ItemTable>(url, item);
   }
 
-  updateItem(id: number, item: ItemTabla): Observable<ItemTabla> {
-    const url = item.tipo === 'Producto' ? `${this.apiUrl}/products/${id}` : `${this.apiUrl}/services/${id}`;
-    return this.http.put<ItemTabla>(url, item);
+  // ✅ Actualizar producto o servicio
+  updateItem(id: number, item: ItemTable): Observable<ItemTable> {
+    const url = item.type === 'Product' ? `${this.apiUrl}/products/${id}` : `${this.apiUrl}/services/${id}`;
+    return this.http.put<ItemTable>(url, item);
   }
 
-  getProductos(): Observable<Producto[]> {
-    return this.http.get<Producto[]>(`${this.apiUrl}/products`);
+  // ✅ Métodos específicos para productos
+  getProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>(`${this.apiUrl}/products`);
   }
 
-  createProducto(data: Partial<Producto>): Observable<Producto> {
-    return this.http.post<Producto>(`${this.apiUrl}/products`, data);
+  createProduct(data: Partial<Product>): Observable<Product> {
+    return this.http.post<Product>(`${this.apiUrl}/products`, data);
   }
 
-  getProductById(id: number): Observable<Producto> {
-  return this.http.get<Producto>(`${this.apiUrl}/products/${id}`);
-}
+  getProductById(id: number): Observable<Product> {
+    return this.http.get<Product>(`${this.apiUrl}/products/${id}`);
+  }
 
-
-  updateProduct(id: number, data: any) {
+  updateProduct(id: number, data: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/products/${id}`, data);
   }
 
-
-  createtServicio(data: Partial<Servicio>): Observable<Servicio> {
-    return this.http.post<Servicio>(`${this.apiUrl}/services`, data);
+  // ✅ Métodos específicos para servicios
+  createService(data: Partial<Service>): Observable<Service> {
+    return this.http.post<Service>(`${this.apiUrl}/services`, data);
   }
 
-  getServiceById(id: number) {
-    return this.http.get(`${this.apiUrl}/services/${id}`);
+  getServiceById(id: number): Observable<Service> {
+    return this.http.get<Service>(`${this.apiUrl}/services/${id}`);
   }
 
-  updateService(id: number, data: any) {
+  updateService(id: number, data: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/services/${id}`, data);
   }
 
-  // Método alternativo usando PATCH para actualizaciones más flexibles
-  updateServicePatch(id: number, data: any) {
+  // ✅ Actualización parcial (PATCH)
+  updateServicePatch(id: number, data: any): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl}/services/${id}`, data);
   }
 }

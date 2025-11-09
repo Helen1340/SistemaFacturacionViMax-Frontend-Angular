@@ -120,13 +120,13 @@ export class Registro {
     const formValue = this.registerForm.value;
 
     const dataToSend = {
-      razon_social: formValue.businessName,
+      business_name: formValue.businessName,
       nit: formValue.nit,
-      correo_empresa: formValue.companyEmail,
-      nombre: formValue.firstName,
-      correo_electronico: formValue.adminEmail,
-      tipo_documento: formValue.documentType,
-      numero_documento: formValue.documentNumber,
+      company_email: formValue.companyEmail,
+      first_name: formValue.firstName,
+      user_email: formValue.adminEmail,
+      document_type: formValue.documentType,
+      document_number: formValue.documentNumber,
       password: formValue.password,
       password_confirmation: formValue.confirmPassword
     };

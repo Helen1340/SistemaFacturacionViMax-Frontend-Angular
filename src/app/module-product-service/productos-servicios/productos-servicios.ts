@@ -2,18 +2,18 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ProductosServicioService, ItemTabla } from '../service/productos-servicio.service';
+import {  ItemTable, ProductosServicioService } from '../service/productos-servicio.service';
 
 @Component({
-  selector: 'app-productos-servicios',
+  selector: 'app-products-services',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './productos-servicios.html',
   styleUrl: './productos-servicios.css'
 })
 export class ProductosServicios implements OnInit {
-  items: ItemTabla[] = [];
-  filteredItems: ItemTabla[] = [];
+  items: ItemTable[] = [];
+  filteredItems: ItemTable[] = [];
   searchTerm: string = '';
   filterValue: string = '';
   openDropdownId: number | null = null;
@@ -22,7 +22,7 @@ export class ProductosServicios implements OnInit {
   isLoading: boolean = false;
   isDropdownOpen: boolean = false;
   
-  // Paginación
+  // Pagination
   currentPage: number = 1;
   itemsPerPage: number = 10;
   totalItems: number = 0;
@@ -30,7 +30,7 @@ export class ProductosServicios implements OnInit {
 
   constructor(
     private router: Router,
-    private productosServicio: ProductosServicioService
+    private productService: ProductosServicioService
   ) {}
 
   ngOnInit() {
@@ -40,7 +40,7 @@ export class ProductosServicios implements OnInit {
 
   loadItems() {
     this.isLoading = true;
-    this.productosServicio.getAllItems().subscribe({
+    this.productService.getAllItems().subscribe({
       next: (items) => {
         this.items = items;
         this.filteredItems = [...this.items];
@@ -49,74 +49,75 @@ export class ProductosServicios implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error al cargar items:', error);
+        console.error('Error loading items:', error);
         this.items = [];
         this.filteredItems = [];
         this.totalItems = 0;
         this.isLoading = false;
-        alert('Error al cargar los ítems. Verifica que la API esté funcionando.');
+        alert('Error loading items. Please verify that the API is running.');
       }
     });
   }
 
-  // Métodos de acción
+  // Dropdown actions
   toggleRegisterDropdown(): void {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
-
-
-  viewItem(item: ItemTabla) {
+  // View item details
+  viewItem(item: ItemTable) {
     this.openDropdownId = null;
-    if (item.tipo === 'Producto') {
-    this.router.navigate(['/detalles-producto', item.id]);
-    } else if (item.tipo === 'Servicio') {
-      this.router.navigate(['detalles-servicio', item.id]);
+    if (item.type === 'Product') {
+      this.router.navigate(['/detalles-producto', item.id]);
+    } else if (item.type === 'Service') {
+      this.router.navigate(['/detalles-servicio', item.id]);
     } else {
-    console.warn('Tipo desconocido:', item.tipo);
-  }
+      console.warn('Unknown type:', item.type);
+    }
   }
 
-  editItem(item: ItemTabla) {
-  this.openDropdownId = null;
+  // Edit item
+  editItem(item: ItemTable) {
+    this.openDropdownId = null;
 
-  if (item.tipo === 'Producto') {
-    this.router.navigate(['/editar-producto', item.id]);
-  } else if (item.tipo === 'Servicio') {
-    this.router.navigate(['/editar-servicio', item.id]);
-  } else {
-    console.warn('Tipo desconocido:', item.tipo);
+    if (item.type === 'Product') {
+      this.router.navigate(['/editar-producto', item.id]);
+    } else if (item.type === 'Service') {
+      this.router.navigate(['/editar-servicio', item.id]);
+    } else {
+      console.warn('Unknown type:', item.type);
+    }
   }
-}
 
-  deleteItem(item: ItemTabla) {
-    if (!confirm(`¿Estás seguro de que deseas eliminar ${item.nombre}?`)) {
+  // Delete item
+  deleteItem(item: ItemTable) {
+    if (!confirm(`Are you sure you want to delete ${item.name}?`)) {
       return;
     }
     
     this.openDropdownId = null;
-    this.productosServicio.deleteItem(item.id, item.tipo).subscribe({
+    this.productService.deleteItem(item.id, item.type).subscribe({
       next: () => {
-        alert('Ítem eliminado correctamente');
+        alert('Item deleted successfully');
         this.loadItems();
       },
       error: (error) => {
-        console.error('Error al eliminar item:', error);
-        alert('Error al eliminar el ítem');
+        console.error('Error deleting item:', error);
+        alert('Error deleting the item');
       }
     });
   }
 
-  //navigation
-  navigateToRegistrarProducto(){
+  // Navigation
+  navigateToRegisterProduct() {
     this.router.navigate(['/registrar-producto']);
   }
 
-  navigateToRegistrarServicio(){
+  navigateToRegisterService() {
     this.router.navigate(['/registrar-servicio']);
   }
 
-  // Búsqueda y filtros
+  // Search & filter
   onSearch() {
     this.applyFilters();
   }
@@ -131,25 +132,25 @@ export class ProductosServicios implements OnInit {
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       filtered = filtered.filter(item => 
-        item.nombre.toLowerCase().includes(term) || 
-        (item.descripcion && item.descripcion.toLowerCase().includes(term)) ||
-        (item.codigo && item.codigo.toLowerCase().includes(term))
+        item.name.toLowerCase().includes(term) || 
+        (item.description && item.description.toLowerCase().includes(term)) ||
+        (item.code && item.code.toLowerCase().includes(term))
       );
     }
 
     if (this.filterValue) {
       switch (this.filterValue) {
-        case 'producto':
-          filtered = filtered.filter(item => item.tipo === 'Producto');
+        case 'product':
+          filtered = filtered.filter(item => item.type === 'Product');
           break;
-        case 'servicio':
-          filtered = filtered.filter(item => item.tipo === 'Servicio');
+        case 'service':
+          filtered = filtered.filter(item => item.type === 'Service');
           break;
-        case 'activo':
-          filtered = filtered.filter(item => item.estado === 'Activo');
+        case 'active':
+          filtered = filtered.filter(item => item.status === 'Active');
           break;
-        case 'inactivo':
-          filtered = filtered.filter(item => item.estado === 'Inactivo');
+        case 'inactive':
+          filtered = filtered.filter(item => item.status === 'Inactive');
           break;
       }
     }
@@ -160,8 +161,8 @@ export class ProductosServicios implements OnInit {
     this.calculatePagination();
   }
   
-  // Lógica de paginación
-  get paginatedItems(): ItemTabla[] {
+  // Pagination logic
+  get paginatedItems(): ItemTable[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     return this.filteredItems.slice(startIndex, endIndex);
@@ -195,6 +196,7 @@ export class ProductosServicios implements OnInit {
     return Math.min(this.currentPage * this.itemsPerPage, this.totalItems);
   }
 
+  // Dropdown positioning
   toggleDropdown(event: Event, itemId: number) {
     event.stopPropagation();
     
@@ -203,44 +205,31 @@ export class ProductosServicios implements OnInit {
       return;
     }
     
-    // Calcular posición del dropdown
     const target = event.currentTarget as HTMLElement;
     const rect = target.getBoundingClientRect();
-    const menuWidth = 160; // w-40 = 10rem = 160px
-    const menuHeight = 120; // Altura aproximada del dropdown
+    const menuWidth = 160;
+    const menuHeight = 120;
     
-    // Posición horizontal: alineado a la derecha del botón
     this.dropdownLeft = rect.right - menuWidth;
     
-    // Posición vertical: debajo del botón, pero ajustada si se sale de pantalla
     let top = rect.bottom + 4;
-    
-    // Si se sale por abajo, mostrarlo arriba
     if (top + menuHeight > window.innerHeight) {
       top = rect.top - menuHeight - 4;
     }
-    
-    // Asegurar que no se salga por arriba
-    if (top < 8) {
-      top = 8;
-    }
-    
-    // Asegurar que no se salga por los lados
-    if (this.dropdownLeft < 8) {
-      this.dropdownLeft = 8;
-    } else if (this.dropdownLeft + menuWidth > window.innerWidth - 8) {
+    if (top < 8) top = 8;
+    if (this.dropdownLeft < 8) this.dropdownLeft = 8;
+    else if (this.dropdownLeft + menuWidth > window.innerWidth - 8)
       this.dropdownLeft = window.innerWidth - menuWidth - 8;
-    }
     
     this.dropdownTop = top;
     this.openDropdownId = itemId;
   }
 
-  trackByFn(index: number, item: ItemTabla): number {
+  trackByFn(index: number, item: ItemTable): number {
     return item.id;
   }
 
-  // Método para formatear precios
+  // Format price
   formatPrice(price: number): string {
     if (!price) return '-';
     return new Intl.NumberFormat('es-CO', {

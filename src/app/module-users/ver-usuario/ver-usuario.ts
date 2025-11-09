@@ -70,7 +70,7 @@ export class VerUsuario implements OnInit {
       next: (roles) => {
         // Filtrar roles de cliente/clientes para el módulo de usuarios
         this.roles = (roles || []).filter(role => 
-          !role.nombre.toLowerCase().includes('cliente')
+          !role.role_name.toLowerCase().includes('cliente')
         );
       },
       error: () => {
@@ -84,7 +84,7 @@ export class VerUsuario implements OnInit {
       return 'Sin rol';
     }
     const role = this.roles.find(r => r.id === roleId);
-    return role ? role.nombre : 'Cargando...';
+    return role ? role.role_name : 'Cargando...';
   }
 
   getRoleClass(role: string): string {
@@ -101,7 +101,7 @@ export class VerUsuario implements OnInit {
   }
 
   getStatusClass(status: string): string {
-    return status === 'Activo' 
+    return status === 'Active' 
       ? 'bg-green-100 text-green-800' 
       : 'bg-red-100 text-red-800';
   }
