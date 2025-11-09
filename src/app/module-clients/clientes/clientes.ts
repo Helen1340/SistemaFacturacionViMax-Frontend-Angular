@@ -71,20 +71,20 @@ export class Clientes implements OnInit, OnDestroy {
         next: (usuarios: any[]) => {
           // Filtrar solo usuarios con rol ID 4 (cliente)
           const clientesConRol4 = usuarios.filter(usuario => {
-            return usuario.rol_id === 4 || usuario.rol === 4 || usuario.role_id === 4;
+            return usuario.role_id === 4;
           });
           
           // Transform the API response to match our interface
           this.clientes = clientesConRol4.map(cliente => ({
             id: cliente.id,
-            nombreRazon: cliente.nombre,
-            documento: `${cliente.tipo_documento} - ${cliente.numero_documento}`,
-            direccion: cliente.direccion || '-',
-            pais: cliente.pais,
-            email: cliente.correo_electronico,
-            telefono: cliente.telefono || '',
-            descripcion: cliente.descripcion || '',
-            estado: cliente.estado || 'Activo'
+            nombreRazon: cliente.first_name,
+            documento: `${cliente.document_type} - ${cliente.document_number}`,
+            direccion: cliente.address || '-',
+            pais: cliente.country,
+            email: cliente.email,
+            telefono: cliente.phone || '',
+            descripcion: cliente.description || '',
+            estado: cliente.status === 'Active' ? 'Activo' : 'Inactivo'
           }));
           this.clientesFiltrados = [...this.clientes];
           this.totalClientes = this.clientes.length;
