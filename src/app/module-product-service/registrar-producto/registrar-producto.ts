@@ -22,6 +22,8 @@ export class RegistrarProducto implements OnInit {
   productoForm!: FormGroup;
   isLoading = false;
   measurementUnits: any[] = [];
+  taxes: any[] = [];
+  selectedTaxIds: number[] = [];
   
 
   constructor(
@@ -38,28 +40,20 @@ export class RegistrarProducto implements OnInit {
       measurement_unit_id: ['', Validators.required],
       unit_price: ['', [Validators.required, Validators.min(0.01)]],
       status: ['Active', Validators.required],
-      description: [''],
-
-      // impuestos (opcional)
-      impuestoIva: [false],
-      impuestoInc: [false],
-      impuestoIca: [false],
+      description: ['']
     });
 
     this.cargarUnidades();
+    this.cargarImpuestos();
   }
 
   cargarUnidades(): void {
-    console.log('Cargando unidades de medida para productos...');
     this.productoService.getMeasurementUnits().subscribe({
       next: (res) => {
-        console.log('Unidades recibidas:', res);
-        // Filtrar SOLO las unidades válidas para productos
-        const codigosProducto = ['UND', 'KGM', 'GRM', 'LTR', 'BX', 'MLT']; 
+        // Filtrar por application_type = 'Product'
         this.measurementUnits = res.filter((u: any) =>
-          codigosProducto.includes(u.dian_code)
+          u.application_type === 'Product'
         );
-        console.log('Unidades filtradas para productos:', this.measurementUnits);
       },
       error: (err) => {
         console.error('Error cargando unidades:', err);
@@ -67,20 +61,57 @@ export class RegistrarProducto implements OnInit {
     });
   }
 
+  cargarImpuestos(): void {
+    this.productoService.getActiveTaxes().subscribe({
+      next: (taxes) => {
+        this.taxes = taxes;
+      },
+      error: (err) => {
+        console.error('Error cargando impuestos:', err);
+      }
+    });
+  }
+
+  toggleTax(taxId: number, event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      if (!this.selectedTaxIds.includes(taxId)) {
+        this.selectedTaxIds.push(taxId);
+      }
+    } else {
+      this.selectedTaxIds = this.selectedTaxIds.filter(id => id !== taxId);
+    }
+  }
+
+  isTaxSelected(taxId: number): boolean {
+    return this.selectedTaxIds.includes(taxId);
+  }
+
   onSubmit(): void {
-    if (this.productoForm.invalid) return;
+    if (this.productoForm.invalid) {
+      this.productoForm.markAllAsTouched();
+      return;
+    }
+    
     this.isLoading = true;
 
-    this.productoService.createProduct(this.productoForm.value).subscribe({
+    const productData = {
+      ...this.productoForm.value,
+      unit_price: parseFloat(this.productoForm.value.unit_price)
+    };
+
+    // Crear producto con impuestos
+    this.productoService.createProductWithTaxes(productData, this.selectedTaxIds).subscribe({
       next: () => {
         this.isLoading = false;
-        this.router.navigate(['/productos-servicios']);
         alert('✅ Producto guardado exitosamente');
+        this.router.navigate(['/productos-servicios']);
       },
       error: (err) => {
         console.error('Error guardando producto', err);
         this.isLoading = false;
-        alert('❌ Error guardando producto');
+        const errorMessage = err.error?.message || 'Error al guardar el producto';
+        alert(`❌ ${errorMessage}`);
       },
     });
   }

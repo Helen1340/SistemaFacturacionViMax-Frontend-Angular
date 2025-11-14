@@ -12,11 +12,6 @@ import { Configuracion } from './module-settings/configuracion/configuracion';
 import { ImpuestosRetenciones } from './module-settings/impuestos-retenciones/impuestos-retenciones';
 import { NuevoImpuesto } from './module-settings/impuestos-retenciones/nuevo-impuesto/nuevo-impuesto';
 
-import { FacturasNotas } from './module-invoices-notes/facturas-notas/facturas-notas';
-import { NuevaFactura } from './module-invoices-notes/nueva-factura/nueva-factura';
-import { EditarFactura } from './module-invoices-notes/editar-facturas/editar-facturas';
-import { NuevaNota } from './module-invoices-notes/nueva-nota/nueva-nota';
-import { DetalleFacturas } from './module-invoices-notes/detalle-facturas/detalle-facturas';
 import { NuevoUsuario } from './module-users/nuevo-usuario/nuevo-usuario';
 import { EditUsuario } from './module-users/edit-usuario/edit-usuario';
 import { VerUsuario } from './module-users/ver-usuario/ver-usuario';
@@ -52,6 +47,9 @@ import { DetallesServicio } from './module-product-service/detalles-servicio/det
 import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
 import { CambiosNormativos } from './module-settings/cambios-normativos/cambios-normativos';
 import { PoliticaRetencion } from './module-settings/retencion-respaldo/retencion-respaldo';
+import { FacturacionComponent } from './module-invoices-notes/facturacion.component/facturacion.component';
+import { InvoiceCreate } from './module-invoices-notes/invoice-create/invoice-create';
+import { InvoiceDetail } from './module-invoices-notes/invoice-detail/invoice-detail';
 
 
 
@@ -108,15 +106,13 @@ export const routes: Routes = [
   //ESPACIO PARA LAS RUTAS DE DAVID (MODULE FACTURAS, CLIENTES)
   
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'facturas-notas', component: FacturasNotas },
   { path: 'clientes', component: Clientes },
-  { path: 'nueva-factura', component: NuevaFactura },
-  { path: 'nueva-nota', component: NuevaNota },
-  { path: 'editar-facturas/:id', component: EditarFactura },
-  { path: 'detalle-facturas/:id', component: DetalleFacturas },
   { path: 'nuevo-cliente', component: NuevoCliente },
   { path: 'editar-cliente/:id', component: EditarCliente },
   { path: 'ver-cliente/:id', component: VerCliente },
+  { path: 'facturacion', component: FacturacionComponent },
+  { path: 'crear-factura', component: InvoiceCreate },
+  { path: 'detalle_factura/:id', component: InvoiceDetail },
   // ... otras rutas
 
 

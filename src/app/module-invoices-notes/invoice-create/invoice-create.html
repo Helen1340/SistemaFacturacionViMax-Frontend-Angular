@@ -1,0 +1,298 @@
+<main class="w-full px-4 pb-4 flex-1 overflow-y-auto overflow-x-visible">
+    <!-- Título -->
+    <div>
+        <h2 class="text-4xl font-semibold mb-6 mt-2">Crear Nueva Factura</h2>
+    </div>
+
+    <!-- Línea divisoria -->
+    <div class="border-b-2 border-gray-300 w-full mb-4"></div>
+
+    <!-- Mensajes de error y éxito -->
+    <div *ngIf="error"
+        class="flex items-center gap-3 p-4 mb-4 rounded-2xl bg-red-50 text-red-700 border border-red-200">
+        <span class="text-lg">⚠️</span>
+        <span>{{ error }}</span>
+    </div>
+
+    <div *ngIf="success"
+        class="flex items-center gap-3 p-4 mb-4 rounded-2xl bg-green-50 text-green-700 border border-green-200">
+        <span class="text-lg">✓</span>
+        <span>{{ success }}</span>
+    </div>
+
+    <!-- Loading de datos iniciales -->
+    <div *ngIf="loadingData"
+        class="flex flex-col items-center justify-center py-12 bg-white rounded-2xl shadow text-gray-600">
+        <div class="w-10 h-10 border-4 border-gray-200 border-t-cyan-600 rounded-full animate-spin mb-4"></div>
+        <p>Cargando datos...</p>
+    </div>
+
+    <!-- Formulario principal -->
+    <div *ngIf="!loadingData" class="bg-white rounded-2xl shadow p-6">
+        <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Columna izquierda: Información básica -->
+                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200">
+                    <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800">Información General</h3>
+                    </div>
+
+                    <!-- Cliente -->
+                    <div class="mb-5">
+                        <label for="buyer_id"
+                            class="block text-sm font-medium text-gray-700 mb-2 after:content-['_*'] after:text-red-500">Cliente</label>
+                        <select id="buyer_id" formControlName="buyer_id"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors"
+                            [class.border-red-500]="invoiceForm.get('buyer_id')?.invalid && invoiceForm.get('buyer_id')?.touched">
+                            <option value="">Seleccione un cliente</option>
+                            <option *ngFor="let client of clients" [value]="client.id">
+                                {{ getClientDisplay(client) }}
+                            </option>
+                        </select>
+                        <span *ngIf="invoiceForm.get('buyer_id')?.invalid && invoiceForm.get('buyer_id')?.touched"
+                            class="block mt-1 text-sm text-red-600">El cliente es requerido</span>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div class="mb-5">
+                        <label for="observation"
+                            class="block text-sm font-medium text-gray-700 mb-2">Observaciones</label>
+                        <textarea id="observation" formControlName="observation"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors resize-y min-h-[80px]"
+                            placeholder="Observaciones adicionales (opcional)"></textarea>
+                    </div>
+
+                    <!-- Método de pago -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="mb-5">
+                            <label for="payment_means_code" class="block text-sm font-medium text-gray-700 mb-2">Código
+                                de
+                                Pago</label>
+                            <input type="text" id="payment_means_code" formControlName="payment_means_code"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors"
+                                placeholder="10">
+                        </div>
+                        <div class="mb-5">
+                            <label for="payment_means_name" class="block text-sm font-medium text-gray-700 mb-2">Método
+                                de
+                                Pago</label>
+                            <input type="text" id="payment_means_name" formControlName="payment_means_name"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors"
+                                placeholder="Contado">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna derecha: Agregar items -->
+                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200">
+                    <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800">Agregar Productos/Servicios</h3>
+                    </div>
+
+                    <!-- Selector de productos -->
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Productos</label>
+                        <select
+                            class="w-full px-3 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors cursor-pointer"
+                            (change)="addItem('product', +$any($event.target).value); $any($event.target).value = ''">
+                            <option value="">Seleccione un producto</option>
+                            <option *ngFor="let product of products" [value]="product.id">
+                                {{ getItemDisplay(product) }} - {{ formatCurrency(product.unit_price) }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Selector de servicios -->
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Servicios</label>
+                        <select
+                            class="w-full px-3 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors cursor-pointer"
+                            (change)="addItem('service', +$any($event.target).value); $any($event.target).value = ''">
+                            <option value="">Seleccione un servicio</option>
+                            <option *ngFor="let service of services" [value]="service.id">
+                                {{ getItemDisplay(service) }} - {{ formatCurrency(service.unit_price) }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items seleccionados -->
+            <div *ngIf="selectedItems.length > 0" class="mt-6 bg-gray-50 p-6 rounded-2xl border border-gray-200">
+                <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800">Items de la Factura</h3>
+                    <span class="text-sm text-gray-600 bg-gray-200 px-3 py-1 rounded-full">{{ selectedItems.length }}
+                        item(s)</span>
+                </div>
+
+                <div
+                    class="overflow-x-auto overflow-y-auto max-h-[400px] mb-6 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+                    <table class="w-full bg-white rounded-lg overflow-hidden">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th
+                                    class="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Tipo</th>
+                                <th
+                                    class="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Descripción</th>
+                                <th
+                                    class="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Cantidad</th>
+                                <th
+                                    class="px-3 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Precio Unit.</th>
+                                <th
+                                    class="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Descuento</th>
+                                <th
+                                    class="px-3 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Subtotal</th>
+                                <th
+                                    class="px-3 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Impuestos</th>
+                                <th
+                                    class="px-3 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Total</th>
+                                <th
+                                    class="px-3 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of selectedItems; let i = index"
+                                class="hover:bg-gray-50 border-b border-gray-200 last:border-b-0">
+                                <td class="px-3 py-4 whitespace-nowrap">
+                                    <span
+                                        class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide"
+                                        [class.bg-blue-100]="item.type === 'product'"
+                                        [class.text-blue-800]="item.type === 'product'"
+                                        [class.bg-purple-100]="item.type === 'service'"
+                                        [class.text-purple-800]="item.type === 'service'">
+                                        {{ item.type === 'product' ? 'Producto' : 'Servicio' }}
+                                    </span>
+                                </td>
+                                <td class="px-3 py-4 whitespace-nowrap font-medium text-gray-900">{{
+                                    getItemDisplay(item.item) }}</td>
+                                <td class="px-3 py-4 whitespace-nowrap">
+                                    <input type="number"
+                                        class="w-20 px-2 py-1 border border-gray-300 rounded-2xl text-center focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                                        [value]="item.quantity"
+                                        (change)="updateItemQuantity(i, +$any($event.target).value)"
+                                        (blur)="updateItemQuantity(i, +$any($event.target).value)" min="1" step="1">
+                                </td>
+                                <td class="px-3 py-4 whitespace-nowrap text-right">{{
+                                    formatCurrency(item.item.unit_price)
+                                    }}</td>
+                                <td class="px-3 py-4 whitespace-nowrap">
+                                    <input type="number"
+                                        class="w-24 px-2 py-1 border border-gray-300 rounded-2xl text-center focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                                        [value]="item.discount"
+                                        (change)="updateItemDiscount(i, +$any($event.target).value)"
+                                        (blur)="updateItemDiscount(i, +$any($event.target).value)" min="0" step="0.01"
+                                        [max]="item.item.unit_price * item.quantity">
+                                </td>
+                                <td class="px-3 py-4 whitespace-nowrap text-right">{{ formatCurrency(item.subtotal) }}
+                                </td>
+                                <td class="px-3 py-4 whitespace-nowrap text-right">
+                                    <span [class.text-red-600]="item.taxes < 0" [class.text-gray-900]="item.taxes >= 0">
+                                        {{ formatCurrency(item.taxes) }}
+                                    </span>
+                                    <div *ngIf="item.item.taxes && item.item.taxes.length > 0"
+                                        class="text-xs text-gray-500 mt-1">
+                                        <span *ngFor="let tax of item.item.taxes; let last = last">
+                                            <span *ngIf="tax.status === 'Activo'">
+                                                {{ tax.name }}{{ !last ? ', ' : '' }}
+                                            </span>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="px-3 py-4 whitespace-nowrap text-right font-semibold text-gray-900">{{
+                                    formatCurrency(item.total) }}</td>
+                                <td class="px-3 py-4 whitespace-nowrap text-center">
+                                    <button type="button"
+                                        class="w-8 h-8 flex items-center justify-center bg-red-50 text-red-600 border border-red-200 rounded hover:bg-red-100 transition-colors"
+                                        (click)="removeItem(i)" title="Eliminar">
+                                        ✕
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Totales -->
+                <div class="bg-white p-6 rounded-2xl border-2 border-gray-200">
+                    <div class="flex flex-col gap-3">
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-gray-600">Subtotal (sin impuestos):</span>
+                            <span class="font-medium text-gray-900">{{ formatCurrency(subtotal) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2" *ngIf="totalDiscount > 0">
+                            <span class="text-gray-600">Descuentos aplicados:</span>
+                            <span class="font-medium text-red-600">- {{ formatCurrency(totalDiscount) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-gray-600">Impuestos:</span>
+                            <span class="font-medium" [class.text-gray-900]="totalTaxes >= 0"
+                                [class.text-red-600]="totalTaxes < 0">
+                                {{ formatCurrency(totalTaxes) }}
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-200">
+                            <span class="text-lg font-semibold text-gray-900">Total a Pagar:</span>
+                            <span class="text-xl font-bold" [class.text-blue-600]="total >= 0"
+                                [class.text-red-600]="total < 0">
+                                {{ formatCurrency(total) }}
+                            </span>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-500 text-right">
+                            {{ selectedItems.length }} item(s) en la factura
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex justify-end gap-4 mt-6 pt-6 border-t-2 border-gray-200">
+                <button type="button"
+                    class="bg-gray-200 text-black px-4 py-2 rounded-xl hover:bg-gray-300 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                    (click)="resetForm()" [disabled]="loading">
+                    Limpiar
+                </button>
+                <button type="submit"
+                    class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-xl text-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center"
+                    [disabled]="loading || invoiceForm.invalid || selectedItems.length === 0">
+                    <span *ngIf="loading"
+                        class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+                    <span>{{ loading ? 'Creando...' : 'Crear Factura' }}</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- Botón Enviar a DIAN (solo si la factura fue creada) -->
+        <div *ngIf="createdInvoiceId && !sendingToDian" class="mt-6 pt-6 border-t-2 border-gray-200">
+            <div class="flex items-center justify-between bg-green-50 p-4 rounded-2xl border border-green-200">
+                <div>
+                    <p class="text-sm font-semibold text-green-800 mb-1">Factura creada exitosamente</p>
+                    <p class="text-xs text-green-600">Puedes enviarla a la DIAN ahora o más tarde desde la lista de
+                        facturas</p>
+                </div>
+                <button type="button"
+                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl text-sm flex items-center gap-2"
+                    (click)="sendToDian()">
+                    
+                    <span>Enviar a DIAN</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading al enviar a DIAN -->
+        <div *ngIf="sendingToDian" class="mt-6 pt-6 border-t-2 border-gray-200">
+            <div class="flex items-center justify-center bg-blue-50 p-4 rounded-2xl border border-blue-200">
+                <div class="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-3"></div>
+                <p class="text-sm text-blue-800">Enviando factura a la DIAN...</p>
+            </div>
+        </div>
+    </div>
+</main>

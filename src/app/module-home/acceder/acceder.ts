@@ -63,7 +63,7 @@ export class Acceder {
           console.log(loginData);
 
           // Redirigir a facturas-notas
-          this.router.navigate(['/facturas-notas']);
+          this.router.navigate(['/facturacion']);
         } else {
           this.showNotification('Error: no se recibió el token', 'error');
         }
