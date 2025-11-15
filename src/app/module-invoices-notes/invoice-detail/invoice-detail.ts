@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { InvoiceService, Invoice } from '../services/invoice.service';
 import { Html5Qrcode } from 'html5-qrcode';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './invoice-detail.html',
   styleUrls: ['./invoice-detail.css']
 })
