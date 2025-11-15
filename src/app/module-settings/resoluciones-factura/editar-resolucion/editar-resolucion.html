@@ -1,92 +1,99 @@
 <main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
-    <!-- Contenido de la página -->
     <div class="-mt-4 mb-2">
         <h2 class="text-4xl font-semibold mb-10 mt-4">
-            Editar resolución
+            Editar Resolución: {{ resolutionData.prefix || 'Cargando...' }} - {{ resolutionData.dianResolutionNumber || '...' }}
         </h2>
     </div>
-    <!-- Línea divisoria -->
     <div class="border-b-2 w-full mb-8 border-gray-300"></div>
 
-    <!-- CONTENEDOR DEL FORMULARIO CON SCROLL -->
     <div class="bg-white rounded-2xl shadow overflow-hidden">
-        <!-- Contenedor del formulario con scroll -->
         <div class="overflow-y-auto max-h-[600px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-            <form class="p-8 w-full max-w-5xl mx-auto">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-base font-medium mb-1">Prefijo <span class="text-red-500">*</span></label>
-                        <input type="text" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Prefijo" required />
+            <form (ngSubmit)="updateResolution()" #editResolutionForm="ngForm" class="p-8 w-full max-w-5xl mx-auto">
+                
+                @if (isLoading) {
+                    <div class="text-center py-10 text-gray-500">Cargando datos de la resolución...</div>
+                } 
+                
+                @if (!isLoading) {
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-base font-medium mb-1">Prefijo <span class="text-red-500">*</span></label>
+                            <input type="text" name="prefix" [(ngModel)]="resolutionData.prefix" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Prefijo" required />
+                        </div>
+                        <div>
+                            <label class="block text-base font-medium mb-1">Número de resolución DIAN <span class="text-red-500">*</span></label>
+                            <input type="text" name="dianResolutionNumber" [(ngModel)]="resolutionData.dianResolutionNumber" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Número de resolución" required />
+                        </div>
+                        <div>
+                            <label class="block text-base font-medium mb-1">Tipo de documento <span class="text-red-500">*</span></label>
+                            <select name="documentType" [(ngModel)]="resolutionData.documentType" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none appearance-none" required>
+                                <option value="" disabled>Seleccione...</option>
+                                <option value="Factura_EL">Factura Electrónica (FE)</option>
+                                <option value="Nota_Credito">Nota Crédito (NC)</option>
+                                <option value="Nota_Debito">Nota Débito (ND)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-base font-medium mb-1">Fecha de resolución <span class="text-red-500">*</span></label>
+                            <input type="date" name="resolutionDate" [(ngModel)]="resolutionData.resolutionDate" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required />
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-base font-medium mb-1">Clave Técnica DIAN <span class="text-red-500">*</span></label>
+                            <input type="text" name="technicalKey" [(ngModel)]="resolutionData.technicalKey" placeholder="Clave técnica para el cálculo del CUFE/CUDE" required
+                                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-gray-700">
+                        </div>
+
+                        <div>
+                            <label class="block text-base font-medium mb-1">Fecha de inicio de vigencia <span class="text-red-500">*</span></label>
+                            <input type="date" name="validityStart" [(ngModel)]="resolutionData.validityStart" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required />
+                        </div>
+                        <div>
+                            <label class="block text-base font-medium mb-1">Fecha de fin de vigencia <span class="text-red-500">*</span></label>
+                            <input type="date" name="validityEnd" [(ngModel)]="resolutionData.validityEnd" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required />
+                        </div>
+                        <div>
+                            <label class="block text-base font-medium mb-1">Rango inicial (Desde) <span class="text-red-500">*</span></label>
+                            <input type="number" name="rangeStart" [(ngModel)]="resolutionData.rangeStart" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Rango inicial" required />
+                        </div>
+                        <div>
+                            <label class="block text-base font-medium mb-1">Rango final (Hasta) <span class="text-red-500">*</span></label>
+                            <input type="number" name="rangeEnd" [(ngModel)]="resolutionData.rangeEnd" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Rango final" required />
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-base font-medium mb-1">Cantidad disponible (Calculada automáticamente)</label>
+                            <input type="text" [value]="resolutionData.rangeEnd > resolutionData.rangeStart ? (resolutionData.rangeEnd - resolutionData.rangeStart + 1) : 0" 
+                                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base bg-gray-100 font-semibold" readonly />
+                        </div>
+                        <div class="md:col-span-2 flex items-center mt-2">
+                            <input type="checkbox" name="isPrincipal" [(ngModel)]="resolutionData.isPrincipal" class="w-5 h-5 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500" />
+                            <label class="ml-2 text-base font-medium text-gray-700">Marcar como principal para la emisión de facturas</label>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-base font-medium mb-1">Archivo de la resolución (opcional)</label>
+                            <input type="file" (change)="onFileSelected($event)" accept="application/pdf" 
+                                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" />
+                            <span class="text-xs text-gray-500 mt-1 block">Tamaño máximo: 2 MB. Solo PDF.</span>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-base font-medium mb-1">Observaciones</label>
+                            <textarea name="observations" [(ngModel)]="resolutionData.observations" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none min-h-[100px]" placeholder="Observaciones"></textarea>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-base font-medium mb-1">Número de resolución DIAN <span class="text-red-500">*</span></label>
-                        <input type="text" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Número de resolución" required />
-                    </div>
-                    <div>
-                        <label class="block text-base font-medium mb-1">Tipo de documento <span class="text-red-500">*</span></label>
-                        <select class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required>
-                            <option value="">Seleccione...</option>
-                            <option value="Factura EL">Factura EL</option>
-                            <option value="Nota Crédito">Nota Crédito</option>
-                            <option value="Nota Débito">Nota Débito</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-base font-medium mb-1">Fecha de resolución <span class="text-red-500">*</span></label>
-                        <input type="date" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required />
-                    </div>
-                    <div>
-                        <label class="block text-base font-medium mb-1">Fecha de inicio de vigencia <span class="text-red-500">*</span></label>
-                        <input type="date" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required />
-                    </div>
-                    <div>
-                        <label class="block text-base font-medium mb-1">Fecha de fin de vigencia <span class="text-red-500">*</span></label>
-                        <input type="date" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required />
-                    </div>
-                    <div>
-                        <label class="block text-base font-medium mb-1">Rango inicial (Desde) <span class="text-red-500">*</span></label>
-                        <input type="number" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Rango inicial" required />
-                    </div>
-                    <div>
-                        <label class="block text-base font-medium mb-1">Rango final (Hasta) <span class="text-red-500">*</span></label>
-                        <input type="number" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Rango final" required />
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-base font-medium mb-1">Cantidad disponible (Calculada automáticamente)</label>
-                        <input type="text" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base bg-gray-100" placeholder="Cantidad disponible" readonly />
-                    </div>
-                    <div class="md:col-span-2 flex items-center gap-4">
-                        <label class="block text-base font-medium mb-1">¿Es principal?</label>
-                        <input type="checkbox" class="w-5 h-5 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500" />
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-base font-medium mb-1">Archivo de la resolución (opcional)</label>
-                        <input type="file" accept="application/pdf" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" />
-                        <span class="text-xs text-gray-500 mt-1 block">Tamaño máximo: 2 MB. Solo PDF.</span>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-base font-medium mb-1">Observaciones</label>
-                        <textarea class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none min-h-[100px]" placeholder="Observaciones"></textarea>
-                    </div>
-                </div>
+                }
+
                 <div class="col-span-full flex flex-col sm:flex-row justify-end gap-4 mt-6">
-                    <button type="submit" onclick="guardarResolucion()" class="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-400 
+                    <button type="button" (click)="cancel()" class="w-full sm:w-auto bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-6 sm:px-10 rounded-md shadow-sm">
+                        Cancelar
+                    </button>
+                    <button type="submit" [disabled]="!editResolutionForm.valid || isLoading"
+                        class="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-400 
                         text-white font-medium py-2 px-6 sm:px-10 rounded-md shadow-sm 
-                        focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 text-center">Guardar resolución</button>
-                    <button type="button" class="w-full sm:w-auto bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500 text-center">Cancelar</button>
+                        focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 text-center">
+                        Actualizar Resolución
+                    </button>
                 </div>
             </form>
         </div>
     </div>
-
-    <!-- Notificación de éxito -->
-    <div id="notificacion" class="hidden fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-        <div class="flex items-center space-x-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            <span>¡Resolución guardada exitosamente!</span>
-        </div>
-    </div>
-
 </main>

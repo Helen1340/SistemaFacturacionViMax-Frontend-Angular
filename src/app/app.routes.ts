@@ -9,8 +9,7 @@ import { Contingencia } from './module-contingency/contingencia/Contingency/cont
 import { FacturaContingencia } from './module-contingency/contingencia/Contingency/Contingency invoices/factura-contingencia';
 import { RecepcionDocumentos } from './module-document-reception/recepcion-documentos/recepcion-documentos';
 import { Configuracion } from './module-settings/configuracion/configuracion';
-import { ImpuestosRetenciones } from './module-settings/impuestos-retenciones/impuestos-retenciones';
-import { NuevoImpuesto } from './module-settings/impuestos-retenciones/nuevo-impuesto/nuevo-impuesto';
+
 
 import { NuevoUsuario } from './module-users/nuevo-usuario/nuevo-usuario';
 import { EditUsuario } from './module-users/edit-usuario/edit-usuario';
@@ -22,8 +21,6 @@ import { ReporteUsuarios } from './module-reports/reporte-usuarios/reporte-usuar
 import { ReporteImpuestos } from './module-reports/reporte-impuestos/reporte-impuestos';
 import { CertificadoDigital } from './module-settings/certificado-digital/certificado-digital';
 import { NotificacionesEmails } from './module-settings/notificaciones-emails/notificaciones-emails';
-import { ConfiguracionRetencionDocumental } from './module-settings/retencion-respaldo/configuracion-retencion-documental/configuracion-retencion-documental';
-import { ConfiguracionRespaldoAutomatico } from './module-settings/retencion-respaldo/configuracion-respaldo-automatico/configuracion-respaldo-automatico';
 import { Acceder } from './module-home/acceder/acceder';
 import { ParametrosGenerales } from './module-settings/parametros-generales/parametros-generales';
 import { ResolucionesFactura } from './module-settings/resoluciones-factura/resoluciones-factura';
@@ -50,7 +47,8 @@ import { PoliticaRetencion } from './module-settings/retencion-respaldo/retencio
 import { FacturacionComponent } from './module-invoices-notes/facturacion.component/facturacion.component';
 import { InvoiceCreate } from './module-invoices-notes/invoice-create/invoice-create';
 import { InvoiceDetail } from './module-invoices-notes/invoice-detail/invoice-detail';
-
+import { ImpuestosRetencionesComponent } from './module-settings/impuestos-retenciones/impuestos-retenciones';
+import { RetencionRespaldo } from './module-settings/retencion-respaldo/retencion-respaldo';
 
 
 
@@ -270,12 +268,11 @@ export const routes: Routes = [
   {path: 'editar-resolucion/:id', component: EditarResolucion},
   {path: 'certificado-digital', component: CertificadoDigital},
   {path: 'notificaciones-email',component: NotificacionesEmails},
-  {path: 'retencion-respaldo', component: PoliticaRetencion},
-  {path: 'configuracion-retencion-documental', component: ConfiguracionRetencionDocumental},
-  {path: 'configuracion-respaldo-automatico', component: ConfiguracionRespaldoAutomatico},
+  {path: 'retencion-respaldo', component: RetencionRespaldo},
+  
   {path: 'cambios-normativos', component: CambiosNormativos},
-  {path: 'impuestos-retenciones',component: ImpuestosRetenciones},
-  {path: 'nuevo-impuesto',component: NuevoImpuesto},
+  {path: 'impuestos-retenciones',component: ImpuestosRetencionesComponent},
+  
 
   //notificaciones 
   {path: 'notificaciones-email',component: NotificacionesEmails},

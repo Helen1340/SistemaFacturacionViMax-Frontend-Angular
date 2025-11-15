@@ -1,92 +1,134 @@
 <main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
-    <!-- Contenido de la página -->
     <div class="-mt-4 mb-2">
         <h2 class="text-4xl font-semibold mb-10 mt-4">
             Agregar resolución
         </h2>
     </div>
-    <!-- Línea divisoria -->
+
     <div class="border-b-2 w-full mb-8 border-gray-300"></div>
 
-    <!-- CONTENEDOR DEL FORMULARIO CON SCROLL -->
-    <div class="bg-white rounded-2xl shadow overflow-hidden">
-        <!-- Contenedor del formulario con scroll -->
+    <div class="bg-gray-50 rounded-2xl shadow overflow-hidden">
         <div class="overflow-y-auto max-h-[600px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-            <form class="p-8 w-full max-w-5xl mx-auto">
+        
+            <form (ngSubmit)="saveResolution()" #resolutionForm="ngForm" class="p-8 w-full max-w-5xl mx-auto">
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
                     <div>
                         <label class="block text-base font-medium mb-1">Prefijo <span class="text-red-500">*</span></label>
-                        <input type="text" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Prefijo" required />
+                        <input type="text" name="prefix" [(ngModel)]="resolutionData.prefix" 
+                            #prefixInput="ngModel"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3"
+                            placeholder="Prefijo" required />
+                        <div *ngIf="prefixInput.invalid && (prefixInput.dirty || prefixInput.touched)" class="text-red-500 text-sm mt-1">
+                            El prefijo es obligatorio.
+                        </div>
                     </div>
+
                     <div>
                         <label class="block text-base font-medium mb-1">Número de resolución DIAN <span class="text-red-500">*</span></label>
-                        <input type="text" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Número de resolución" required />
+                        <input type="text" name="resolution_number" [(ngModel)]="resolutionData.resolution_number" class="w-full border border-gray-300 rounded-xl px-4 py-3"
+                            placeholder="Número de resolución" required />
                     </div>
+
                     <div>
                         <label class="block text-base font-medium mb-1">Tipo de documento <span class="text-red-500">*</span></label>
-                        <select class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required>
+                        <select name="document_type" [(ngModel)]="resolutionData.document_type" class="w-full border border-gray-300 rounded-xl px-4 py-3"
+                            required>
                             <option value="">Seleccione...</option>
-                            <option value="Factura EL">Factura EL</option>
-                            <option value="Nota Crédito">Nota Crédito</option>
-                            <option value="Nota Débito">Nota Débito</option>
-                        </select>
+                            <option value="Factura">Factura</option>
+                            <option value="NotaCredito">Nota Crédito</option> <option value="NotaDebito">Nota Débito</option>   </select>
                     </div>
+
+                    <div>
+                        <label class="block text-base font-medium mb-1">Código tipo documento <span class="text-red-500">*</span></label>
+                        <input type="text" name="document_type_code" [(ngModel)]="resolutionData.document_type_code" class="w-full border border-gray-300 rounded-xl px-4 py-3"
+                            placeholder="Código" required />
+                    </div>
+
                     <div>
                         <label class="block text-base font-medium mb-1">Fecha de resolución <span class="text-red-500">*</span></label>
-                        <input type="date" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required />
+                        <input type="date" name="resolution_date" [(ngModel)]="resolutionData.resolution_date"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3" required />
                     </div>
+
                     <div>
                         <label class="block text-base font-medium mb-1">Fecha de inicio de vigencia <span class="text-red-500">*</span></label>
-                        <input type="date" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required />
+                        <input type="date" name="validity_start_date" [(ngModel)]="resolutionData.validity_start_date"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3" required />
                     </div>
+
                     <div>
                         <label class="block text-base font-medium mb-1">Fecha de fin de vigencia <span class="text-red-500">*</span></label>
-                        <input type="date" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" required />
+                        <input type="date" name="validity_end_date" [(ngModel)]="resolutionData.validity_end_date"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3" required />
                     </div>
+
                     <div>
                         <label class="block text-base font-medium mb-1">Rango inicial (Desde) <span class="text-red-500">*</span></label>
-                        <input type="number" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Rango inicial" required />
+                        <input type="number" name="start_number" [(ngModel)]="resolutionData.start_number"
+                            (ngModelChange)="calculateAvailable()" class="w-full border border-gray-300 rounded-xl px-4 py-3"
+                            placeholder="Rango inicial" required />
                     </div>
+
                     <div>
                         <label class="block text-base font-medium mb-1">Rango final (Hasta) <span class="text-red-500">*</span></label>
-                        <input type="number" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" placeholder="Rango final" required />
+                        <input type="number" name="end_number" [(ngModel)]="resolutionData.end_number"
+                            (ngModelChange)="calculateAvailable()" class="w-full border border-gray-300 rounded-xl px-4 py-3"
+                            placeholder="Rango final" required />
                     </div>
+
                     <div class="md:col-span-2">
-                        <label class="block text-base font-medium mb-1">Cantidad disponible (Calculada automáticamente)</label>
-                        <input type="text" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base bg-gray-100" placeholder="Cantidad disponible" readonly />
+                        <label class="block text-base font-medium mb-1">Cantidad disponible (automática)</label>
+                        <input type="text" [value]="availableAmount" class="w-full border border-gray-300 rounded-xl px-4 py-3 bg-gray-100"
+                            readonly />
                     </div>
-                    <div class="md:col-span-2 flex items-center gap-4">
-                        <label class="block text-base font-medium mb-1">¿Es principal?</label>
-                        <input type="checkbox" class="w-5 h-5 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500" />
+
+                    <div class="md:col-span-2">
+                        <label class="block text-base font-medium mb-1">Estado actual <span class="text-red-500">*</span></label>
+                        <select name="current_status" [(ngModel)]="resolutionData.current_status"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3" required>
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
                     </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-base font-medium mb-1">Ambiente <span class="text-red-500">*</span></label>
+                        <select name="environment" [(ngModel)]="resolutionData.environment"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3" required>
+                            <option value="Pruebas">Pruebas</option>
+                            <option value="Produccion">Producción</option> </select>
+                    </div>
+
                     <div class="md:col-span-2">
                         <label class="block text-base font-medium mb-1">Archivo de la resolución (opcional)</label>
-                        <input type="file" accept="application/pdf" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none" />
+                        <input type="file" (change)="onFileSelected($event)" accept="application/pdf"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3" />
                         <span class="text-xs text-gray-500 mt-1 block">Tamaño máximo: 2 MB. Solo PDF.</span>
                     </div>
+
                     <div class="md:col-span-2">
                         <label class="block text-base font-medium mb-1">Observaciones</label>
-                        <textarea class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none min-h-[100px]" placeholder="Observaciones"></textarea>
+                        <textarea name="description" [(ngModel)]="resolutionData.description"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3 min-h-[100px]"
+                            placeholder="Observaciones"></textarea>
                     </div>
+
                 </div>
-                <div class="col-span-full flex flex-col sm:flex-row justify-end gap-4 mt-6">
-                    <button type="submit" onclick="guardarResolucion()" class="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-400 
-                        text-white font-medium py-2 px-6 sm:px-10 rounded-md shadow-sm 
-                        focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 text-center">Guardar resolución</button>
-                    <button type="button" class="w-full sm:w-auto bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500 text-center">Cancelar</button>
+
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="submit" [disabled]="!resolutionForm.valid"
+                        class="bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2 px-10 rounded-md">
+                        Guardar resolución
+                    </button>
+
+                    <button type="button" (click)="cancel()" class="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500">
+                        Cancelar
+                    </button>
                 </div>
+
             </form>
         </div>
     </div>
-
-    <!-- Notificación de éxito -->
-    <div id="notificacion" class="hidden fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-        <div class="flex items-center space-x-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            <span>¡Resolución guardada exitosamente!</span>
-        </div>
-    </div>
-
 </main>
