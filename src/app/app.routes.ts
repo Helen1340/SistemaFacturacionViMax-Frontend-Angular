@@ -43,7 +43,6 @@ import { DetallesProducto } from './module-product-service/detalles-producto/det
 import { DetallesServicio } from './module-product-service/detalles-servicio/detalles-servicio';
 import { Notificaciones } from './module-notifications/notificaciones/notificaciones';
 import { CambiosNormativos } from './module-settings/cambios-normativos/cambios-normativos';
-import { PoliticaRetencion } from './module-settings/retencion-respaldo/retencion-respaldo';
 import { FacturacionComponent } from './module-invoices-notes/facturacion.component/facturacion.component';
 import { InvoiceCreate } from './module-invoices-notes/invoice-create/invoice-create';
 import { InvoiceDetail } from './module-invoices-notes/invoice-detail/invoice-detail';
