@@ -15,6 +15,9 @@ export class EditarProducto implements OnInit {
   productoForm!: FormGroup;
   productoId!: number;
   measurementUnits: any[] = [];
+  taxes: any[] = [];
+  selectedTaxIds: number[] = [];
+  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -43,6 +46,7 @@ export class EditarProducto implements OnInit {
 
     // Cargar unidades (solo de tipo Producto)
     this.cargarUnidades();
+    this.cargarImpuestos();
   }
 
   cargarProducto(id: number) {
@@ -57,6 +61,11 @@ export class EditarProducto implements OnInit {
           measurement_unit_id: producto.measurement_unit_id ?? '',
           status: producto.status ?? 'Active'
         });
+
+        // Cargar impuestos asignados
+        if (producto.taxes && Array.isArray(producto.taxes)) {
+          this.selectedTaxIds = producto.taxes.map((tax: any) => tax.id);
+        }
       },
       error: (err) => {
         console.error('Error al cargar producto:', err);
@@ -67,26 +76,76 @@ export class EditarProducto implements OnInit {
   cargarUnidades(): void {
     this.productosServicio.getMeasurementUnits().subscribe({
       next: (res) => {
-        // Unidades de producto (excluye las de servicio)
-        const codigosServicio = ['HUR', 'DAY', 'MON', 'E48', 'CNT'];
+        // Filtrar por application_type = 'Product'
         this.measurementUnits = res.filter(
-          (u: any) => !codigosServicio.includes(u.codigo_dian)
+          (u: any) => u.application_type === 'Product'
         );
       },
       error: (err) => console.error('Error cargando unidades:', err),
     });
   }
 
-  onSubmit() {
-    if (this.productoForm.invalid) return;
+  cargarImpuestos(): void {
+    this.productosServicio.getActiveTaxes().subscribe({
+      next: (taxes) => {
+        this.taxes = taxes;
+      },
+      error: (err) => {
+        console.error('Error cargando impuestos:', err);
+      }
+    });
+  }
 
-    this.productosServicio.updateProduct(this.productoId, this.productoForm.value).subscribe({
+  toggleTax(taxId: number, event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      if (!this.selectedTaxIds.includes(taxId)) {
+        this.selectedTaxIds.push(taxId);
+      }
+    } else {
+      this.selectedTaxIds = this.selectedTaxIds.filter(id => id !== taxId);
+    }
+  }
+
+  isTaxSelected(taxId: number): boolean {
+    return this.selectedTaxIds.includes(taxId);
+  }
+
+  onSubmit() {
+    if (this.productoForm.invalid) {
+      this.productoForm.markAllAsTouched();
+      return;
+    }
+
+    this.isLoading = true;
+
+    const productData = {
+      ...this.productoForm.value,
+      unit_price: parseFloat(this.productoForm.value.unit_price)
+    };
+
+    // Actualizar producto primero
+    this.productosServicio.updateProduct(this.productoId, productData).subscribe({
       next: () => {
-        alert('Producto actualizado con éxito');
-        this.router.navigate(['/productos-servicios']); // redirige a listado
+        // Luego sincronizar impuestos
+        this.productosServicio.syncProductTaxes(this.productoId, this.selectedTaxIds).subscribe({
+          next: () => {
+            this.isLoading = false;
+            alert('✅ Producto actualizado con éxito');
+            this.router.navigate(['/productos-servicios']);
+          },
+          error: (err) => {
+            console.error('Error al sincronizar impuestos:', err);
+            this.isLoading = false;
+            alert('Producto actualizado, pero hubo un error al actualizar los impuestos');
+          }
+        });
       },
       error: (err) => {
         console.error('Error al actualizar producto:', err);
+        this.isLoading = false;
+        const errorMessage = err.error?.message || 'Error al actualizar el producto';
+        alert(`❌ ${errorMessage}`);
       }
     });
   }

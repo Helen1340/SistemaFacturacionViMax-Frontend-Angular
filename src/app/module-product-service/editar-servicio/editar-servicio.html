@@ -65,14 +65,51 @@
                     class="w-full border rounded px-3 py-2 text-sm text-black" placeholder="Opcional"></textarea>
             </div>
 
+            <!-- Impuestos -->
+            <div class="col-span-full">
+                <label class="block text-sm font-medium text-black mb-2">Impuestos aplicados</label>
+                <div *ngIf="taxes.length === 0" class="text-sm text-gray-500 mb-2">
+                    Cargando impuestos...
+                </div>
+                <div *ngIf="taxes.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <label *ngFor="let tax of taxes" 
+                        class="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded cursor-pointer">
+                        <input type="checkbox" 
+                            [checked]="isTaxSelected(tax.id)"
+                            (change)="toggleTax(tax.id, $event)"
+                            class="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500">
+                        <div class="flex-1">
+                            <span class="text-sm font-medium text-gray-900">{{ tax.name }}</span>
+                            <div class="text-xs text-gray-500">
+                                <span *ngIf="tax.application_type === 'Porcentaje'">
+                                    {{ tax.percentage }}%
+                                </span>
+                                <span *ngIf="tax.application_type === 'ValorFijo'">
+                                    ${{ tax.fixed_value | number:'1.0-0' }}
+                                </span>
+                                <span *ngIf="tax.application_type === 'Retencion'">
+                                    Retención {{ tax.percentage }}%
+                                </span>
+                                <span class="ml-2 text-gray-400">•</span>
+                                <span class="ml-1">{{ tax.type }}</span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">
+                    Seleccione los impuestos que aplican a este servicio
+                </p>
+            </div>
+
             <!-- Botones -->
             <div class="col-span-full flex justify-end gap-4 mt-6">
-                <button type="submit" class="bg-cyan-600 text-white px-6 py-2 rounded hover:bg-cyan-700"
-                    [disabled]="serviceForm.invalid">
-                    Guardar Cambios
+                <button type="submit" class="bg-cyan-600 text-white px-6 py-2 rounded hover:bg-cyan-700 disabled:bg-gray-400"
+                    [disabled]="serviceForm.invalid || isLoading">
+                    <span *ngIf="!isLoading">Guardar Cambios</span>
+                    <span *ngIf="isLoading">Guardando...</span>
                 </button>
                 <button type="button" class="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500"
-                    (click)="cancelar()">
+                    (click)="cancelar()" [disabled]="isLoading">
                     Cancelar
                 </button>
             </div>

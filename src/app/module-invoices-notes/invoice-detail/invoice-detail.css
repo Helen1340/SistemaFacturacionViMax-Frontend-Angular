@@ -1,0 +1,60 @@
+/* Estilos específicos para el componente de detalles de factura */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+tbody tr:first-child {
+  border-top: none;
+}
+
+/* Estilos para impresión */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+  }
+  
+  .bg-gray-100 {
+    background: white !important;
+  }
+  
+  .shadow-lg, .shadow-sm {
+    box-shadow: none !important;
+  }
+}
+
+/* Animación suave para el QR */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+img[alt="Código QR de la factura"] {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Mejoras para la tabla */
+tbody tr:hover {
+  background-color: #f9fafb;
+  transition: background-color 0.2s ease;
+}
+
+/* Estilos para badges de estado */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}

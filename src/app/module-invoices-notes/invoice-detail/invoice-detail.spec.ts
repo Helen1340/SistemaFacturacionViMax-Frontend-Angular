@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NuevaNota } from './nueva-nota';
+import { InvoiceDetail } from './invoice-detail';
 
-describe('NuevaNota', () => {
-  let component: NuevaNota;
-  let fixture: ComponentFixture<NuevaNota>;
+describe('InvoiceDetail', () => {
+  let component: InvoiceDetail;
+  let fixture: ComponentFixture<InvoiceDetail>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NuevaNota]
+      imports: [InvoiceDetail]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(NuevaNota);
+    fixture = TestBed.createComponent(InvoiceDetail);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -21,3 +21,4 @@ describe('NuevaNota', () => {
     expect(component).toBeTruthy();
   });
 });
+

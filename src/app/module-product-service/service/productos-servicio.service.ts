@@ -41,14 +41,14 @@ interface Service {
   updated_at?: string;
 }
 
-interface Tax {
+export interface Tax {
   id: number;
   tax_code: string;
   name: string;
-  description: string;
+  description?: string;
   type: string;
-  percentage?: string;
-  fixed_value?: string;
+  percentage?: number;
+  fixed_value?: number;
   application_type: string;
   status: string;
   created_at?: string;
@@ -128,6 +128,23 @@ export class ProductosServicioService {
     return this.http.get<Tax[]>(`${this.apiUrl}/taxes`);
   }
 
+  // ✅ Obtener impuestos activos
+  getActiveTaxes(): Observable<Tax[]> {
+    return this.http.get<Tax[]>(`${this.apiUrl}/taxes`).pipe(
+      map(taxes => taxes.filter(tax => tax.status === 'Activo'))
+    );
+  }
+
+  // ✅ Sincronizar impuestos de un producto
+  syncProductTaxes(productId: number, taxIds: number[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/products/${productId}/sync-taxes`, { tax_ids: taxIds });
+  }
+
+  // ✅ Sincronizar impuestos de un servicio
+  syncServiceTaxes(serviceId: number, taxIds: number[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/services/${serviceId}/sync-taxes`, { tax_ids: taxIds });
+  }
+
   // ✅ Obtener un solo producto o servicio
   getItemById(id: number, type: 'Product' | 'Service'): Observable<ItemTable> {
     const url = type === 'Product' ? `${this.apiUrl}/products/${id}` : `${this.apiUrl}/services/${id}`;
@@ -155,8 +172,27 @@ export class ProductosServicioService {
     return this.http.post<Product>(`${this.apiUrl}/products`, data);
   }
 
+  // ✅ Crear producto con impuestos
+  createProductWithTaxes(productData: Partial<Product>, taxIds: number[]): Observable<Product> {
+    return new Observable(observer => {
+      this.createProduct(productData).subscribe({
+        next: (product) => {
+          if (taxIds.length > 0) {
+            this.syncProductTaxes(product.id, taxIds).subscribe({
+              next: () => observer.next(product),
+              error: (err) => observer.error(err)
+            });
+          } else {
+            observer.next(product);
+          }
+        },
+        error: (err) => observer.error(err)
+      });
+    });
+  }
+
   getProductById(id: number): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrl}/products/${id}`);
+    return this.http.get<Product>(`${this.apiUrl}/products/${id}?included=taxes`);
   }
 
   updateProduct(id: number, data: any): Observable<any> {
@@ -168,8 +204,27 @@ export class ProductosServicioService {
     return this.http.post<Service>(`${this.apiUrl}/services`, data);
   }
 
+  // ✅ Crear servicio con impuestos
+  createServiceWithTaxes(serviceData: Partial<Service>, taxIds: number[]): Observable<Service> {
+    return new Observable(observer => {
+      this.createService(serviceData).subscribe({
+        next: (service) => {
+          if (taxIds.length > 0) {
+            this.syncServiceTaxes(service.id, taxIds).subscribe({
+              next: () => observer.next(service),
+              error: (err) => observer.error(err)
+            });
+          } else {
+            observer.next(service);
+          }
+        },
+        error: (err) => observer.error(err)
+      });
+    });
+  }
+
   getServiceById(id: number): Observable<Service> {
-    return this.http.get<Service>(`${this.apiUrl}/services/${id}`);
+    return this.http.get<Service>(`${this.apiUrl}/services/${id}?included=taxes`);
   }
 
   updateService(id: number, data: any): Observable<any> {

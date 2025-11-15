@@ -8,12 +8,12 @@ export interface EditarClienteForm {
   first_name: string;
   document_type: string;
   document_number: string;
-  address: string;
-  country: string;
-  description: string;
-  password: string;
+  address?: string;
+  country?: string;
+  description?: string;
   email: string;
-  phone: string;
+  phone?: string;
+  status?: string;
 }
 
 @Component({
@@ -27,14 +27,10 @@ export class EditarCliente implements OnInit {
   // Formulario
   clienteForm: EditarClienteForm = {
     first_name: '',
-    document_type: '',
+    document_type: 'CC',
     document_number: '',
-    address: '',
-    country: '',
-    description: '',
-    password: '',
     email: '',
-    phone: ''
+    status: 'Active'
   };
 
   // Estados
@@ -49,11 +45,13 @@ export class EditarCliente implements OnInit {
   tiposDocumento = [
     { value: 'CC', label: 'Cédula de Ciudadanía' },
     { value: 'CE', label: 'Cédula de Extranjería' },
-    { value: 'NIT', label: 'NIT' },
-    { value: 'PP', label: 'Pasaporte' },
-    { value: 'RC', label: 'Registro Civil' }
+    { value: 'NIT', label: 'NIT' }
   ];
 
+  estados = [
+    { value: 'Active', label: 'Activo' },
+    { value: 'Inactive', label: 'Inactivo' }
+  ];
 
   constructor(
     private router: Router,
@@ -72,30 +70,6 @@ export class EditarCliente implements OnInit {
     
     // Cargar datos del cliente
     this.cargarDatosCliente();
-  }
-
-  // Generar contraseña automáticamente cuando se ingrese el número de documento
-  onNumeroDocumentoChange(): void {
-    if (this.clienteForm.document_number && this.clienteForm.document_number.trim() !== '') {
-      this.clienteForm.password = this.generarContraseñaEncriptada(this.clienteForm.document_number);
-    }
-  }
-
-  // Generar contraseña encriptada basada en el número de documento
-  private generarContraseñaEncriptada(numeroDocumento: string): string {
-    // Simular encriptación usando base64 y algunos caracteres especiales
-    const timestamp = Date.now().toString();
-    const combined = numeroDocumento + timestamp;
-    
-    // Crear un hash simple simulando encriptación
-    let hash = '';
-    for (let i = 0; i < combined.length; i++) {
-      const char = combined.charCodeAt(i);
-      hash += String.fromCharCode((char + 7) % 94 + 33);
-    }
-    
-    // Convertir a base64 para simular encriptación
-    return btoa(hash).substring(0, 16);
   }
 
   // Cargar datos del cliente para editar
@@ -123,34 +97,33 @@ export class EditarCliente implements OnInit {
   // Popular el formulario con los datos del cliente
   private popularFormulario(cliente: any): void {
     this.clienteForm = {
-      first_name: cliente.first_name || cliente.nombre || cliente.name || '',
-      document_type: cliente.document_type || cliente.tipo_documento || '',
-      document_number: cliente.document_number || cliente.numero_documento || '',
-      address: cliente.address || cliente.direccion || '',
-      country: cliente.country || cliente.pais || '',
-      description: cliente.description || cliente.descripcion || '',
-      password: cliente.password || cliente.contrasena || '',
-      email: cliente.email || cliente.correo_electronico || '',
-      phone: cliente.phone || cliente.telefono || ''
+      first_name: cliente.first_name || '',
+      document_type: cliente.document_type || 'CC',
+      document_number: cliente.document_number || '',
+      address: cliente.address || '',
+      country: cliente.country || '',
+      description: cliente.description || '',
+      email: cliente.email || '',
+      phone: cliente.phone || '',
+      status: cliente.status || 'Active'
     };
   }
 
   // Validación del formulario
   validarFormulario(): boolean {
-    const camposObligatorios = [
-      'first_name',
-      'document_type', 
-      'document_number',
-      'email',
-      'country',
-      'address'
-    ];
+    if (!this.clienteForm.first_name?.trim()) {
+      this.mostrarAlerta('El nombre es obligatorio', 'error');
+      return false;
+    }
 
-    for (const campo of camposObligatorios) {
-      if (!this.clienteForm[campo as keyof EditarClienteForm]?.trim()) {
-        this.mostrarAlerta(`El campo ${this.getNombreCampo(campo)} es obligatorio`, 'error');
-        return false;
-      }
+    if (!this.clienteForm.document_number?.trim()) {
+      this.mostrarAlerta('El número de documento es obligatorio', 'error');
+      return false;
+    }
+
+    if (!this.clienteForm.email?.trim()) {
+      this.mostrarAlerta('El correo electrónico es obligatorio', 'error');
+      return false;
     }
 
     // Validar email
@@ -163,19 +136,6 @@ export class EditarCliente implements OnInit {
     return true;
   }
 
-  // Obtener nombre legible del campo
-  private getNombreCampo(campo: string): string {
-    const nombres: { [key: string]: string } = {
-      'first_name': 'Nombre',
-      'document_type': 'Tipo de Documento',
-      'document_number': 'Número de Documento',
-      'email': 'Correo Electrónico',
-      'country': 'País',
-      'address': 'Dirección'
-    };
-    return nombres[campo] || campo;
-  }
-
   // Actualizar cliente
   actualizarCliente(): void {
     if (!this.validarFormulario()) {
@@ -185,18 +145,17 @@ export class EditarCliente implements OnInit {
     this.isLoading = true;
     this.mostrarAlerta('Actualizando cliente...', 'info');
 
-    // Preparar datos para la API
-    const clienteData = {
-      first_name: this.clienteForm.first_name,
+    // Preparar datos para la API - SOLO campos que pueden cambiar
+    const clienteData: any = {
+      first_name: this.clienteForm.first_name.trim(),
       document_type: this.clienteForm.document_type,
-      document_number: this.clienteForm.document_number,
-      address: this.clienteForm.address,
-      country: this.clienteForm.country,
-      description: this.clienteForm.description,
-      password: this.clienteForm.password,
-      email: this.clienteForm.email,
-      phone: this.clienteForm.phone,
-      role_id: 4
+      document_number: this.clienteForm.document_number.trim(),
+      email: this.clienteForm.email.trim(),
+      status: this.clienteForm.status,
+      ...(this.clienteForm.address && { address: this.clienteForm.address.trim() }),
+      ...(this.clienteForm.country && { country: this.clienteForm.country.trim() }),
+      ...(this.clienteForm.description && { description: this.clienteForm.description.trim() }),
+      ...(this.clienteForm.phone && { phone: this.clienteForm.phone.trim() })
     };
 
     // Llamar al servicio para actualizar el cliente
@@ -213,7 +172,15 @@ export class EditarCliente implements OnInit {
       error: (error) => {
         this.isLoading = false;
         console.error('Error al actualizar cliente:', error);
-        this.mostrarAlerta('Error al actualizar el cliente. Inténtelo de nuevo.', 'error');
+        
+        let errorMsg = 'Error al actualizar el cliente';
+        if (error.includes('Datos inválidos o repetidos')) {
+          errorMsg = 'El número de documento o email ya existen en el sistema';
+        } else if (error.includes('No se puede conectar')) {
+          errorMsg = 'Error de conexión con el servidor';
+        }
+        
+        this.mostrarAlerta(errorMsg, 'error');
       }
     });
   }
@@ -242,19 +209,19 @@ export class EditarCliente implements OnInit {
 
   // Obtener clases CSS para las alertas
   getAlertClasses(): string {
-    const baseClasses = 'fixed top-20 right-4 px-6 py-4 rounded-lg shadow-lg z-50 animate-fade-in';
+    const baseClasses = 'fixed top-20 right-4 px-6 py-4 rounded-xl shadow-md z-50 animate-fade-in border';
     
     switch (this.alertType) {
       case 'success':
-        return `${baseClasses} bg-green-50 border border-green-200 text-green-800`;
+        return `${baseClasses} bg-green-50 border-green-100 text-green-700`;
       case 'error':
-        return `${baseClasses} bg-red-50 border border-red-200 text-red-800`;
+        return `${baseClasses} bg-rose-50 border-rose-100 text-rose-700`;
       case 'warning':
-        return `${baseClasses} bg-yellow-50 border border-yellow-200 text-yellow-800`;
+        return `${baseClasses} bg-amber-50 border-amber-100 text-amber-700`;
       case 'info':
-        return `${baseClasses} bg-blue-50 border border-blue-200 text-blue-800`;
+        return `${baseClasses} bg-sky-50 border-sky-100 text-sky-700`;
       default:
-        return `${baseClasses} bg-gray-50 border border-gray-200 text-gray-800`;
+        return `${baseClasses} bg-gray-50 border-gray-100 text-gray-700`;
     }
   }
 }

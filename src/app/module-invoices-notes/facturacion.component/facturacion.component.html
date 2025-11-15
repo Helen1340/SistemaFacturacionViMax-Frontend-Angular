@@ -1,0 +1,197 @@
+<!-- Contenido principal -->
+<main class="w-full px-4 pb-4 flex-1 overflow-y-auto overflow-x-visible">
+
+    <!-- Título -->
+    <div>
+        <h2 class="text-4xl font-semibold mb-6 mt-2">Facturación</h2>
+    </div>
+
+    <!-- Línea divisoria -->
+    <div class="border-b-2 border-gray-300 w-full mb-4"></div>
+
+    <!-- ALERTAS -->
+    <div *ngIf="alert.message"
+        [ngClass]="{'bg-green-100 text-green-700': alert.type === 'success', 'bg-red-100 text-red-700': alert.type === 'error'}"
+        class="p-4 rounded-xl mb-4 text-center font-medium shadow-md transition-all duration-300">
+        {{ alert.message }}
+    </div>
+
+    <!-- Botón crear factura -->
+    <div class="relative flex justify-end mb-4">
+        <button (click)="navigateToCreateInvoice()"
+            class="bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-2 rounded-2xl flex items-center transition-colors shadow-sm">
+            <span class="mr-2 text-xl">+</span>
+            <span>Nueva Factura</span>
+        </button>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="bg-white p-4 rounded-2xl border border-gray-200 mb-4 flex flex-col md:flex-row flex-wrap items-center justify-between gap-4 w-full mx-auto">
+        <!-- Buscador -->
+        <div class="flex items-center border border-gray-300 rounded-2xl px-4 py-2 w-full md:w-[70%]">
+            <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" />
+            </svg>
+            <input type="text" [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Buscar factura o cliente"
+                class="w-full border-none outline-none text-gray-700 text-sm bg-transparent" />
+        </div>
+
+        <!-- Filtros agrupados -->
+        <div class="flex items-center space-x-2 w-full md:w-auto">
+            <label class="text-base font-semibold text-gray-900 whitespace-nowrap">Filtrar</label>
+            
+            <!-- Estado interno -->
+            <div class="relative">
+                <select [(ngModel)]="filter.internal_status" (change)="applyFilters()"
+                    class="appearance-none border border-gray-300 rounded-2xl px-4 py-2 text-gray-700 pr-10 w-40 focus:ring-2 focus:ring-cyan-300">
+                    <option value="">Estado Interno</option>
+                    <option value="draft">Borrador</option>
+                    <option value="issued">Emitido</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Estado DIAN -->
+            <div class="relative">
+                <select [(ngModel)]="filter.dian_status" (change)="applyFilters()"
+                    class="appearance-none border border-gray-300 rounded-2xl px-4 py-2 text-gray-700 pr-10 w-40 focus:ring-2 focus:ring-cyan-300">
+                    <option value="">Estado DIAN</option>
+                    <option value="pending">Pendiente</option>
+                    <option value="accepted">Aceptado</option>
+                    <option value="rejected">Rechazado</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Fecha -->
+            <div>
+                <input type="date" [(ngModel)]="filter.date" (change)="applyFilters()"
+                    class="border border-gray-300 rounded-2xl px-4 py-2 text-gray-700 w-40 focus:ring-2 focus:ring-cyan-300" />
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="bg-white rounded-2xl shadow overflow-hidden">
+        <div class="overflow-x-auto overflow-y-auto max-h-[375px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+            <table class="w-full min-w-[800px] table-fixed text-xs sm:text-sm">
+                <thead class="bg-gray-100 text-gray-800 text-left sticky top-0 z-10">
+                    <tr>
+                        <th class="px-4 py-3 font-semibold sm:w-16">#</th>
+                        <th class="px-4 py-3 font-semibold sm:w-32">Número</th>
+                        <th class="px-4 py-3 font-semibold sm:w-56">Cliente</th>
+                        <th class="px-4 py-3 font-semibold sm:w-24 text-right">Total</th>
+                        <th class="px-4 py-3 font-semibold sm:w-24 text-center">Estado</th>
+                        <th class="px-4 py-3 font-semibold sm:w-24 text-center">DIAN</th>
+                        <th class="px-4 py-3 font-semibold sm:w-32 text-center">Fecha</th>
+                        <th class="px-4 py-3 font-semibold sm:w-40 text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let factura of paginatedInvoices; let i = index"
+                        class="border-t border-gray-200 hover:bg-gray-50">
+                        <td class="px-4 py-3">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+                        <td class="px-4 py-3 font-semibold text-gray-800">{{ factura.invoice_number }}</td>
+                        <td class="px-4 py-3 text-gray-700">
+                          {{ factura.buyer?.first_name || factura.user?.company?.business_name || 'N/A' }}
+                        </td>
+                        <td class="px-4 py-3 text-right text-gray-800">$ {{ factura.payable_amount |
+                            number:'1.0-0' }}</td>
+
+                        <td class="px-4 py-3 text-center">
+                            <span [ngClass]="{
+                                'bg-gray-200 text-gray-800': factura.internal_status === 'draft',
+                                'bg-blue-100 text-blue-700': factura.internal_status === 'issued'
+                              }" class="px-3 py-1 rounded-full text-xs font-semibold capitalize">
+                                {{ factura.internal_status }}
+                            </span>
+                        </td>
+
+                        <td class="px-4 py-3 text-center">
+                            <span [ngClass]="{
+                                'bg-yellow-100 text-yellow-700': factura.dian_status === 'pending',
+                                'bg-green-100 text-green-700': factura.dian_status === 'accepted',
+                                'bg-red-100 text-red-700': factura.dian_status === 'rejected'
+                              }" class="px-3 py-1 rounded-full text-xs font-semibold capitalize">
+                                {{ factura.dian_status }}
+                            </span>
+                        </td>
+
+                        <td class="px-4 py-3 text-center">{{ factura.issue_date | date:'short' }}</td>
+
+                        <td class="px-4 py-3 sm:w-20 text-center whitespace-nowrap relative">
+                            <button type="button" (click)="toggleMenu(i, $event)" class="p-2 rounded hover:bg-gray-100 transition-colors">
+                                <svg width="19" height="19" viewBox="0 0 22 30" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M13.4136 15.0078C13.4193 13.558 12.5425 12.3793 11.4552 12.375C10.3679 12.3707 9.48184 13.5425 9.47612 14.9922C9.4704 16.4419 10.3472 17.6207 11.4345 17.625C12.5218 17.6293 13.4079 16.4575 13.4136 15.0078Z"
+                                        fill="black" />
+                                    <path
+                                        d="M19.976 15.0337C19.9818 13.584 19.105 12.4052 18.0177 12.4009C16.9304 12.3966 16.0443 13.5684 16.0386 15.0181C16.0328 16.4679 16.9096 17.6466 17.9969 17.6509C19.0842 17.6552 19.9703 16.4834 19.976 15.0337Z"
+                                        fill="black" />
+                                    <path
+                                        d="M6.85109 14.9819C6.85681 13.5321 5.98002 12.3534 4.89272 12.3491C3.80542 12.3448 2.91934 13.5166 2.91362 14.9663C2.9079 16.4161 3.78469 17.5948 4.87199 17.5991C5.9593 17.6034 6.84537 16.4316 6.85109 14.9819Z"
+                                        fill="black" />
+                                </svg>
+                            </button>
+                            @if (openMenuIndex === i) {
+                            <div class="dropdown-menu fixed w-48 bg-white border border-gray-300 rounded-lg shadow-xl z-[9999]"
+                                [style.top.px]="dropdownPosition.top"
+                                [style.left.px]="dropdownPosition.left">
+                                <button (click)="navigateToVerDetalles(factura); $event.stopPropagation()"
+                                    class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-50 transition-colors border-b border-gray-100">
+                                    Ver detalles
+                                </button>
+                                
+                                <button (click)="anularFactura(factura); $event.stopPropagation()"
+                                    class="block w-full text-left px-4 py-2 text-sm hover:bg-red-50 transition-colors text-red-600">
+                                    Anular
+                                </button>
+                            </div>
+                            }
+                        </td>
+                    </tr>
+
+                    <tr *ngIf="paginatedInvoices.length === 0">
+                        <td colspan="8" class="px-4 py-8 text-center text-gray-500">
+                            {{ isLoading ? 'Cargando facturas...' : 'No se encontraron facturas' }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PAGINACIÓN -->
+    <div *ngIf="totalPages > 0"
+        class="bg-white p-4 rounded-2xl shadow mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="text-xs sm:text-sm text-gray-600 w-full sm:w-auto text-center sm:text-left">
+            Mostrando {{ (currentPage - 1) * pageSize + 1 }} -
+            {{ getMaxDisplayed() }} de {{ filteredInvoices.length }} facturas
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-center">
+            <button (click)="previousPage()" [disabled]="currentPage === 1"
+                class="px-3 py-1 border border-gray-300 rounded-lg text-xs sm:text-sm disabled:opacity-50 hover:bg-gray-100">
+                Anterior
+            </button>
+            <span
+                class="px-3 py-1 bg-cyan-600 text-white rounded-lg text-xs sm:text-sm font-medium min-w-[64px] text-center">
+                {{ currentPage }} / {{ totalPages }}
+            </span>
+            <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+                class="px-3 py-1 border border-gray-300 rounded-lg text-xs sm:text-sm disabled:opacity-50 hover:bg-gray-100">
+                Siguiente
+            </button>
+        </div>
+    </div>
+</main>

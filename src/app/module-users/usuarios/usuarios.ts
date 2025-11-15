@@ -64,7 +64,7 @@ export class Usuarios implements OnInit {
         // Filtrar usuarios que NO sean clientes usando los roles cargados
         this.users = (users || []).filter(user => {
           const userRole = this.roles.find(role => role.id === user.role_id);
-          return userRole && !userRole.role_name.toLowerCase().includes('cliente');
+          return userRole && !userRole.role_name.toLowerCase().includes('client');
         });
         this.filteredUsers = [...this.users];
         this.totalUsers = this.users.length;

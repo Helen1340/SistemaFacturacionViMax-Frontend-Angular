@@ -12,8 +12,10 @@ import { Router } from '@angular/router';
 })
 export class RegitrarServicio {
   servicioForm: FormGroup;
-  impuestosSeleccionados: string[] = [];
+  selectedTaxIds: number[] = [];
+  taxes: any[] = [];
   measurementUnits: any[] = [];
+  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -30,18 +32,16 @@ export class RegitrarServicio {
     });
 
     this.cargarUnidades();
+    this.cargarImpuestos();
   }
 
   cargarUnidades(): void {
-    console.log('Cargando unidades de medida para servicios...');
     this.servicioService.getMeasurementUnits().subscribe({
       next: (res) => {
-        console.log('Unidades recibidas:', res);
-        const codigosServicio = ['HUR', 'DAY', 'MON', 'E48', 'CNT']; 
+        // Filtrar por application_type = 'Service'
         this.measurementUnits = res.filter((u: any) =>
-          codigosServicio.includes(u.dian_code)
+          u.application_type === 'Service'
         );
-        console.log('Unidades filtradas para servicios:', this.measurementUnits);
       },
       error: (err) => {
         console.error('Error cargando unidades:', err);
@@ -49,13 +49,30 @@ export class RegitrarServicio {
     });
   }
 
-  toggleImpuesto(event: Event) {
+  cargarImpuestos(): void {
+    this.servicioService.getActiveTaxes().subscribe({
+      next: (taxes) => {
+        this.taxes = taxes;
+      },
+      error: (err) => {
+        console.error('Error cargando impuestos:', err);
+      }
+    });
+  }
+
+  toggleTax(taxId: number, event: Event): void {
     const checkbox = event.target as HTMLInputElement;
     if (checkbox.checked) {
-      this.impuestosSeleccionados.push(checkbox.value);
+      if (!this.selectedTaxIds.includes(taxId)) {
+        this.selectedTaxIds.push(taxId);
+      }
     } else {
-      this.impuestosSeleccionados = this.impuestosSeleccionados.filter(i => i !== checkbox.value);
+      this.selectedTaxIds = this.selectedTaxIds.filter(id => id !== taxId);
     }
+  }
+
+  isTaxSelected(taxId: number): boolean {
+    return this.selectedTaxIds.includes(taxId);
   }
 
   guardarServicio() {
@@ -64,19 +81,25 @@ export class RegitrarServicio {
       return;
     }
 
-    const data = {
+    this.isLoading = true;
+
+    const serviceData = {
       ...this.servicioForm.value,
-      impuestos: this.impuestosSeleccionados
+      unit_price: parseFloat(this.servicioForm.value.unit_price)
     };
 
-    this.servicioService.createService(data).subscribe({
+    // Crear servicio con impuestos
+    this.servicioService.createServiceWithTaxes(serviceData, this.selectedTaxIds).subscribe({
       next: () => {
-        alert('Servicio registrado con éxito');
+        this.isLoading = false;
+        alert('✅ Servicio registrado con éxito');
         this.router.navigate(['/productos-servicios']);
       },
       error: (err) => {
         console.error('Error al registrar servicio:', err);
-        alert('Hubo un error al registrar el servicio');
+        this.isLoading = false;
+        const errorMessage = err.error?.message || 'Error al registrar el servicio';
+        alert(`❌ ${errorMessage}`);
       }
     });
   }
