@@ -1,276 +1,380 @@
-import { Component, OnInit } from '@angular/core';
-
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { ImpuestosRetencionesService, Impuesto } from './services/impuestos-retenciones.service';
+import { ImpuestosRetencionesService } from './services/impuestos-retenciones.service';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Subscription, firstValueFrom } from 'rxjs';
+
+// Interfaz para impuestos en BD
+export interface Impuesto {
+  id: number;
+  tax_code: string;
+  nombre: string;
+  descripcion?: string;
+  tipo: string;
+  porcentaje_base: number;
+  estado: string;
+}
+
+// Interfaz para impuestos predefinidos (catálogo completo)
+interface ImpuestoPredefinido {
+  codigo: string;
+  nombre: string;
+  descripcion: string;
+  tipo: string;
+  porcentaje: number;
+  categoria: string;
+  // Propiedades calculadas
+  id?: number;
+  estado?: string;
+  enBaseDatos?: boolean;
+}
 
 @Component({
   selector: 'app-impuestos-retenciones',
-  imports: [CommonModule, FormsModule],
   templateUrl: './impuestos-retenciones.html',
-  styleUrl: './impuestos-retenciones.css'
+  styleUrls: ['./impuestos-retenciones.css'],
+  imports: [CommonModule, FormsModule]
 })
-export class ImpuestosRetenciones implements OnInit {
+export class ImpuestosRetencionesComponent implements OnInit, OnDestroy {
+  // Catálogo completo de impuestos (predefinidos)
+  impuestosPredefinidos: ImpuestoPredefinido[] = [];
   
-  // Variables para la tabla
-  impuestos: Impuesto[] = [];
-  filteredImpuestos: Impuesto[] = [];
-  paginatedImpuestos: Impuesto[] = [];
+  // Impuestos que están en la base de datos
+  impuestosEnBD: Impuesto[] = [];
   
-  // Variables de búsqueda y filtrado
+  // Lista combinada para mostrar en la tabla
+  impuestosCombinados: ImpuestoPredefinido[] = [];
+  impuestosFiltrados: ImpuestoPredefinido[] = [];
+  paginatedImpuestos: ImpuestoPredefinido[] = [];
+  
+  // UI State
+  openDropdownId: string | null = null;
+  isLoading: boolean = false;
+  
+  // Filtros
   searchTerm: string = '';
   filterValue: string = '';
   
-  // Variables de paginación
+  // Paginación
   currentPage: number = 1;
   itemsPerPage: number = 10;
-  totalImpuestos: number = 0;
-  totalPages: number = 0;
-  startItem: number = 0;
-  endItem: number = 0;
   
-  // Variables de estado
-  isLoading: boolean = false;
-  openDropdownId: number | null = null;
-  
+  // Suscripción
+  private impuestoCreadoSubscription?: Subscription;
+
   constructor(
-    private router: Router,
-    private impuestosService: ImpuestosRetencionesService
+    private impuestosService: ImpuestosRetencionesService,
+    private router: Router
   ) {}
-  
-  ngOnInit() {
-    console.log('Inicializando componente impuestos-retenciones');
-    this.loadImpuestos();
-  }
-  
-  // Cargar impuestos desde la API
-  loadImpuestos() {
-    this.isLoading = true;
-    console.log('Cargando impuestos desde la API...');
+
+  ngOnInit(): void {
+    this.cargarImpuestosPredefinidos();
+    this.obtenerImpuestos();
     
+    // Suscribirse para recargar cuando se cree/actualice un impuesto
+    this.impuestoCreadoSubscription = this.impuestosService.impuestoCreado$.subscribe(() => {
+      console.log('🔄 Recargando lista de impuestos...');
+      this.obtenerImpuestos();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.impuestoCreadoSubscription) {
+      this.impuestoCreadoSubscription.unsubscribe();
+    }
+  }
+
+  // ==========================================
+  // CARGAR CATÁLOGO COMPLETO DE IMPUESTOS
+  // ==========================================
+  cargarImpuestosPredefinidos(): void {
+    this.impuestosPredefinidos = [
+      // IVA
+      { codigo: 'IVA-001', nombre: 'IVA General 19%', descripcion: 'Impuesto sobre las ventas a la tarifa del 19%', tipo: 'IVA', porcentaje: 19, categoria: 'Nacional' },
+      { codigo: 'IVA-002', nombre: 'IVA Reducido 5%', descripcion: 'Impuesto sobre las ventas a la tarifa del 5%', tipo: 'IVA', porcentaje: 5, categoria: 'Nacional' },
+      { codigo: 'IVA-003', nombre: 'IVA Exento', descripcion: 'Bienes y servicios exentos de IVA', tipo: 'IVA', porcentaje: 0, categoria: 'Nacional' },
+      { codigo: 'IVA-004', nombre: 'IVA Excluido', descripcion: 'Bienes y servicios excluidos de IVA', tipo: 'IVA', porcentaje: 0, categoria: 'Nacional' },
+      
+      // RETENCIÓN EN LA FUENTE
+      { codigo: 'RF-001', nombre: 'ReteFuente Servicios 4%', descripcion: 'Retención sobre pagos por servicios', tipo: 'ReteFuente', porcentaje: 4, categoria: 'Retenciones' },
+      { codigo: 'RF-002', nombre: 'ReteFuente Honorarios 11%', descripcion: 'Retención sobre honorarios profesionales', tipo: 'ReteFuente', porcentaje: 11, categoria: 'Retenciones' },
+      { codigo: 'RF-003', nombre: 'ReteFuente Arrendamientos 3.5%', descripcion: 'Retención sobre arrendamientos', tipo: 'ReteFuente', porcentaje: 3.5, categoria: 'Retenciones' },
+      { codigo: 'RF-004', nombre: 'ReteFuente Compras 2.5%', descripcion: 'Retención sobre compra de bienes', tipo: 'ReteFuente', porcentaje: 2.5, categoria: 'Retenciones' },
+      { codigo: 'RF-005', nombre: 'ReteFuente Dividendos 10%', descripcion: 'Retención sobre dividendos y participaciones', tipo: 'ReteFuente', porcentaje: 10, categoria: 'Retenciones' },
+      { codigo: 'RF-006', nombre: 'ReteFuente Rendimientos Financieros 7%', descripcion: 'Retención sobre rendimientos financieros', tipo: 'ReteFuente', porcentaje: 7, categoria: 'Retenciones' },
+      
+      // RETENCIÓN DE IVA
+      { codigo: 'RETEIVA-001', nombre: 'Retención IVA 15%', descripcion: 'Retención IVA régimen común', tipo: 'ReteIVA', porcentaje: 15, categoria: 'Retenciones' },
+      { codigo: 'RETEIVA-002', nombre: 'Retención IVA 100%', descripcion: 'Retención IVA régimen simplificado', tipo: 'ReteIVA', porcentaje: 100, categoria: 'Retenciones' },
+      
+      // ICA (Impuesto de Industria y Comercio)
+      { codigo: 'ICA-001', nombre: 'ICA Industrial 0.7%', descripcion: 'ICA para actividades industriales', tipo: 'ICA', porcentaje: 0.7, categoria: 'Municipal' },
+      { codigo: 'ICA-002', nombre: 'ICA Comercial 0.414%', descripcion: 'ICA para actividades comerciales', tipo: 'ICA', porcentaje: 0.414, categoria: 'Municipal' },
+      { codigo: 'ICA-003', nombre: 'ICA Servicios 0.966%', descripcion: 'Impuesto de Industria y Comercio - Servicios', tipo: 'ICA', porcentaje: 0.966, categoria: 'Municipal' },
+      { codigo: 'ICA-004', nombre: 'ICA Financiero 0.5%', descripcion: 'ICA para actividades financieras', tipo: 'ICA', porcentaje: 0.5, categoria: 'Municipal' },
+      
+      // RETENCIÓN DE ICA
+      { codigo: 'RETEICA-001', nombre: 'Retención ICA General 0.966%', descripcion: 'Retención ICA para Bogotá', tipo: 'ReteICA', porcentaje: 0.966, categoria: 'Retenciones' },
+      { codigo: 'RETEICA-002', nombre: 'Retención ICA Industrial 0.7%', descripcion: 'Retención ICA actividades industriales', tipo: 'ReteICA', porcentaje: 0.7, categoria: 'Retenciones' },
+      { codigo: 'RETEICA-003', nombre: 'Retención ICA Comercial 0.414%', descripcion: 'Retención ICA actividades comerciales', tipo: 'ReteICA', porcentaje: 0.414, categoria: 'Retenciones' },
+      
+      // IMPUESTO AL CONSUMO
+      { codigo: 'INC-001', nombre: 'Impuesto Nacional al Consumo 8%', descripcion: 'Impuesto Nacional al Consumo aplicable a restaurantes y bares', tipo: 'INC', porcentaje: 8, categoria: 'Nacional' },
+      { codigo: 'INC-002', nombre: 'Impuesto Nacional al Consumo 16%', descripcion: 'Impuesto al consumo de vehículos y telecomunicaciones', tipo: 'INC', porcentaje: 16, categoria: 'Nacional' },
+      { codigo: 'INC-003', nombre: 'Impuesto Nacional al Consumo 4%', descripcion: 'Impuesto al consumo de telefonía móvil', tipo: 'INC', porcentaje: 4, categoria: 'Nacional' },
+    ];
+  }
+
+  // ==========================================
+  // OBTENER IMPUESTOS DE LA BASE DE DATOS
+  // ==========================================
+  obtenerImpuestos(): void {
+    this.isLoading = true;
     this.impuestosService.getImpuestos().subscribe({
-      next: (response) => {
-        console.log('Respuesta de la API:', response);
-        if (response && response.success && response.data) {
-          this.impuestos = response.data;
-          this.filteredImpuestos = [...this.impuestos];
-          this.totalImpuestos = this.impuestos.length;
-          this.updatePagination();
-          console.log('Impuestos cargados desde API:', this.impuestos);
+      next: (response: any) => {
+        console.log('✅ Datos recibidos del backend:', response);
+        
+        // Si viene con paginación de Laravel
+        if (response.data) {
+          this.impuestosEnBD = response.data;
         } else {
-          console.log('Respuesta de API inválida, usando datos mock');
-          this.loadMockData();
+          this.impuestosEnBD = response;
         }
+        
+        // Combinar impuestos predefinidos con los de BD
+        this.combinarImpuestos();
         this.isLoading = false;
       },
-      error: (error) => {
-        console.error('Error cargando desde API:', error);
-        console.log('Usando datos mock como fallback');
-        this.loadMockData();
+      error: (error: any) => {
+        console.error('❌ Error obteniendo impuestos:', error);
         this.isLoading = false;
+        // Aún así mostrar los predefinidos
+        this.combinarImpuestos();
       }
     });
   }
 
-  // Cargar datos mock como fallback
-  private loadMockData() {
-    this.impuestos = this.impuestosService.getMockImpuestos();
-    this.filteredImpuestos = [...this.impuestos];
-    this.totalImpuestos = this.impuestos.length;
-    this.updatePagination();
-    console.log('Datos mock cargados:', this.impuestos);
-  }
-  
-  // Búsqueda
-  onSearch() {
-    if (!this.searchTerm.trim()) {
-      this.filteredImpuestos = [...this.impuestos];
-    } else {
-      const searchTerm = this.searchTerm.toLowerCase().trim();
-      
-      this.filteredImpuestos = this.impuestos.filter(impuesto => {
-        // Búsqueda por tipo exacto
-        if (searchTerm === 'iva') {
-          return impuesto.tipo.toLowerCase() === 'iva';
-        }
-        if (searchTerm === 'ica') {
-          return impuesto.tipo.toLowerCase() === 'ica';
-        }
-        if (searchTerm === 'retefuente' || searchTerm === 'retención' || searchTerm === 'retencion') {
-          return impuesto.tipo.toLowerCase() === 'retefuente';
-        }
-        
-        // Búsqueda general (nombre, descripción, tipo)
-        return impuesto.nombre.toLowerCase().includes(searchTerm) ||
-               impuesto.descripcion.toLowerCase().includes(searchTerm) ||
-               impuesto.tipo.toLowerCase().includes(searchTerm);
-      });
-    }
-    
-    this.totalImpuestos = this.filteredImpuestos.length;
-    this.currentPage = 1;
-    this.updatePagination();
-    
-    console.log('Búsqueda realizada:', {
-      termino: this.searchTerm,
-      resultados: this.filteredImpuestos.length,
-      filtrados: this.filteredImpuestos.map(i => ({ nombre: i.nombre, tipo: i.tipo }))
+  // ==========================================
+  // COMBINAR IMPUESTOS PREDEFINIDOS CON BD
+  // ==========================================
+  combinarImpuestos(): void {
+    this.impuestosCombinados = this.impuestosPredefinidos.map(predefinido => {
+      // Buscar si este impuesto existe en la BD (por tax_code)
+      const enBD = this.impuestosEnBD.find(
+        imp => (imp as any).tax_code === predefinido.codigo
+      );
+
+      if (enBD) {
+        // Si existe en BD, marcar como activo y agregar el ID
+        return {
+          ...predefinido,
+          id: enBD.id,
+          estado: 'Activo',
+          enBaseDatos: true
+        };
+      } else {
+        // No existe en BD, marcar como inactivo
+        return {
+          ...predefinido,
+          estado: 'Inactivo',
+          enBaseDatos: false
+        };
+      }
     });
+
+    console.log('Impuestos combinados:', this.impuestosCombinados);
+    this.applyFiltersAndPagination();
   }
-  
-  // Filtrado
-  onFilter() {
-    if (!this.filterValue) {
-      this.filteredImpuestos = [...this.impuestos];
-    } else {
-      this.filteredImpuestos = this.impuestos.filter(impuesto => {
-        if (this.filterValue === 'activo' || this.filterValue === 'inactivo') {
-          return impuesto.estado.toLowerCase() === this.filterValue;
-        }
-        return true;
-      });
+
+  // ==========================================
+  // FILTROS Y PAGINACIÓN
+  // ==========================================
+  applyFiltersAndPagination(): void {
+    let filtrados = [...this.impuestosCombinados];
+
+    // Filtro por búsqueda
+    if (this.searchTerm.trim() !== '') {
+      const search = this.searchTerm.toLowerCase();
+      filtrados = filtrados.filter(i =>
+        i.nombre.toLowerCase().includes(search) ||
+        i.descripcion.toLowerCase().includes(search) ||
+        i.tipo.toLowerCase().includes(search)
+      );
     }
-    this.totalImpuestos = this.filteredImpuestos.length;
-    this.currentPage = 1;
+
+    // Filtro por estado
+    if (this.filterValue !== '') {
+      if (this.filterValue === 'activo') {
+        filtrados = filtrados.filter(i => i.estado === 'Activo');
+      } else if (this.filterValue === 'inactivo') {
+        filtrados = filtrados.filter(i => i.estado === 'Inactivo');
+      }
+    }
+
+    this.impuestosFiltrados = filtrados;
     this.updatePagination();
   }
-  
-  // Paginación
-  updatePagination() {
-    this.totalPages = Math.ceil(this.totalImpuestos / this.itemsPerPage);
-    this.startItem = (this.currentPage - 1) * this.itemsPerPage + 1;
-    this.endItem = Math.min(this.currentPage * this.itemsPerPage, this.totalImpuestos);
-    
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.paginatedImpuestos = this.filteredImpuestos.slice(startIndex, endIndex);
-    
-    console.log('Paginación actualizada:', {
-      totalImpuestos: this.totalImpuestos,
-      paginatedImpuestos: this.paginatedImpuestos.length,
-      currentPage: this.currentPage,
-      totalPages: this.totalPages
-    });
+
+  updatePagination(): void {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    this.paginatedImpuestos = this.impuestosFiltrados.slice(start, end);
   }
-  
-  previousPage() {
+
+  onSearch(): void {
+    this.currentPage = 1;
+    this.applyFiltersAndPagination();
+  }
+
+  onFilter(): void {
+    this.currentPage = 1;
+    this.applyFiltersAndPagination();
+  }
+
+  previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
       this.updatePagination();
     }
   }
-  
-  nextPage() {
+
+  nextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
       this.updatePagination();
     }
   }
-  
-  // Dropdown
-  toggleDropdown(event: Event, id: number) {
+
+  // Getters para paginación
+  get totalImpuestos(): number {
+    return this.impuestosFiltrados.length;
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalImpuestos / this.itemsPerPage);
+  }
+
+  get startItem(): number {
+    return this.totalImpuestos === 0 ? 0 : (this.currentPage - 1) * this.itemsPerPage + 1;
+  }
+
+  get endItem(): number {
+    const end = this.currentPage * this.itemsPerPage;
+    return end > this.totalImpuestos ? this.totalImpuestos : end;
+  }
+
+  // ==========================================
+  // MÉTODOS DE UI
+  // ==========================================
+  toggleDropdown(event: Event, codigo: string): void {
     event.stopPropagation();
-    this.openDropdownId = this.openDropdownId === id ? null : id;
+    this.openDropdownId = this.openDropdownId === codigo ? null : codigo;
   }
-  
+
   shouldShowDropdownUp(index: number): boolean {
-    return index > this.paginatedImpuestos.length - 3;
+    const totalRows = this.paginatedImpuestos.length;
+    return index >= totalRows - 2;
   }
-  
-  // Clases de estilo
-  getTipoClass(tipo: string): string {
-    switch (tipo.toLowerCase()) {
-      case 'iva':
-        return 'bg-blue-100 text-blue-800';
-      case 'ica':
-        return 'bg-green-100 text-green-800';
-      case 'retefuente':
-        return 'bg-purple-100 text-purple-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+
+  trackByFn(index: number, item: ImpuestoPredefinido): string {
+    return item.codigo;
   }
-  
+
   getStatusClass(estado: string): string {
-    switch (estado.toLowerCase()) {
-      case 'activo':
+    switch (estado) {
+      case 'Activo':
         return 'bg-green-100 text-green-800';
-      case 'inactivo':
+      case 'Inactivo':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   }
-  
-  // Acciones
-  activarImpuesto(impuesto: Impuesto) {
-    console.log('Activando impuesto:', impuesto);
-    this.openDropdownId = null;
-    
-    // Cambio inmediato en la tabla (feedback visual)
-    const index = this.impuestos.findIndex(imp => imp.id === impuesto.id);
-    if (index !== -1) {
-      this.impuestos[index].estado = 'Activo';
-      this.filteredImpuestos = [...this.impuestos];
-      this.updatePagination();
-      console.log('Estado cambiado a Activo en la tabla');
-    }
-    
-    // Actualizar en la API
-    this.impuestosService.updateImpuesto(impuesto.id, { estado: 'Activo' }).subscribe({
-      next: (response) => {
-        if (response.success) {
-          console.log('Impuesto activado exitosamente en la API');
-        }
-      },
-      error: (error) => {
-        console.error('Error activando impuesto en la API:', error);
-        console.log('El cambio ya se aplicó localmente');
-      }
-    });
+
+  getTipoClass(tipo: string): string {
+    const tipoUpper = tipo.toUpperCase();
+    if (tipoUpper.includes('IVA')) return 'bg-blue-100 text-blue-800';
+    if (tipoUpper.includes('ICA')) return 'bg-purple-100 text-purple-800';
+    if (tipoUpper.includes('RETE')) return 'bg-orange-100 text-orange-800';
+    if (tipoUpper.includes('INC')) return 'bg-green-100 text-green-800';
+    return 'bg-gray-100 text-gray-800';
   }
 
-  desactivarImpuesto(impuesto: Impuesto) {
-    console.log('Desactivando impuesto:', impuesto);
+  // ==========================================
+  // ACTIVAR IMPUESTO (Crear en BD)
+  // ==========================================
+  async activarImpuesto(impuesto: ImpuestoPredefinido): Promise<void> {
     this.openDropdownId = null;
-    
-    // Cambio inmediato en la tabla (feedback visual)
-    const index = this.impuestos.findIndex(imp => imp.id === impuesto.id);
-    if (index !== -1) {
-      this.impuestos[index].estado = 'Inactivo';
-      this.filteredImpuestos = [...this.impuestos];
-      this.updatePagination();
-      console.log('Estado cambiado a Inactivo en la tabla');
-    }
-    
-    // Actualizar en la API
-    this.impuestosService.updateImpuesto(impuesto.id, { estado: 'Inactivo' }).subscribe({
-      next: (response) => {
-        if (response.success) {
-          console.log('Impuesto desactivado exitosamente en la API');
-        }
-      },
-      error: (error) => {
-        console.error('Error desactivando impuesto en la API:', error);
-        console.log('El cambio ya se aplicó localmente');
+
+    // Siempre crear un nuevo registro en la BD
+    const nuevoImpuesto = {
+      tax_code: impuesto.codigo,
+      name: impuesto.nombre,
+      description: impuesto.descripcion,
+      type: impuesto.tipo,
+      percentage: impuesto.porcentaje,
+      fixed_value: 0,
+      application_type: 'Porcentaje',
+      min_value: 0,
+      max_value: 0,
+      status: 'Activo'
+    };
+
+    try {
+      await firstValueFrom(this.impuestosService.createImpuesto(nuevoImpuesto));
+      console.log('✅ Impuesto creado y activado en la BD');
+      this.impuestosService.notificarImpuestoCreado();
+      this.obtenerImpuestos();
+    } catch (error: any) {
+      console.error('Error creando impuesto:', error);
+      
+      // Mensaje de error más específico
+      if (error.error?.message) {
+        alert(`Error: ${error.error.message}`);
+      } else {
+        alert('Error al crear el impuesto. Por favor intenta nuevamente.');
       }
-    });
+    }
   }
-  
-  // Navegación
-  navigateToNewImpuestos() {
+
+  // ==========================================
+  // DESACTIVAR IMPUESTO (Eliminar de BD)
+  // ==========================================
+  async desactivarImpuesto(impuesto: ImpuestoPredefinido): Promise<void> {
+    this.openDropdownId = null;
+
+    if (!impuesto.enBaseDatos || !impuesto.id) {
+      console.warn('El impuesto no está en la base de datos');
+      return;
+    }
+
+    // Confirmar antes de eliminar
+    const confirmar = confirm(`¿Estás seguro de desactivar el impuesto "${impuesto.nombre}"?\n\nEsto lo eliminará de la base de datos.`);
+    
+    if (!confirmar) {
+      return;
+    }
+
+    try {
+      // Eliminar el registro de la BD usando el método DELETE
+      await firstValueFrom(this.impuestosService.deleteImpuesto(impuesto.id));
+      console.log('✅ Impuesto eliminado de la BD');
+      this.impuestosService.notificarImpuestoCreado();
+      this.obtenerImpuestos();
+    } catch (error: any) {
+      console.error('❌ Error eliminando impuesto:', error);
+      
+      // Mensaje de error más específico
+      if (error.error?.message) {
+        alert(`Error: ${error.error.message}`);
+      } else {
+        alert('Error al desactivar el impuesto. Por favor intenta nuevamente.');
+      }
+    }
+  }
+
+  navigateToNewImpuestos(): void {
     this.router.navigate(['/nuevo-impuesto']);
-  }
-  
-  // TrackBy para optimización
-  trackByFn(index: number, item: Impuesto): number {
-    return item.id;
-  }
-  
-  // Prueba de conexión API
-  testApiConnection() {
-    console.log('Probando conexión API...');
-    // Implementar prueba de conexión
   }
 }

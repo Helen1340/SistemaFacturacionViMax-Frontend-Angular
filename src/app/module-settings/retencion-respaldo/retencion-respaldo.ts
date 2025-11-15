@@ -1,69 +1,111 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
 
-interface Policy {
+export interface RetencionRespaldoPolicy {
   retentionPeriod: number;
-  backupFrequency: string;
-  backupLocation: string;
+  backupFrequency: 'Diaria' | 'Semanal' | 'Mensual' | 'Trimestral';
+  backupLocation: 'local' | 'google-drive' | 'dropbox';
+  backupTypes: {
+    xml: boolean;
+    pdf: boolean;
+    database: boolean;
+  };
 }
 
 @Component({
-  selector: 'app-politica-retencion',
+  selector: 'app-retencion-respaldo',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BrowserModule],
   templateUrl: './retencion-respaldo.html',
-  styleUrls: ['./retencion-respaldo.css']  
-}) 
-export class PoliticaRetencion implements OnInit {
-
-  // Objeto para almacenar la configuración de la política
-  policy: Policy = {
+  styleUrls: ['./retencion-respaldo.css']
+})
+export class RetencionRespaldo implements OnInit {
+  policy: RetencionRespaldoPolicy = {
     retentionPeriod: 5,
     backupFrequency: 'Semanal',
-    backupLocation: ''
+    backupLocation: 'local',
+    backupTypes: {
+      xml: true,
+      pdf: true,
+      database: false
+    }
   };
 
-  // Variables para el estado del respaldo
-  lastBackupDate: Date | null = null;
-  nextBackupDate: Date | null = null;
-  backupStatus: string = 'Exitoso'; // 'Exitoso' o 'Error'
+  isLoading = true;
+  isSaving = false;
+  uploadMessage = '';
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-    // Aquí puedes cargar la configuración actual desde una API
-    // this.loadPolicy();
-    this.updateBackupStatus();
+  ngOnInit() {
+    this.loadPolicy();
   }
 
-  /**
-   * Simula la carga de la política actual desde una API.
-   */
-  loadPolicy(): void {
-    // Simular una llamada a la API y actualizar `this.policy`
-    // this.policy = { ...respuestaDesdeAPI };
+  loadPolicy() {
+    this.isLoading = true;
+    setTimeout(() => {
+      const savedPolicy = localStorage.getItem('policyBackup');
+      if (savedPolicy) {
+        this.policy = JSON.parse(savedPolicy);
+      }
+      this.isLoading = false;
+    }, 500);
   }
 
-  /**
-   * Simula el guardado de la política en una API.
-   */
-  savePolicy(): void {
-    console.log('Guardando política:', this.policy);
-    // Aquí se haría la llamada HTTP para guardar los datos.
-    // Ej: this.http.post('api/politica', this.policy).subscribe(...)
-    alert('Política guardada con éxito.');
+  savePolicy() {
+    if (this.isSaving || this.isLoading) return;
+
+    this.isSaving = true;
+    const dataStr = JSON.stringify(this.policy, null, 2);
+    localStorage.setItem('policyBackup', dataStr);
+
+    // --- Manejo según la ubicación seleccionada ---
+    if (this.policy.backupLocation === 'local') {
+      this.downloadBackup(dataStr);
+      this.uploadMessage = '✅ Respaldo guardado localmente.';
+    } else if (this.policy.backupLocation === 'google-drive') {
+      this.simulateGoogleDriveUpload();
+    } else if (this.policy.backupLocation === 'dropbox') {
+      this.simulateDropboxUpload();
+    }
+
+    setTimeout(() => {
+      this.isSaving = false;
+    }, 800);
   }
 
-  /**
-   * Simula la actualización del estado del último y próximo respaldo.
-   */
-  updateBackupStatus(): void {
-    // En un entorno real, estos datos se obtendrían de una API de logs
-    // de respaldo.
-    this.lastBackupDate = new Date();
-    this.nextBackupDate = new Date();
-    this.nextBackupDate.setDate(this.nextBackupDate.getDate() + 7); // Simular el próximo respaldo en 7 días
+  private downloadBackup(data: string) {
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `politica_respaldo_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
+  private simulateGoogleDriveUpload() {
+    this.uploadMessage = '📡 Conectando con Google Drive...';
+    setTimeout(() => {
+      this.uploadMessage = '🔑 Autenticando usuario...';
+      setTimeout(() => {
+        this.uploadMessage = '☁️ Subiendo archivo a Google Drive...';
+        setTimeout(() => {
+          this.uploadMessage = '✅ Archivo subido exitosamente a Google Drive.';
+        }, 2000);
+      }, 1000);
+    }, 1000);
+  }
+
+  private simulateDropboxUpload() {
+    this.uploadMessage = '📡 Conectando con Dropbox...';
+    setTimeout(() => {
+      this.uploadMessage = '☁️ Subiendo archivo a Dropbox...';
+      setTimeout(() => {
+        this.uploadMessage = '✅ Archivo subido exitosamente a Dropbox.';
+      }, 2000);
+    }, 1000);
+  }
 }

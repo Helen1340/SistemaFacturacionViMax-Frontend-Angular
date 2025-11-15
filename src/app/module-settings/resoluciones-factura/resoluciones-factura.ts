@@ -7,6 +7,10 @@ export interface Resolucion {
   id: number;
   prefijo: string;
   numero_resolucion: string;
+  clave_tecnica: string; 
+  cantidad_disponible: number;
+  vigencia_inicio: string;
+  vigencia_fin: string;
   desde: number;
   hasta: number;
   tipo: string;
@@ -44,23 +48,53 @@ export class ResolucionesFactura implements OnInit {
 
   ngOnInit() {
     this.loadResoluciones();
-    document.addEventListener('click', () => this.openMenuIndex = null);
+    
+    // CÓDIGO CORREGIDO PARA CERRAR EL MENÚ DESPLEGABLE
+    document.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement; // Definición correcta de target
+      
+      // Verifica si el menú está abierto Y si el clic NO fue dentro del menú desplegable
+      if (this.openMenuIndex !== null && target && !target.closest('.dropdown')) {
+          this.openMenuIndex = null;
+      }
+    });
   }
 
   loadResoluciones() {
     this.isLoading = true;
-    // Datos de ejemplo - aquí deberías conectar con tu servicio
+    
+    // DATOS DE EJEMPLO CORREGIDOS para incluir todos los campos de la interfaz
     this.resoluciones = [
       {
         id: 1,
         prefijo: 'FE',
         numero_resolucion: '187600019283',
+        clave_tecnica: 'A1B2C3D4E5F6G7H8',
+        cantidad_disponible: 1000,
         desde: 1001,
         hasta: 2000,
         tipo: 'Factura EL',
         vigencia: '01/01/2025 - 31/12/2025',
+        vigencia_inicio: '01/01/2025',
+        vigencia_fin: '31/12/2025',
         estado: 'Activa',
         created_at: '2025-01-01',
+        updated_at: '2025-01-01'
+      },
+      {
+        id: 2,
+        prefijo: 'NC',
+        numero_resolucion: '2001000101',
+        clave_tecnica: 'H9G8F7E6D5C4B3A2',
+        cantidad_disponible: 50,
+        desde: 1,
+        hasta: 100,
+        tipo: 'Nota Crédito',
+        vigencia: '01/01/2024 - 31/12/2024',
+        vigencia_inicio: '01/01/2024',
+        vigencia_fin: '31/12/2024',
+        estado: 'Inactiva',
+        created_at: '2024-01-01',
         updated_at: '2025-01-01'
       }
     ];
@@ -161,7 +195,6 @@ export class ResolucionesFactura implements OnInit {
     }
     // Implementar lógica de activación
     console.log('Activando resolución:', resolucion.id);
-    // Actualizar el estado en la lista
     resolucion.estado = 'Activa';
   }
 
@@ -171,7 +204,6 @@ export class ResolucionesFactura implements OnInit {
     }
     // Implementar lógica de desactivación
     console.log('Desactivando resolución:', resolucion.id);
-    // Actualizar el estado en la lista
     resolucion.estado = 'Inactiva';
   }
 
