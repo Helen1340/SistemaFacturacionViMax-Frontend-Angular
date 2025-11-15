@@ -1,89 +1,173 @@
-import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Certificate, CertificateRequest, CertificateService } from './certificate.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CertificateService } from './certificate.service';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-certificado-digital',
-  imports: [ CommonModule, ReactiveFormsModule, HttpClientModule ],
   templateUrl: './certificado-digital.html',
-  styleUrl: './certificado-digital.css'
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  styleUrls: ['./certificado-digital.css']
 })
 export class CertificadoDigital implements OnInit {
-  certificateForm: FormGroup;
+  certificateForm!: FormGroup;
+  certificates: any[] = [];
+  editingCertificate: any = null;
+  
   selectedFile: File | null = null;
   fileName: string = '';
   fileSize: string = '';
-  showPassword: boolean = false;
+  
   loading: boolean = false;
-  certificates: Certificate[] = [];
-  editingCertificate: Certificate | null = null;
-
-  tiposFirma = [
-    { value: 'persona_natural', label: 'Persona Natural' },
-    { value: 'persona_juridica', label: 'Persona Jurídica' },
-    { value: 'entidad_publica', label: 'Entidad Pública' }
-  ];
-
-  estadosCertificado = [
-    { value: 'valido', label: 'Válido' },
-    { value: 'invalido', label: 'Inválido' },
-    { value: 'revocado', label: 'Revocado' },
-    { value: 'bloqueado', label: 'Bloqueado' }
-  ];
+  isSubmitting: boolean = false;
+  submitAttempted: boolean = false;
+  
+  companyId: number = 0;
 
   constructor(
     private fb: FormBuilder,
     private certificateService: CertificateService
   ) {
-    this.certificateForm = this.createForm();
-  }
-
-  ngOnInit(): void {
-    this.loadCertificates();
-  }
-
-  createForm(): FormGroup {
-    return this.fb.group({
-      tipo_firma: ['', [Validators.required]],
-      nombre_titular: ['', [Validators.required, Validators.minLength(3)]],
-      nit_asociado: ['', [Validators.required, Validators.pattern(/^\d{9}-\d$/)]],
-      fecha_emision: ['', [Validators.required]],
-      fecha_vencimiento: ['', [Validators.required]],
-      contrasena: ['', [Validators.required, Validators.minLength(6)]],
-      estado_actual: ['', [Validators.required]],
-      activar_notificacion: [false]
+    this.certificateForm = this.fb.group({
+      certificate_name: ['', Validators.required],
+      certificate_type: ['', Validators.required],
+      start_date: ['', Validators.required],
+      end_date: ['', Validators.required],
+      serial_number: ['', Validators.required],
+      issuer: [''],
+      signature_type: ['', Validators.required],
+      description: ['']
     });
   }
 
-  // Cargar lista de certificados
+  ngOnInit(): void {
+    this.initForm();
+    this.getCompanyFromAuth();
+    
+    // Si no hay company_id, intentar obtenerlo del token o mostrar mensaje
+    if (!this.companyId || this.companyId === 0) {
+      console.error('❌ No se encontró company_id. Verifica que hayas iniciado sesión correctamente.');
+      // Intentar obtener del token si existe
+      this.getCompanyFromToken();
+    }
+    
+    // Cargar certificados si tenemos company_id válido
+    if (this.companyId > 0) {
+      this.loadCertificates();
+    } else {
+      this.loading = false;
+    }
+  }
+
+  getCompanyFromAuth(): void {
+    // 1. Intentar obtener company_id desde 'company' en localStorage
+    const companyData = localStorage.getItem('company');
+    if (companyData) {
+      try {
+        const company = JSON.parse(companyData);
+        this.companyId = company.id || 0;
+        console.log('🏢 Company ID obtenido desde company:', this.companyId);
+        if (this.companyId > 0) return;
+      } catch (error) {
+        console.error('❌ Error parseando company');
+      }
+    }
+
+    // 2. Si no encontró, intentar desde 'user'
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        this.companyId = user.company_id || user.empresa_id || 0;
+        console.log('🏢 Company ID obtenido desde user:', this.companyId);
+        if (this.companyId > 0) return;
+      } catch (error) {
+        console.error('❌ Error parseando user');
+      }
+    }
+
+    // 3. Si aún no encontró, intentar desde token
+    if (!this.companyId || this.companyId === 0) {
+      this.getCompanyFromToken();
+    }
+  }
+
+  /**
+   * Intentar obtener company_id del token JWT
+   */
+  getCompanyFromToken(): void {
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    
+    if (!token) {
+      console.warn('⚠️ No hay token en localStorage');
+      return;
+    }
+
+    try {
+      // Decodificar el token JWT (segunda parte)
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      console.log('🔐 Payload del token:', payload);
+      
+      // Intentar obtener company_id del token
+      this.companyId = payload.company_id || payload.empresa_id || payload.companyId || 0;
+      
+      if (this.companyId > 0) {
+        console.log('✅ Company ID obtenido del token:', this.companyId);
+      }
+    } catch (error) {
+      console.error('❌ Error al decodificar token:', error);
+    }
+  }
+
+  /**
+   * Inicializar formulario
+   */
+  initForm(): void {
+    this.certificateForm = this.fb.group({
+      certificate_name: ['', Validators.required],
+      certificate_type: ['', Validators.required],
+      start_date: ['', Validators.required],
+      end_date: ['', Validators.required],
+      serial_number: ['', Validators.required],
+      issuer: [''],
+      signature_type: ['', Validators.required],
+      description: ['']
+    });
+  }
+
+  /**
+   * Cargar lista de certificados
+   */
   loadCertificates(): void {
     this.loading = true;
+    
     this.certificateService.getCertificates().subscribe({
-      next: (certificates) => {
-        this.certificates = certificates;
+      next: (response: any) => {
+        console.log('✅ Certificados recibidos:', response);
+        this.certificates = response || [];
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error al cargar certificados:', error);
+        console.error('❌ Error cargando certificados:', error);
         this.loading = false;
+        // No mostrar alert, solo log
       }
     });
   }
 
-  // Manejar selección de archivo
+  /**
+   * Evento de selección de archivo
+   */
   onFileSelected(event: any): void {
     const file = event.target.files[0];
-    
     if (file) {
-      // Validar tipo de archivo
       if (!file.name.toLowerCase().endsWith('.pfx')) {
         alert('Solo se permiten archivos .pfx');
         return;
       }
 
-      // Validar tamaño (5MB máximo)
       if (file.size > 5 * 1024 * 1024) {
         alert('El archivo no debe superar los 5MB');
         return;
@@ -92,197 +176,231 @@ export class CertificadoDigital implements OnInit {
       this.selectedFile = file;
       this.fileName = file.name;
       this.fileSize = this.formatFileSize(file.size);
-      
-      // Mostrar información del archivo
-      const uploadContent = document.getElementById('uploadContent');
-      const fileInfo = document.getElementById('fileInfo');
-      
-      if (uploadContent && fileInfo) {
-        uploadContent.classList.add('hidden');
-        fileInfo.classList.remove('hidden');
-      }
     }
   }
 
-  // Formatear tamaño del archivo
+  /**
+   * Formatear tamaño de archivo
+   */
   formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ['Bytes', 'KB', 'MB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   }
 
-  // Alternar visibilidad de contraseña
-  togglePassword(): void {
-    this.showPassword = !this.showPassword;
-  }
-
-  // Resetear archivo seleccionado
+  /**
+   * Quitar archivo seleccionado
+   */
   resetFile(): void {
     this.selectedFile = null;
     this.fileName = '';
     this.fileSize = '';
-    
-    const uploadContent = document.getElementById('uploadContent');
-    const fileInfo = document.getElementById('fileInfo');
-    const fileInput = document.getElementById('certificateFile') as HTMLInputElement;
-    
-    if (uploadContent && fileInfo && fileInput) {
-      uploadContent.classList.remove('hidden');
-      fileInfo.classList.add('hidden');
-      fileInput.value = '';
-    }
   }
 
-  // Cargar certificado (crear o actualizar)
-  cargarCertificado(): void {
-    if (this.certificateForm.invalid) {
-      this.markFormGroupTouched();
-      return;
-    }
-
-    if (!this.selectedFile && !this.editingCertificate) {
-      alert('Debe seleccionar un archivo de certificado');
-      return;
-    }
-
-    this.loading = true;
-
-    const formData: CertificateRequest = {
-      ...this.certificateForm.value,
-      archivo_certificado: this.selectedFile!
-    };
-
-    const operation = this.editingCertificate 
-      ? this.certificateService.updateCertificate(this.editingCertificate.id!, formData)
-      : this.certificateService.createCertificate(formData);
-
-    operation.subscribe({
-      next: (response) => {
-        alert(this.editingCertificate ? 'Certificado actualizado exitosamente' : 'Certificado cargado exitosamente');
-        this.resetForm();
-        this.loadCertificates();
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error:', error);
-        alert('Error al procesar el certificado');
-        this.loading = false;
-      }
-    });
-  }
-
-  // Eliminar certificado
-  eliminarCertificado(id?: number): void {
-    const certificateId = id || this.editingCertificate?.id;
-    
-    if (!certificateId) {
-      alert('No hay certificado seleccionado para eliminar');
-      return;
-    }
-
-    if (confirm('¿Está seguro de que desea eliminar este certificado?')) {
-      this.certificateService.deleteCertificate(certificateId).subscribe({
-        next: () => {
-          alert('Certificado eliminado exitosamente');
-          this.resetForm();
-          this.loadCertificates();
-        },
-        error: (error) => {
-          console.error('Error:', error);
-          alert('Error al eliminar el certificado');
-        }
-      });
-    }
-  }
-
-  // Verificar validez
-  verificarValidez(id?: number): void {
-    const certificateId = id || this.editingCertificate?.id;
-    
-    if (!certificateId) {
-      alert('No hay certificado seleccionado para verificar');
-      return;
-    }
-
-    this.certificateService.verifyCertificate(certificateId).subscribe({
-      next: (response) => {
-        alert('Verificación completada: ' + JSON.stringify(response));
-      },
-      error: (error) => {
-        console.error('Error:', error);
-        alert('Error al verificar el certificado');
-      }
-    });
-  }
-
-  // Bloquear firma
-  bloquearFirma(id?: number): void {
-    const certificateId = id || this.editingCertificate?.id;
-    
-    if (!certificateId) {
-      alert('No hay certificado seleccionado para bloquear');
-      return;
-    }
-
-    if (confirm('¿Está seguro de que desea bloquear este certificado?')) {
-      this.certificateService.blockCertificate(certificateId).subscribe({
-        next: () => {
-          alert('Certificado bloqueado exitosamente');
-          this.loadCertificates();
-        },
-        error: (error) => {
-          console.error('Error:', error);
-          alert('Error al bloquear el certificado');
-        }
-      });
-    }
-  }
-
-  // Editar certificado
-  editarCertificado(certificate: Certificate): void {
-    this.editingCertificate = certificate;
-    
-    this.certificateForm.patchValue({
-      nombre_titular: certificate.nombre_certificado,
-      contrasena: certificate.contrasena,
-      fecha_emision: certificate.fecha_inicio,
-      fecha_vencimiento: certificate.fecha_fin,
-      estado_actual: certificate.estado
-    });
-  }
-
-  // Resetear formulario
-  resetForm(): void {
-    this.certificateForm.reset();
-    this.resetFile();
-    this.editingCertificate = null;
-  }
-
-  // Marcar campos como tocados para mostrar errores
-  private markFormGroupTouched(): void {
-    Object.keys(this.certificateForm.controls).forEach(key => {
-      const control = this.certificateForm.get(key);
-      if (control) {
-        control.markAsTouched();
-      }
-    });
-  }
-
-  // Validadores de campo
+  /**
+   * Validar campo del formulario
+   */
   isFieldInvalid(fieldName: string): boolean {
     const field = this.certificateForm.get(fieldName);
-    return field ? field.invalid && field.touched : false;
+    return !!(field && field.invalid && (field.touched || this.submitAttempted));
   }
 
-  getFieldError(fieldName: string): string {
-    const field = this.certificateForm.get(fieldName);
-    if (field?.errors) {
-      if (field.errors['required']) return `${fieldName} es requerido`;
-      if (field.errors['minlength']) return `${fieldName} debe tener al menos ${field.errors['minlength'].requiredLength} caracteres`;
-      if (field.errors['pattern']) return `${fieldName} no tiene el formato correcto`;
+  /**
+   * Cargar nuevo certificado
+   */
+  cargarCertificado(): void {
+    this.submitAttempted = true;
+
+    // Verificar formulario válido
+    if (this.certificateForm.invalid) {
+      alert('Por favor complete todos los campos requeridos');
+      return;
     }
-    return '';
+
+    // Obtener company_id nuevamente por si acaso
+    this.getCompanyFromAuth();
+
+    if (!this.companyId || this.companyId === 0) {
+      alert('No se ha identificado la empresa. Por favor, inicie sesión nuevamente.');
+      console.error('❌ Company ID no válido:', this.companyId);
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    const formValue = this.certificateForm.value;
+
+    const payload: any = {
+      company_id: this.companyId,
+      signature_type: formValue.signature_type,
+      certificate_name: formValue.certificate_name,
+      certificate_type: formValue.certificate_type,
+      serial_number: formValue.serial_number,
+      issuer: formValue.issuer || '',
+      description: formValue.description || '',
+      start_date: formValue.start_date,
+      end_date: formValue.end_date,
+      archivo_certificado: this.selectedFile,
+      status: 'Vigente'
+    };
+
+    console.log('📤 Enviando payload:', payload);
+
+    this.certificateService.uploadCertificate(payload).subscribe({
+      next: (response: any) => {
+        this.isSubmitting = false;
+        console.log('✅ Certificado guardado:', response);
+        alert('Certificado cargado correctamente');
+        this.resetForm();
+        this.loadCertificates();
+      },
+      error: (error) => {
+        this.isSubmitting = false;
+        console.error('❌ Error al cargar certificado:', error);
+        console.error('❌ Detalles del error:', error.error);
+        alert(error.error?.message || 'Ocurrió un error al cargar el certificado');
+      }
+    });
+  }
+
+  /**
+   * Actualizar certificado existente
+   */
+  actualizarCertificado(): void {
+    this.submitAttempted = true;
+
+    // Verificar formulario válido
+    if (this.certificateForm.invalid) {
+      alert('Por favor complete todos los campos requeridos');
+      return;
+    }
+
+    if (!this.editingCertificate || !this.editingCertificate.id) {
+      return;
+    }
+
+    // Obtener company_id nuevamente por si acaso
+    this.getCompanyFromAuth();
+
+    if (!this.companyId || this.companyId === 0) {
+      alert('No se ha identificado la empresa. Por favor, inicie sesión nuevamente.');
+      console.error('❌ Company ID no válido:', this.companyId);
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    const formValue = this.certificateForm.value;
+
+    const payload: any = {
+      company_id: this.companyId,
+      signature_type: formValue.signature_type,
+      certificate_name: formValue.certificate_name,
+      certificate_type: formValue.certificate_type,
+      serial_number: formValue.serial_number,
+      issuer: formValue.issuer || '',
+      description: formValue.description || '',
+      start_date: formValue.start_date,
+      end_date: formValue.end_date
+    };
+
+    if (this.selectedFile) {
+      payload.archivo_certificado = this.selectedFile;
+    }
+
+    console.log('📤 Actualizando certificado:', payload);
+
+    this.certificateService.updateCertificate(this.editingCertificate.id, payload).subscribe({
+      next: (response) => {
+        this.isSubmitting = false;
+        console.log('✅ Certificado actualizado:', response);
+        alert('Certificado actualizado correctamente');
+        this.resetForm();
+        this.loadCertificates();
+      },
+      error: (error) => {
+        this.isSubmitting = false;
+        console.error('❌ Error al actualizar certificado:', error);
+        console.error('❌ Detalles del error:', error.error);
+        alert(error.error?.message || 'Ocurrió un error al actualizar el certificado');
+      }
+    });
+  }
+
+  /**
+   * Preparar formulario para editar certificado
+   */
+  editarCertificado(cert: any): void {
+    this.editingCertificate = cert;
+    
+    this.certificateForm.patchValue({
+      certificate_name: cert.nombre_certificado,
+      certificate_type: cert.certificate_type || 'Producción',
+      start_date: cert.fecha_emision,
+      end_date: cert.fecha_vencimiento,
+      serial_number: cert.numero_serial,
+      issuer: cert.entidad_emisora,
+      signature_type: cert.signature_type || 'digital',
+      description: cert.descripcion || ''
+    });
+
+    this.selectedFile = null;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /**
+   * Verificar validez del certificado
+   */
+  verificarValidez(cert: any): void {
+    if (!cert.id) return;
+
+    alert('Verificando certificado...');
+
+    this.certificateService.verifyCertificate(cert.id).subscribe({
+      next: (response) => {
+        const estado = cert.estado_actual;
+        alert(`Estado del Certificado:\n\nNombre: ${cert.nombre_certificado}\nEstado: ${estado}\nVálido hasta: ${new Date(cert.fecha_vencimiento).toLocaleDateString('es-CO')}`);
+      },
+      error: (error) => {
+        console.error('Error verificando certificado:', error);
+        alert('No se pudo verificar el certificado');
+      }
+    });
+  }
+
+  /**
+   * Eliminar certificado
+   */
+  eliminarCertificado(id: number | undefined): void {
+    if (!id) return;
+
+    if (!confirm('¿Deseas eliminar este certificado? Esta acción no se puede deshacer.')) {
+      return;
+    }
+
+    this.certificateService.deleteCertificate(id).subscribe({
+      next: (response) => {
+        alert('Certificado eliminado correctamente');
+        this.loadCertificates();
+      },
+      error: (error) => {
+        console.error('Error eliminando certificado:', error);
+        alert('Ocurrió un error al eliminar el certificado');
+      }
+    });
+  }
+
+  /**
+   * Resetear formulario
+   */
+  resetForm(): void {
+    this.certificateForm.reset();
+    this.editingCertificate = null;
+    this.selectedFile = null;
+    this.fileName = '';
+    this.fileSize = '';
+    this.submitAttempted = false;
   }
 }

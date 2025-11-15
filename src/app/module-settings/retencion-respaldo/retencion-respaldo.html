@@ -4,74 +4,91 @@
   </div>
 
   <div class="border-b-2 border-gray-300 w-full mb-8"></div>
-  <p class="text-base text-gray-500">
-  Configure las políticas para el almacenamiento y respaldo de sus documentos electrónicos.
-  Esto es crucial para el cumplimiento normativo y la seguridad de la información.
-</p>
+  <p class="text-base text-black">
+    Configure las políticas para el almacenamiento y respaldo de sus documentos electrónicos.
+  </p>
   <br>
 
   <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
-    <h3 class="text-2xl font-semibold mb-6">Configuración de la Política</h3>
+    <h3 class="text-2xl font-semibold mb-6">Configuración de la Política General</h3>
 
-    <form (ngSubmit)="savePolicy()">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label for="retentionPeriod" class="block text-base font-medium text-gray-700 mb-2">Período de Retención</label>
-          <div class="relative">
-            <select id="retentionPeriod" name="retentionPeriod" [(ngModel)]="policy.retentionPeriod" required
-                    class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 pr-10 appearance-none">
-              <option value="5">5 Años</option>
-              <option value="10">10 Años</option>
-              <option value="15">15 Años</option>
+    @if (isLoading) {
+      <div class="text-center py-20 text-gray-500 text-lg">Cargando política de respaldo...</div>
+    }
+
+    @if (!isLoading) {
+      <form (ngSubmit)="savePolicy()" #policyForm="ngForm">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <div>
+            <label class="block text-base font-medium text-gray-700 mb-2">Período Mínimo de Retención (años)</label>
+            <select [(ngModel)]="policy.retentionPeriod" name="retentionPeriod" required
+              class="block w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-cyan-500">
+              <option [ngValue]="5">5 años</option>
+              <option [ngValue]="10">10 años</option>
+              <option [ngValue]="15">15 años</option>
             </select>
-            <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
           </div>
-          <p class="mt-2 text-sm text-gray-500">
-            Tiempo mínimo que los documentos deben ser conservados para cumplir con la ley.
-          </p>
-        </div>
 
-        <div>
-          <label for="backupFrequency" class="block text-base font-medium text-gray-700 mb-2">Frecuencia de Respaldo</label>
-          <div class="relative">
-            <select id="backupFrequency" name="backupFrequency" [(ngModel)]="policy.backupFrequency" required
-                    class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 pr-10 appearance-none">
+          <div>
+            <label class="block text-base font-medium text-gray-700 mb-2">Frecuencia de Respaldo</label>
+            <select [(ngModel)]="policy.backupFrequency" name="backupFrequency" required
+              class="block w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-cyan-500">
               <option value="Diaria">Diaria</option>
               <option value="Semanal">Semanal</option>
               <option value="Mensual">Mensual</option>
+              <option value="Trimestral">Trimestral</option>
             </select>
-            <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
           </div>
+        </div>
+
+        <div class="mt-6">
+          <label class="block text-base font-medium text-gray-700 mb-2">Ubicación de Respaldo</label>
+          <select [(ngModel)]="policy.backupLocation" name="backupLocation" required
+            class="block w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-cyan-500">
+            <option value="local">💾 Guardar en el equipo local</option>
+            <option value="google-drive">☁️ Google Drive</option>
+            <option value="dropbox">📦 Dropbox</option>
+          </select>
           <p class="mt-2 text-sm text-gray-500">
-            Con qué frecuencia se generará un respaldo de sus documentos.
+            Seleccione dónde desea almacenar sus respaldos automáticos.
           </p>
         </div>
-      </div>
 
-      <div class="mt-6">
-        <label for="backupLocation" class="block text-base font-medium text-gray-700 mb-2">Ubicación de Respaldo</label>
-        <input type="text" id="backupLocation" name="backupLocation" [(ngModel)]="policy.backupLocation" required
-               class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-               placeholder="Ej: Google Drive, Servidor local, Dropbox">
-        <p class="mt-2 text-sm text-gray-500">
-          Ruta o servicio donde se almacenarán los archivos de respaldo.
-        </p>
-      </div>
+        <div class="mt-6">
+          <label class="block text-base font-medium text-gray-700 mb-2">Tipos de Archivos a Respaldar</label>
+          <div class="flex flex-wrap gap-4">
+            <label class="flex items-center">
+              <input type="checkbox" [(ngModel)]="policy.backupTypes.xml" name="backupXML"
+                class="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500">
+              <span class="ml-2 text-sm font-medium text-gray-700">XML (Obligatorio DIAN)</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" [(ngModel)]="policy.backupTypes.pdf" name="backupPDF"
+                class="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500">
+              <span class="ml-2 text-sm font-medium text-gray-700">PDF</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" [(ngModel)]="policy.backupTypes.database" name="backupDB"
+                class="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500">
+              <span class="ml-2 text-sm font-medium text-gray-700">Base de Datos</span>
+            </label>
+          </div>
+        </div>
 
-      <div class="mt-8 flex justify-end">
-        <button type="submit"
-                class="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-8 py-2 rounded-2xl">
-          Guardar Cambios
-        </button>
-      </div>
-    </form>
+        <div class="mt-8 flex justify-end">
+          <button type="submit" [disabled]="isSaving || !policyForm.valid"
+            class="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-400 text-white font-semibold px-8 py-3 rounded-2xl">
+            @if (isSaving) { Guardando... } @else { Guardar Cambios }
+          </button>
+        </div>
+      </form>
+
+      @if (uploadMessage) {
+        <div class="mt-6 text-center text-gray-700 font-medium animate-pulse">
+          {{ uploadMessage }}
+        </div>
+      }
+    }
   </div>
 </main>

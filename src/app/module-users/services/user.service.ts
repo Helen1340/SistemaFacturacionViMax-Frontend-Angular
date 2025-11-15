@@ -33,8 +33,8 @@ export interface CreateUserPayload {
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost/api/users';
-  private rolesUrl = 'http://localhost/api/roles';
+  private apiUrl = 'http://127.0.0.1:8000/api/users';
+  private rolesUrl = 'http://127.0.0.1:8000/api/roles';
 
   constructor(private http: HttpClient) {}
 

@@ -7,7 +7,7 @@ import { AuthService } from '../../module-home/services/Auth.Service';
     providedIn: 'root'
 })
 export class CompletaRegistroService {
-    private apiUrl = 'http://localhost/api';
+    private apiUrl = 'http://127.0.0.1:8000/api';
 
     constructor(private http: HttpClient, private auth: AuthService) { }
 
