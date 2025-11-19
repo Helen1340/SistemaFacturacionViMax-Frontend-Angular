@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class NotificacionesService {
-  private apiUrl = 'http://127.0.0.1:8000/api/notifications'; // URL del backend Laravel
+  private apiUrl = 'http://localhost/api/notifications'; // URL del backend Laravel
   private ably!: Ably.Realtime;
   private channel!: Ably.RealtimeChannel; // ✅ Cambio 1: RealtimeChannel en lugar de Types.RealtimeChannelCallbacks
 

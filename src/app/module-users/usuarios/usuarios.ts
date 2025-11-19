@@ -64,7 +64,7 @@ export class Usuarios implements OnInit {
         // Filtrar usuarios que NO sean clientes usando los roles cargados
         this.users = (users || []).filter(user => {
           const userRole = this.roles.find(role => role.id === user.role_id);
-          return userRole && !userRole.role_name.toLowerCase().includes('client');
+          return userRole && !userRole.role_name.toLowerCase().includes('cliente');
         });
         this.filteredUsers = [...this.users];
         this.totalUsers = this.users.length;
@@ -188,9 +188,7 @@ export class Usuarios implements OnInit {
     const classes: { [key: string]: string } = {
       'administrador': 'bg-green-100 text-green-800',
       'facturador': 'bg-blue-100 text-blue-800',
-      'editor': 'bg-purple-100 text-purple-800',
-      'visualizador': 'bg-yellow-100 text-yellow-800',
-      'usuario': 'bg-gray-100 text-gray-800',
+      'contador': 'bg-purple-100 text-purple-800',
       'sin rol': 'bg-red-100 text-red-800',
       'cargando...': 'bg-gray-200 text-gray-600'
     };
@@ -201,6 +199,14 @@ export class Usuarios implements OnInit {
     return status === 'Active' 
       ? 'bg-green-100 text-green-800' 
       : 'bg-red-100 text-red-800';
+  }
+
+  translateUserStatus(status: string): string {
+    switch (status) {
+      case 'Active': return 'Activo';
+      case 'Inactive': return 'Inactivo';
+      default: return status;
+    }
   }
 
   toggleDropdown(event: Event, userId: number) {

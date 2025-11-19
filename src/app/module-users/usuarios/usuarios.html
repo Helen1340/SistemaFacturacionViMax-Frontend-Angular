@@ -90,7 +90,7 @@
             </td>
             <td class="px-4 py-3 min-w-[8%]">
               <span [ngClass]="getStatusClass(user.status)" class="text-xs px-2 py-1 rounded-full">{{
-                user.status }}</span>
+                translateUserStatus(user.status) }}</span>
             </td>
             <td class="px-4 py-3 text-center relative min-w-[8%]">
               <button (click)="toggleDropdown($event, user.id)" class="p-2 rounded hover:bg-gray-100">

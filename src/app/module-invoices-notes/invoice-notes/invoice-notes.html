@@ -1,0 +1,130 @@
+<main class="w-full px-4 pb-4 flex-1 overflow-y-auto overflow-x-visible">
+  <div>
+    <h2 class="text-4xl font-semibold mb-6 mt-2">Notas de Factura</h2>
+  </div>
+
+  <div class="border-b-2 border-gray-300 w-full mb-4"></div>
+
+  <div *ngIf="lastMessage" 
+       [ngClass]="{'bg-green-100 text-green-700': lastMessage, 'bg-red-100 text-red-700': false}"
+       class="p-4 rounded-2xl mb-4 text-center font-medium shadow-md">
+    {{ lastMessage }}
+  </div>
+
+  <div class="flex justify-end gap-3 mb-4">
+    <button (click)="goBack()" class="bg-gray-200 text-black px-4 py-2 rounded-xl hover:bg-gray-300 text-sm">Volver</button>
+  </div>
+
+  <div *ngIf="loading" class="flex flex-col items-center justify-center py-20 bg-white rounded-2xl shadow">
+    <div class="w-12 h-12 border-4 border-gray-200 border-t-cyan-600 rounded-full animate-spin mb-4"></div>
+    <p class="text-gray-600">Cargando notas...</p>
+  </div>
+
+  <div *ngIf="!loading" class="bg-white rounded-2xl shadow overflow-hidden mb-6">
+    <div class="overflow-x-auto overflow-y-auto max-h-[375px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+      <table class="w-full min-w-[800px] table-fixed text-xs sm:text-sm">
+        <thead class="bg-gray-100 text-gray-800 text-left sticky top-0 z-10">
+          <tr>
+            <th class="px-4 py-3 font-semibold sm:w-16">#</th>
+            <th class="px-4 py-3 font-semibold sm:w-24">Tipo</th>
+            <th class="px-4 py-3 font-semibold sm:w-32">Número</th>
+            <th class="px-4 py-3 font-semibold sm:w-32">Fecha</th>
+            <th class="px-4 py-3 font-semibold sm:w-24 text-center">Estado</th>
+            <th class="px-4 py-3 font-semibold sm:w-24 text-right">Total</th>
+            <th class="px-4 py-3 font-semibold sm:w-40 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let n of notes; let i = index" class="border-t border-gray-200 hover:bg-gray-50">
+            <td class="px-4 py-3">{{ i + 1 }}</td>
+            <td class="px-4 py-3">{{ n.note_type === 'credit' ? 'Crédito' : 'Débito' }}</td>
+            <td class="px-4 py-3 font-semibold text-gray-800">{{ n.note_number }}</td>
+            <td class="px-4 py-3">{{ n.issue_date | date:'short' }}</td>
+            <td class="px-4 py-3 text-center">
+              <span [ngClass]="{
+                  'bg-yellow-100 text-yellow-700': n.status === 'pending',
+                  'bg-green-100 text-green-700': n.status === 'accepted',
+                  'bg-red-100 text-red-700': n.status === 'rejected'
+                }" class="px-3 py-1 rounded-full text-xs font-semibold capitalize">
+                {{ n.status }}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-right text-gray-800">$ {{ n.total_amount | number:'1.0-0' }}</td>
+            <td class="px-4 py-3 text-center">
+              <button (click)="downloadPDF(n.id)" class="bg-blue-600 text-white px-3 py-1 rounded-xl hover:bg-blue-700 text-xs mr-2">PDF</button>
+              <button (click)="downloadXML(n.id)" class="bg-green-600 text-white px-3 py-1 rounded-xl hover:bg-green-700 text-xs">XML</button>
+            </td>
+          </tr>
+          <tr *ngIf="notes.length === 0">
+            <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+              No se encontraron notas
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="bg-white p-6 rounded-2xl border border-gray-200 mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-gray-800">Nueva nota</h3>
+      <div *ngIf="invoiceTotal !== null" class="text-sm text-gray-700">
+        Total factura: <span class="font-semibold">$ {{ invoiceTotal | number:'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <form (ngSubmit)="createNote()" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
+        <select [(ngModel)]="note_type" name="note_type" class="w-full px-3 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500">
+          <option value="credit">Crédito</option>
+          <option value="debit">Débito</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Motivo</label>
+        <input [(ngModel)]="reason" name="reason" class="w-full px-3 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Monto</label>
+        <input type="number" [(ngModel)]="total_amount" name="total_amount" class="w-full px-3 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+        <select [(ngModel)]="status" name="status" class="w-full px-3 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500">
+          <option value="">(opcional)</option>
+          <option value="accepted">Aceptada</option>
+          <option value="rejected">Rechazada</option>
+          <option value="pending">Pendiente</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha</label>
+        <input type="date" [(ngModel)]="issue_date" name="issue_date" class="w-full px-3 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+      </div>
+
+      <div class="md:col-span-5">
+        <button type="submit" [disabled]="creating" class="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-2xl transition-colors">Crear</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="bg-white p-6 rounded-2xl border border-gray-200">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-gray-800">Anular factura</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+      <div class="md:col-span-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Motivo</label>
+        <input [(ngModel)]="reason" name="annul_reason" [ngModelOptions]="{standalone: true}" class="w-full px-3 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+      </div>
+      <div>
+        <button (click)="annulInvoice()" [disabled]="creating" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-2xl transition-colors">Anular</button>
+      </div>
+    </div>
+  </div>
+</main>

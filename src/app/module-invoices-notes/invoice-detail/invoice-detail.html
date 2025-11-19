@@ -1,7 +1,20 @@
 <main class="w-full px-4 pb-4 flex-1 overflow-y-auto overflow-x-visible">
   <!-- Título -->
-  <div>
-    <h2 class="text-4xl font-semibold mb-6 mt-2">Detalle de Factura</h2>
+  <div class="flex items-center justify-between mb-4 mt-2">
+    <h2 class="text-3xl font-bold">Detalle de Factura</h2>
+    <div class="flex items-center gap-2" *ngIf="invoice">
+      <span [ngClass]="getStatusBadgeClass(invoice.internal_status, 'internal')" 
+        class="px-3 py-1 rounded-full text-xs font-semibold capitalize">
+        {{ invoice.internal_status === 'draft' ? 'Borrador' : 
+           invoice.internal_status === 'issued' ? 'Emitida' : 'Anulada' }}
+      </span>
+      <span [ngClass]="getStatusBadgeClass(invoice.dian_status, 'dian')" 
+        class="px-3 py-1 rounded-full text-xs font-semibold capitalize">
+        {{ invoice.dian_status === 'pending' ? 'Pendiente' : 
+           invoice.dian_status === 'accepted' ? 'Aceptada' : 
+           invoice.dian_status === 'rejected' ? 'Rechazada' : 'Sin enviar' }}
+      </span>
+    </div>
   </div>
 
   <!-- Línea divisoria -->
@@ -9,19 +22,11 @@
 
   <!-- Botones de acción -->
   <div class="flex justify-end gap-3 mb-4">
-    <!-- Botón para volver a la lista de facturas 
-    <button (click)="goBack()" 
-      class="bg-gray-200 text-black px-4 py-2 rounded-xl hover:bg-gray-300 text-sm">
-      Volver
-    </button>
-    <button *ngIf="invoice?.uuid" (click)="downloadPDF()" 
-      class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 text-sm">
-      📄 PDF
-    </button>
-    <button *ngIf="invoice?.uuid" (click)="downloadXML()" 
-      class="bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 text-sm">
-      📄 XML
-    </button>-->
+    <button (click)="goBack()" class="bg-gray-200 text-black px-4 py-2 rounded-xl hover:bg-gray-300 text-sm">Volver</button>
+    <button (click)="navigateToNotes()" class="bg-cyan-600 text-white px-4 py-2 rounded-xl hover:bg-cyan-700 text-sm">Notas</button>
+    <button *ngIf="invoice?.uuid" (click)="downloadPDF()" class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 text-sm">PDF</button>
+    <button *ngIf="invoice?.uuid" (click)="downloadXML()" class="bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 text-sm">XML</button>
+    <button *ngIf="invoice && invoice.internal_status === 'draft'" (click)="sendToDian()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm">Enviar a DIAN</button>
   </div>
 
   <!-- Loading -->
@@ -267,8 +272,8 @@
     </div>
 
     <!-- Pie de página -->
-    <div class="p-6 bg-gray-800 text-gray-300 text-xs text-center">
-      <p>Esta es una factura electrónica válida según la normativa colombiana</p>
+    <div class="p-6 bg-gray-900 text-gray-300 text-xs text-center">
+      <p class="tracking-wide">Factura electrónica válida según normativa colombiana</p>
       <p class="mt-1" *ngIf="invoice.uuid">
         CUFE: {{ invoice.uuid }}
       </p>
@@ -282,11 +287,11 @@
   <div class="mt-6 flex justify-end gap-4" *ngIf="invoice && invoice.internal_status === 'draft'">
     <button (click)="sendToDian()" 
       class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm">
-      ✅ Enviar a DIAN
+       Enviar a DIAN
     </button>
     <button (click)="cancelInvoice()" 
       class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm">
-      ❌ Anular Factura
+      Anular Factura
     </button>
   </div>
 

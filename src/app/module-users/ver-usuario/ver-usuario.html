@@ -84,7 +84,7 @@
                 <label class="block text-sm text-black">Estado</label>
                 <div class="flex items-center">
                     <span [ngClass]="getStatusClass(usuarioData.status)" class="text-xs px-2 py-1 rounded-full">{{
-                        usuarioData.status }}</span>
+                        translateUserStatus(usuarioData.status) }}</span>
                 </div>
             </div>
 

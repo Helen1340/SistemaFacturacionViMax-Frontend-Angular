@@ -239,4 +239,20 @@ export class ProductosServicios implements OnInit {
       maximumFractionDigits: 2
     }).format(price);
   }
+
+  translateItemType(type: string): string {
+    switch (type) {
+      case 'Product': return 'Producto';
+      case 'Service': return 'Servicio';
+      default: return type;
+    }
+  }
+
+  translateItemStatus(status: string): string {
+    switch (status) {
+      case 'Active': return 'Activo';
+      case 'Inactive': return 'Inactivo';
+      default: return status;
+    }
+  }
 }

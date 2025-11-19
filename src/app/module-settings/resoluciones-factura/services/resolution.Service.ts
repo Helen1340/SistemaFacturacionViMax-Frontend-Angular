@@ -8,7 +8,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class ResolutionService {
   // 👉 URL DE LA API: Asegúrate de que esta URL sea correcta y tu servidor backend esté corriendo.
-  private apiUrl = 'http://127.0.0.1:8000/api/dianNumberings'; 
+  private apiUrl = 'http://localhost/api/dianNumberings'; 
 
   constructor(private http: HttpClient) {}
 

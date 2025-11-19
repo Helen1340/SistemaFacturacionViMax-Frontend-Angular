@@ -7,8 +7,8 @@
             <img *ngIf="imagePreview" [src]="imagePreview" alt="Company Logo" class="w-full h-full object-cover" />
             <span *ngIf="!imagePreview">Logo</span>
         </div>
-        <p class="mt-2 text-gray-600 text-sm">Company Logo</p>
-        <input type="file" accept="image/*" (change)="onFileSelected($event)" class="mt-2 text-sm" />
+        <p class="mt-2 text-gray-600 text-sm">Logo de la Empresa</p>
+        <input type="file" accept="image/*" (change)="onFileSelected($event)" class="mt-2 text-sm bg-cyan-500 p-2 rounded-lg hover:bg-cyan-600" />
     </div>
 
     <!-- Main Form -->
@@ -18,16 +18,16 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- COMPANY DETAILS -->
             <div>
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Company Details</h2>
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Detalles de la Empresa</h2>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm text-gray-600">Business Name</label>
+                        <label class="block text-sm text-gray-600">Razon Social</label>
                         <input formControlName="business_name" type="text"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
 
                     <div>
-                        <label class="block text-sm text-gray-600">Trade Name</label>
+                        <label class="block text-sm text-gray-600">Nombre comercial</label>
                         <input formControlName="trade_name" type="text"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
@@ -39,18 +39,18 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm text-gray-600">Tax Regime</label>
+                        <label class="block text-sm text-gray-600">Régimen tributario</label>
                         <select formControlName="tax_regime"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Select...</option>
-                            <option value="Ordinary Regime">Ordinary Regime</option>
+                            <option value="Ordinary Regime">Regimen Ordinario</option>
                             <option value="Simple Tax Regime (RTS)">Simple Tax Regime (RTS)</option>
                             <option value="Special Tax Regime (RTE)">Special Tax Regime (RTE)</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-sm text-gray-600">CIIU Code</label>
+                        <label class="block text-sm text-gray-600">codigo CIIU</label>
                         <input formControlName="ciiu_code" type="text"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
@@ -64,29 +64,29 @@
 
             <!-- BASIC INFO -->
             <div>
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Basic Information</h2>
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Información basica</h2>
                 <div class="space-y-4">
-                    <div><label class="block text-sm text-gray-600">Address</label><input formControlName="address"
+                    <div><label class="block text-sm text-gray-600">Dirección</label><input formControlName="address"
                             type="text"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
-                    <div><label class="block text-sm text-gray-600">City</label><input formControlName="city"
+                    <div><label class="block text-sm text-gray-600">Ciudad</label><input formControlName="city"
                             type="text"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
-                    <div><label class="block text-sm text-gray-600">Department</label><input
+                    <div><label class="block text-sm text-gray-600">Departamento</label><input
                             formControlName="department" type="text"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
-                    <div><label class="block text-sm text-gray-600">Country</label><input formControlName="country"
+                    <div><label class="block text-sm text-gray-600">País</label><input formControlName="country"
                             type="text"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
-                    <div><label class="block text-sm text-gray-600">Phone</label><input formControlName="phone"
+                    <div><label class="block text-sm text-gray-600">Telefono</label><input formControlName="phone"
                             type="text"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
-                    <div><label class="block text-sm text-gray-600">Company Email</label><input formControlName="email"
+                    <div><label class="block text-sm text-gray-600">Correo de la Empresa</label><input formControlName="email"
                             type="email"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
@@ -95,24 +95,24 @@
 
             <!-- LEGAL REPRESENTATIVE -->
             <div>
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Legal Representative</h2>
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Representante legal</h2>
                 <div class="space-y-4">
-                    <div><label class="block text-sm text-gray-600">Full Name</label><input
+                    <div><label class="block text-sm text-gray-600">Nombre completo</label><input
                             formControlName="legal_representative_name" type="text"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
                     <div>
-                        <label class="block text-sm text-gray-600">Document Type</label>
+                        <label class="block text-sm text-gray-600">Tipo de documento</label>
                         <select formControlName="legal_representative_document_type"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Select...</option>
-                            <option value="CC">Citizen ID</option>
-                            <option value="CE">Foreigner ID</option>
+                            <option value="">Selecciona</option>
+                            <option value="CC">Cedula de Ciudadania</option>
+                            <option value="CE">Cedula de Extrangeria</option>
                             <option value="NIT">NIT</option>
-                            <option value="PAS">Passport</option>
+                            <option value="PAS">Pasaporte</option>
                         </select>
                     </div>
-                    <div><label class="block text-sm text-gray-600">Document Number</label><input
+                    <div><label class="block text-sm text-gray-600">Número de documento</label><input
                             formControlName="legal_representative_document_number" type="text"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
@@ -122,40 +122,40 @@
 
         <!-- USER DETAILS -->
         <div class="border-t pt-8 mt-6">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4">Billing User Details</h2>
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Detalles del Usuario</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div><label class="block text-sm text-gray-600">Full Name</label><input formControlName="first_name"
+                <div><label class="block text-sm text-gray-600">Nombre completo</label><input formControlName="first_name"
                         type="text"
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div>
-                    <label class="block text-sm text-gray-600">Document Type</label>
+                    <label class="block text-sm text-gray-600">Tipo de documento</label>
                     <select formControlName="document_type"
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Select...</option>
-                        <option value="CC">Citizen ID</option>
-                        <option value="CE">Foreigner ID</option>
+                        <option value="">Selecciona</option>
+                        <option value="CC">Cedula de Ciudadania</option>
+                        <option value="CE">Cedula de Extrangeria</option>
                         <option value="NIT">NIT</option>
-                        <option value="PAS">Passport</option>
+                        <option value="PAS">Pasaporte</option>
                     </select>
                 </div>
-                <div><label class="block text-sm text-gray-600">Document Number</label><input
+                <div><label class="block text-sm text-gray-600">Numero de documento</label><input
                         formControlName="document_number" type="text"
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
-                <div><label class="block text-sm text-gray-600">User Email</label><input formControlName="user_email"
+                <div><label class="block text-sm text-gray-600">Correo Electronico</label><input formControlName="user_email"
                         type="email"
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
-                <div><label class="block text-sm text-gray-600">Address</label><input formControlName="user_address"
+                <div><label class="block text-sm text-gray-600">Dirección</label><input formControlName="user_address"
                         type="text"
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
-                <div><label class="block text-sm text-gray-600">Phone</label><input formControlName="user_phone"
+                <div><label class="block text-sm text-gray-600">Telefono</label><input formControlName="user_phone"
                         type="text"
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
-                <div class="md:col-span-2"><label class="block text-sm text-gray-600">Description</label><textarea
+                <div class="md:col-span-2"><label class="block text-sm text-gray-600">Descripción</label><textarea
                         formControlName="description" rows="3"
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
@@ -165,8 +165,8 @@
         <!-- SAVE BUTTON -->
         <div class="flex justify-center mt-8">
             <button type="submit" [disabled]="isLoading"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium shadow transition disabled:opacity-70">
-                {{ isLoading ? 'Saving...' : 'Save and Continue' }}
+                class="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-2 rounded-lg font-medium shadow transition disabled:opacity-70">
+                {{ isLoading ? 'Guardando...' : 'Guardar y continuar' }}
             </button>
         </div>
     </form>

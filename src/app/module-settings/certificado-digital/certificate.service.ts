@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class CertificateService {
 
-  private apiUrl = 'http://127.0.0.1:8000/api/digitalCertificates';
+  private apiUrl = 'http://localhost/api/digitalCertificates';
 
   constructor(private http: HttpClient) {}
 

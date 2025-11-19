@@ -29,6 +29,12 @@ export class InvoiceCreate implements OnInit {
   products: Product[] = [];
   services: Service[] = [];
   clients: Client[] = [];
+  filteredProducts: Product[] = [];
+  filteredServices: Service[] = [];
+  filteredClients: Client[] = [];
+  clientQuery: string = '';
+  productQuery: string = '';
+  serviceQuery: string = '';
   selectedItems: SelectedItem[] = [];
   
   loading = false;
@@ -72,12 +78,57 @@ export class InvoiceCreate implements OnInit {
         this.products = data.products;
         this.services = data.services;
         this.clients = data.clients;
+        this.filteredProducts = [...this.products];
+        this.filteredServices = [...this.services];
+        this.filteredClients = [...this.clients];
         this.loadingData = false;
       },
       error: (err) => {
         this.error = 'Error al cargar los datos: ' + (err.error?.message || err.message);
         this.loadingData = false;
       }
+    });
+  }
+
+  onClientQueryChange(query: string): void {
+    this.clientQuery = query;
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      this.filteredClients = [...this.clients];
+      return;
+    }
+    this.filteredClients = this.clients.filter(c => {
+      const name = (c.first_name || '').toLowerCase();
+      const doc = String(c.document_number || '').toLowerCase();
+      return name.includes(q) || doc.includes(q);
+    });
+  }
+
+  onProductQueryChange(query: string): void {
+    this.productQuery = query;
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      this.filteredProducts = [...this.products];
+      return;
+    }
+    this.filteredProducts = this.products.filter(p => {
+      const code = String(p.product_code || '').toLowerCase();
+      const name = String(p.name || '').toLowerCase();
+      return code.includes(q) || name.includes(q);
+    });
+  }
+
+  onServiceQueryChange(query: string): void {
+    this.serviceQuery = query;
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      this.filteredServices = [...this.services];
+      return;
+    }
+    this.filteredServices = this.services.filter(s => {
+      const code = String(s.service_code || '').toLowerCase();
+      const name = String(s.name || '').toLowerCase();
+      return code.includes(q) || name.includes(q);
     });
   }
 
