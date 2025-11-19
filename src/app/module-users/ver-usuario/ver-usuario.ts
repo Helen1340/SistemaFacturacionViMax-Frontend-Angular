@@ -106,6 +106,14 @@ export class VerUsuario implements OnInit {
       : 'bg-red-100 text-red-800';
   }
 
+  translateUserStatus(status: string): string {
+    switch (status) {
+      case 'Active': return 'Activo';
+      case 'Inactive': return 'Inactivo';
+      default: return status;
+    }
+  }
+
   onVolver(): void {
     this.router.navigate(['/usuarios']);
   }

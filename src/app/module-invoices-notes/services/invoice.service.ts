@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -187,8 +187,10 @@ export class InvoiceService {
       });
     }
 
-    return this.http.get<ApiResponse<Invoice[]>>(`${this.apiUrl}`, { params })
-      .pipe(map(response => response.data));
+    params = params.set('included', 'buyer,user,user.company');
+
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}`, { params })
+      .pipe(map(response => Array.isArray(response.data) ? response.data : (response.data?.data ?? [])));
   }
 
   /**
@@ -257,9 +259,17 @@ export class InvoiceService {
   /**
    * Cancelar factura
    */
-  cancelInvoice(id: number): Observable<any> {
-    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/${id}/cancel`, {})
+  cancelInvoice(id: number, reason: string = 'Anulación automática'): Observable<any> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/${id}/notes/annul`, { reason })
       .pipe(map(response => response.data));
+  }
+
+  downloadPDFRes(id: number): Observable<HttpResponse<Blob>> {
+    return this.http.get(`${this.apiUrl}/${id}/download/pdf`, { responseType: 'blob', observe: 'response' });
+  }
+
+  downloadXMLRes(id: number): Observable<HttpResponse<Blob>> {
+    return this.http.get(`${this.apiUrl}/${id}/download/xml`, { responseType: 'blob', observe: 'response' });
   }
 
   /**
@@ -281,5 +291,6 @@ export class InvoiceService {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/stats/summary`, { params })
       .pipe(map(response => response.data));
   }
+
 }
 

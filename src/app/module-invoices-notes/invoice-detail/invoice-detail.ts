@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { InvoiceService, Invoice } from '../services/invoice.service';
 import { Html5Qrcode } from 'html5-qrcode';
 import { FormsModule } from '@angular/forms';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-invoice-detail',
@@ -181,12 +182,45 @@ export class InvoiceDetail implements OnInit, OnDestroy {
 
   downloadPDF(): void {
     if (!this.invoiceId) return;
-    window.open(`http://localhost/api/invoices/${this.invoiceId}/download/pdf`, '_blank');
+    this.invoiceService.downloadPDFRes(this.invoiceId).subscribe({
+      next: res => {
+        const contentType = res.headers.get('Content-Type') || res.headers.get('content-type') || '';
+        const blob = res.body as Blob;
+        if (blob && (contentType.includes('application/pdf') || blob.size > 0)) {
+          saveAs(blob, `factura_${this.invoiceId}.pdf`);
+        } else {
+          alert('No se pudo descargar el PDF: respuesta inválida.');
+        }
+      },
+      error: (err) => {
+        const msg = err.error?.message || err.message || 'Error desconocido al descargar PDF';
+        alert(msg);
+      }
+    });
   }
 
   downloadXML(): void {
     if (!this.invoiceId) return;
-    window.open(`http://localhost/api/invoices/${this.invoiceId}/download/xml`, '_blank');
+    this.invoiceService.downloadXMLRes(this.invoiceId).subscribe({
+      next: res => {
+        const contentType = res.headers.get('Content-Type') || res.headers.get('content-type') || '';
+        const blob = res.body as Blob;
+        if (blob && (contentType.includes('application/xml') || contentType.includes('text/xml') || blob.size > 0)) {
+          saveAs(blob, `factura_${this.invoiceId}.xml`);
+        } else {
+          alert('No se pudo descargar el XML: respuesta inválida.');
+        }
+      },
+      error: (err) => {
+        const msg = err.error?.message || err.message || 'Error desconocido al descargar XML';
+        alert(msg);
+      }
+    });
+  }
+
+  navigateToNotes(): void {
+    if (!this.invoiceId) return;
+    this.router.navigate(['/notas-factura', this.invoiceId]);
   }
 
   getStatusBadgeClass(status: string, type: 'internal' | 'dian'): string {
@@ -278,6 +312,7 @@ export class InvoiceDetail implements OnInit, OnDestroy {
       });
     }
   }
+
 
   ngOnDestroy(): void {
     this.stopQRScanner();

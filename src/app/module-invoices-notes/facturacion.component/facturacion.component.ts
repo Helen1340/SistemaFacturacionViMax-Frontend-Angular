@@ -84,6 +84,31 @@ export class FacturacionComponent implements OnInit {
     this.paginatedInvoices = this.filteredInvoices.slice(start, end);
   }
 
+  translateInternalStatus(status: string): string {
+    switch (status) {
+      case 'draft': return 'Borrador';
+      case 'issued': return 'Emitida';
+      case 'cancelled': return 'Anulada';
+      default: return status;
+    }
+  }
+
+  translateDianStatus(status: string): string {
+    switch (status) {
+      case 'pending': return 'Pendiente';
+      case 'sent': return 'Enviada';
+      case 'accepted': return 'Aceptada';
+      case 'rejected': return 'Rechazada';
+      case 'error': return 'Error';
+      case 'cancelled': return 'Anulada';
+      default: return status;
+    }
+  }
+
+  getBuyerDisplay(factura: any): string {
+    return factura?.buyer?.first_name || factura?.user?.company?.business_name || 'N/A';
+  }
+
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
@@ -170,7 +195,7 @@ export class FacturacionComponent implements OnInit {
     
     if (invoiceId !== undefined && invoiceId !== null && confirm(`¿Está seguro de anular la factura ${factura.invoice_number}?`)) {
       this.openMenuIndex = null;
-      this.invoiceService.cancelInvoice(invoiceId).subscribe({
+      this.invoiceService.cancelInvoice(invoiceId, 'Anulación desde listado').subscribe({
         next: () => {
           this.alert = { message: `Factura ${factura.invoice_number} anulada correctamente`, type: 'success' };
           this.loadInvoices(); // Recargar lista
@@ -181,6 +206,26 @@ export class FacturacionComponent implements OnInit {
         }
       });
     } else if (invoiceId === undefined || invoiceId === null) {
+      this.alert = { message: 'Error: No se pudo obtener el ID de la factura', type: 'error' };
+    }
+  }
+
+  crearNotaCredito(factura: any) {
+    const invoiceId = factura?.id;
+    if (invoiceId !== undefined && invoiceId !== null) {
+      this.openMenuIndex = null;
+      this.router.navigate(['/notas-factura', invoiceId], { queryParams: { type: 'credit' } });
+    } else {
+      this.alert = { message: 'Error: No se pudo obtener el ID de la factura', type: 'error' };
+    }
+  }
+
+  crearNotaDebito(factura: any) {
+    const invoiceId = factura?.id;
+    if (invoiceId !== undefined && invoiceId !== null) {
+      this.openMenuIndex = null;
+      this.router.navigate(['/notas-factura', invoiceId], { queryParams: { type: 'debit' } });
+    } else {
       this.alert = { message: 'Error: No se pudo obtener el ID de la factura', type: 'error' };
     }
   }

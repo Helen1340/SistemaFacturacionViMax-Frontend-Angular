@@ -103,7 +103,7 @@
                         <td class="px-4 py-3">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                         <td class="px-4 py-3 font-semibold text-gray-800">{{ factura.invoice_number }}</td>
                         <td class="px-4 py-3 text-gray-700">
-                          {{ factura.buyer?.first_name || factura.user?.company?.business_name || 'N/A' }}
+                          {{ getBuyerDisplay(factura) }}
                         </td>
                         <td class="px-4 py-3 text-right text-gray-800">$ {{ factura.payable_amount |
                             number:'1.0-0' }}</td>
@@ -113,7 +113,7 @@
                                 'bg-gray-200 text-gray-800': factura.internal_status === 'draft',
                                 'bg-blue-100 text-blue-700': factura.internal_status === 'issued'
                               }" class="px-3 py-1 rounded-full text-xs font-semibold capitalize">
-                                {{ factura.internal_status }}
+                                {{ translateInternalStatus(factura.internal_status) }}
                             </span>
                         </td>
 
@@ -123,7 +123,7 @@
                                 'bg-green-100 text-green-700': factura.dian_status === 'accepted',
                                 'bg-red-100 text-red-700': factura.dian_status === 'rejected'
                               }" class="px-3 py-1 rounded-full text-xs font-semibold capitalize">
-                                {{ factura.dian_status }}
+                                {{ translateDianStatus(factura.dian_status) }}
                             </span>
                         </td>
 
@@ -151,6 +151,14 @@
                                 <button (click)="navigateToVerDetalles(factura); $event.stopPropagation()"
                                     class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-50 transition-colors border-b border-gray-100">
                                     Ver detalles
+                                </button>
+                                <button (click)="crearNotaCredito(factura); $event.stopPropagation()"
+                                    class="block w-full text-left px-4 py-2 text-sm hover:bg-green-50 transition-colors border-b border-gray-100">
+                                    Nota crédito
+                                </button>
+                                <button (click)="crearNotaDebito(factura); $event.stopPropagation()"
+                                    class="block w-full text-left px-4 py-2 text-sm hover:bg-yellow-50 transition-colors border-b border-gray-100">
+                                    Nota débito
                                 </button>
                                 
                                 <button (click)="anularFactura(factura); $event.stopPropagation()"

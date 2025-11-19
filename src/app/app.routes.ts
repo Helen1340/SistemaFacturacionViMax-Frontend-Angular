@@ -1,4 +1,6 @@
-import { Routes } from '@angular/router';
+import { Routes, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { AuthService } from './module-home/services/Auth.Service';
 import { Clientes } from './module-clients/clientes/clientes';
 import { NuevoCliente } from './module-clients/nuevo-cliente/nuevo-cliente';
 import { EditarCliente } from './module-clients/editar-cliente/editar-cliente';
@@ -48,6 +50,7 @@ import { InvoiceCreate } from './module-invoices-notes/invoice-create/invoice-cr
 import { InvoiceDetail } from './module-invoices-notes/invoice-detail/invoice-detail';
 import { ImpuestosRetencionesComponent } from './module-settings/impuestos-retenciones/impuestos-retenciones';
 import { RetencionRespaldo } from './module-settings/retencion-respaldo/retencion-respaldo';
+import { InvoiceNotes } from './module-invoices-notes/invoice-notes/invoice-notes';
 
 
 
@@ -107,9 +110,10 @@ export const routes: Routes = [
   { path: 'nuevo-cliente', component: NuevoCliente },
   { path: 'editar-cliente/:id', component: EditarCliente },
   { path: 'ver-cliente/:id', component: VerCliente },
-  { path: 'facturacion', component: FacturacionComponent },
-  { path: 'crear-factura', component: InvoiceCreate },
-  { path: 'detalle_factura/:id', component: InvoiceDetail },
+  { path: 'facturacion', component: FacturacionComponent, canActivate: [() => { const a = inject(AuthService); const r = inject(Router); if (a.isAuthenticated()) return true; r.navigate(['/login']); return false; }] },
+  { path: 'crear-factura', component: InvoiceCreate, canActivate: [() => { const a = inject(AuthService); const r = inject(Router); if (a.isAuthenticated()) return true; r.navigate(['/login']); return false; }] },
+  { path: 'detalle_factura/:id', component: InvoiceDetail, canActivate: [() => { const a = inject(AuthService); const r = inject(Router); if (a.isAuthenticated()) return true; r.navigate(['/login']); return false; }] },
+  { path: 'notas-factura/:id', component: InvoiceNotes, canActivate: [() => { const a = inject(AuthService); const r = inject(Router); if (a.isAuthenticated()) return true; r.navigate(['/login']); return false; }] },
   // ... otras rutas
 
 

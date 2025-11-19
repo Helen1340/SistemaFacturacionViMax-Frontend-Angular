@@ -7,7 +7,7 @@ import { Observable, Subject } from 'rxjs'; // 👈 Importamos Subject
 })
 export class ImpuestosRetencionesService {
 
-  private apiUrl = 'http://localhost:8000/api/taxes'; // AsegÃºrate que coincida con tus rutas Laravel
+  private apiUrl = 'http://localhost/api/taxes'; // AsegÃºrate que coincida con tus rutas Laravel
 
   // 🌟 AÃ±adimos el Subject y el Observable pÃºblico
   private impuestoCreadoSource = new Subject<void>();
