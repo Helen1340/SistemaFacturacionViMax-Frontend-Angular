@@ -34,6 +34,7 @@
     "apexcharts": "^5.3.6",
     "chart.js": "^4.5.1",
     "file-saver": "^2.0.5",
+    "firebase": "^12.6.0",
     "html5-qrcode": "^2.3.8",
     "jspdf": "^3.0.3",
     "jspdf-autotable": "^5.0.2",

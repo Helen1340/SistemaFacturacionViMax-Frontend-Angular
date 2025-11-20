@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/Auth.Service';
+import { FirebaseService } from '../../module-notifications/services/firebase-service';
 
 @Component({
   selector: 'app-acceder',
@@ -25,10 +26,11 @@ export class Acceder {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private firebaseService: FirebaseService// 👈 Agregar
   ) {
     this.loginForm = this.formBuilder.group({
-      correo_electronico: ['', [Validators.required, Validators.email]], // coincide con el backend
+      correo_electronico: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
@@ -51,16 +53,21 @@ export class Acceder {
     };
 
     this.authService.login(loginData).subscribe({
-      next: (res) => {
+      next: async (res) => { // 👈 Agregar async
         this.isLoading = false;
 
         if (res && res.access_token) {
-          //  Guardar token en localStorage con AuthService
+          // Guardar token en localStorage con AuthService
           this.authService.setToken(res.access_token);
+
+          // 🔥 Guardar el userId y inicializar Firebase
+          if (res.user && res.user.id) {
+            localStorage.setItem('userId', res.user.id.toString());
+            await this.firebaseService.init(res.user.id);
+          }
 
           this.showNotification('Inicio de sesión exitoso 🚀', 'success');
           console.log(res);
-          console.log(loginData);
 
           // Redirigir a facturas-notas
           this.router.navigate(['/facturacion']);
