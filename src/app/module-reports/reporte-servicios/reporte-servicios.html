@@ -1,0 +1,98 @@
+<main class="w-full md:ml-0 px-4 pb-2 flex-1 overflow-auto">
+  <div>
+    <h2 class="text-4xl font-semibold mb-6 mt-2">Reporte de Servicios</h2>
+  </div>
+  <div class="border-b-2 border-gray-300 w-full mb-4"></div>
+
+  <div class="bg-white rounded-xl shadow-md p-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+      <mat-form-field appearance="outline">
+        <mat-label>Buscar</mat-label>
+        <input matInput [(ngModel)]="texto" placeholder="Código o nombre" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Estado</mat-label>
+        <mat-select [(ngModel)]="estado">
+          <mat-option value="">Todos</mat-option>
+          <mat-option value="emitido">Emitido</mat-option>
+          <mat-option value="anulado">Anulado</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Desde</mat-label>
+        <input matInput type="date" [(ngModel)]="desde" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Hasta</mat-label>
+        <input matInput type="date" [(ngModel)]="hasta" />
+      </mat-form-field>
+    </div>
+    <div class="flex justify-between mt-6">
+      <div>
+        <button (click)="reset()" class="bg-gray-400 text-white text-sm px-6 py-2 rounded-xl mr-3">Limpiar</button>
+        <button (click)="apply()" class="bg-cyan-600 text-white text-sm px-6 py-2 rounded-xl">Buscar</button>
+      </div>
+      <div>
+        <button (click)="downloadCsv()" class="bg-blue-600 text-white text-sm px-6 py-2 rounded-xl">Descargar CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 bg-white rounded-2xl shadow overflow-hidden">
+    <div class="p-2">
+      <table mat-table [dataSource]="dataSource" class="w-full">
+        <ng-container matColumnDef="codigo">
+          <th mat-header-cell *matHeaderCellDef>Código</th>
+          <td mat-cell *matCellDef="let p">{{ p.codigo }}</td>
+        </ng-container>
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <td mat-cell *matCellDef="let p">{{ p.nombre }}</td>
+        </ng-container>
+        <ng-container matColumnDef="unidad">
+          <th mat-header-cell *matHeaderCellDef>Unidad</th>
+          <td mat-cell *matCellDef="let p">{{ p.unidad }}</td>
+        </ng-container>
+        <ng-container matColumnDef="cantidad_vendida">
+          <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+          <td mat-cell *matCellDef="let p">{{ p.cantidad_vendida }}</td>
+        </ng-container>
+        <ng-container matColumnDef="subtotal">
+          <th mat-header-cell *matHeaderCellDef>Subtotal</th>
+          <td mat-cell *matCellDef="let p">{{ p.subtotal | number:'1.0-0' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="impuestos">
+          <th mat-header-cell *matHeaderCellDef>Impuestos</th>
+          <td mat-cell *matCellDef="let p">{{ p.impuestos | number:'1.0-0' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef>Total</th>
+          <td mat-cell *matCellDef="let p">{{ p.total | number:'1.0-0' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="precio_promedio">
+          <th mat-header-cell *matHeaderCellDef>Precio promedio</th>
+          <td mat-cell *matCellDef="let p">{{ p.precio_promedio | number:'1.0-0' }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator [pageSize]="10" [pageSizeOptions]="[10,20,50]"></mat-paginator>
+    </div>
+  </div>
+
+  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-xl shadow-md p-4">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-sm font-semibold">Ventas mensuales</h3>
+      </div>
+      <apx-chart [series]="lineSeries" [xaxis]="lineXAxis" [chart]="lineChart"></apx-chart>
+    </div>
+    <div class="bg-white rounded-xl shadow-md p-4">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-sm font-semibold">Top 5 servicios</h3>
+      </div>
+      <apx-chart [series]="topSeries" [xaxis]="topXAxis" [chart]="topChart" [plotOptions]="topPlotOptions"></apx-chart>
+    </div>
+  </div>
+</main>

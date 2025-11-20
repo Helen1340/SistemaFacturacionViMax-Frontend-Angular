@@ -10,59 +10,46 @@
     <!-- 🔹 Filtros -->
     <div class="bg-white rounded-xl shadow-md p-4">
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-            <div class="md:col-span-2">
-                <label class="text-sm font-medium text-black block mb-1">Buscar factura</label>
-                <div class="flex items-center border border-gray-300 rounded-lg px-3 py-1.5">
-                    <svg class="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" />
-                    </svg>
-                    <input type="text" placeholder="Número de factura" [(ngModel)]="invoiceNumber"
-                        class="w-full border-none outline-none text-black text-sm placeholder-gray-400" />
-                </div>
-            </div>
+            <mat-form-field appearance="outline" class="md:col-span-2">
+                <mat-label>Número de factura</mat-label>
+                <input matInput [(ngModel)]="invoiceNumber" placeholder="Ej: FAC-001" />
+            </mat-form-field>
 
-            <div>
-                <label class="text-sm font-medium text-black block mb-1">Estado</label>
-                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black bg-white"
-                    [(ngModel)]="status" (change)="applyFilters()">
-                    <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
-                </select>
-            </div>
+            <mat-form-field appearance="outline">
+                <mat-label>Estado</mat-label>
+                <mat-select [(ngModel)]="status" (selectionChange)="applyFilters()">
+                    <mat-option *ngFor="let s of statusOptions" [value]="s">{{ s }}</mat-option>
+                </mat-select>
+            </mat-form-field>
 
-            <div>
-                <label class="text-sm font-medium text-black block mb-1">Desde</label>
-                <input type="date" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black"
-                    [(ngModel)]="startDate" />
-            </div>
+            <mat-form-field appearance="outline">
+                <mat-label>Desde</mat-label>
+                <input matInput type="date" [(ngModel)]="startDate" />
+            </mat-form-field>
 
-            <div>
-                <label class="text-sm font-medium text-black block mb-1">Hasta</label>
-                <input type="date" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black"
-                    [(ngModel)]="endDate" />
-            </div>
+            <mat-form-field appearance="outline">
+                <mat-label>Hasta</mat-label>
+                <input matInput type="date" [(ngModel)]="endDate" />
+            </mat-form-field>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div>
-                <label class="text-sm font-medium text-black block mb-1">Cliente</label>
-                <input type="text" placeholder="Nombre" [(ngModel)]="clientName"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black placeholder-gray-400" />
-            </div>
+            <mat-form-field appearance="outline">
+                <mat-label>Cliente</mat-label>
+                <input matInput [(ngModel)]="clientName" placeholder="Nombre" />
+            </mat-form-field>
 
-            <div>
-                <label class="text-sm font-medium text-black block mb-1">Responsable de emisión</label>
-                <input type="text" placeholder="Usuario que emitió" [(ngModel)]="responsible"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black placeholder-gray-400" />
-            </div>
+            <mat-form-field appearance="outline">
+                <mat-label>Responsable</mat-label>
+                <input matInput [(ngModel)]="responsible" placeholder="Usuario" />
+            </mat-form-field>
 
-            <div>
-                <label class="text-sm font-medium text-black block mb-1">Tipo de documento</label>
-                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black bg-white"
-                    [(ngModel)]="documentType" (change)="applyFilters()">
-                    <option *ngFor="let d of documentOptions" [value]="d">{{ d }}</option>
-                </select>
-            </div>
+            <mat-form-field appearance="outline">
+                <mat-label>Tipo de documento</mat-label>
+                <mat-select [(ngModel)]="documentType" (selectionChange)="applyFilters()">
+                    <mat-option *ngFor="let d of documentOptions" [value]="d">{{ d }}</mat-option>
+                </mat-select>
+            </mat-form-field>
         </div>
 
         <div class="flex justify-between mt-6 space-x-4">
@@ -77,54 +64,93 @@
                 </button>
             </div>
             <div>
-                <button (click)="exportExcel()"
-                    class="bg-green-600 text-white text-sm px-8 py-2 rounded-xl hover:bg-green-700 transition mr-3">
-                    Exportar Excel
+                <button (click)="downloadCsv()"
+                    class="bg-blue-600 text-white text-sm px-8 py-2 rounded-xl hover:bg-blue-700 transition mr-3">
+                    Descargar CSV
                 </button>
-                <button (click)="exportPDF()"
-                    class="bg-red-600 text-white text-sm px-8 py-2 rounded-xl hover:bg-red-700 transition mr-3">
-                    Exportar PDF
+                <button (click)="exportFullReportPDF()"
+                    class="bg-purple-600 text-white text-sm px-8 py-2 rounded-xl hover:bg-purple-700 transition mr-3">
+                    Reporte completo (PDF)
                 </button>
             </div>
         </div>
     </div>
 
+    <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl shadow-md p-4">
+            <h3 class="text-sm font-semibold mb-3">Totales por estado</h3>
+            <div class="flex justify-end mb-2">
+                <button (click)="downloadChartPng('chart-invoices-status','facturas_estado.png')" class="text-xs px-3 py-1 rounded bg-blue-600 text-white">Descargar PNG</button>
+            </div>
+            <div id="chart-invoices-status">
+                <apx-chart [series]="statusSeries" [labels]="statusLabels" [chart]="statusChart"></apx-chart>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-4">
+            <h3 class="text-sm font-semibold mb-3">Totales por mes</h3>
+            <div class="flex justify-end mb-2">
+                <button (click)="downloadChartPng('chart-invoices-month','facturas_mes.png')" class="text-xs px-3 py-1 rounded bg-blue-600 text-white">Descargar PNG</button>
+            </div>
+            <div id="chart-invoices-month">
+                <apx-chart [series]="monthSeries" [xaxis]="monthXAxis" [chart]="monthChart"></apx-chart>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-4">
+            <h3 class="text-sm font-semibold mb-3">Top clientes</h3>
+            <div class="flex justify-end mb-2">
+                <button (click)="downloadChartPng('chart-invoices-topclients','top_clientes.png')" class="text-xs px-3 py-1 rounded bg-blue-600 text-white">Descargar PNG</button>
+            </div>
+            <div id="chart-invoices-topclients">
+                <apx-chart [series]="topSeries" [xaxis]="topXAxis" [chart]="topChart" [plotOptions]="topPlotOptions"></apx-chart>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 flex justify-end">
+        <button (click)="exportChartsToPDF()" class="text-xs px-4 py-2 rounded bg-red-600 text-white">Exportar gráficos a PDF</button>
+    </div>
+
     <!-- 🔹 Tabla -->
     <div class="mt-6 bg-white rounded-2xl shadow overflow-hidden">
-        <div
-            class="overflow-x-auto overflow-y-auto max-h-[325px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-            <table class="min-w-full text-sm text-left">
-                <thead class="bg-gray-100 text-gray-800 text-left sticky top-0 z-10">
-                    <tr>
-                        <th class="px-4 py-3">Fecha</th>
-                        <th class="px-4 py-3">Tipo de documento</th>
-                        <th class="px-4 py-3">Factura / Número</th>
-                        <th class="px-4 py-3">Cliente</th>
-                        <th class="px-4 py-3">NIT</th>
-                        <th class="px-4 py-3">Responsable</th>
-                        <th class="px-4 py-3">Valor total</th>
-                        <th class="px-4 py-3">Estado</th>
-                    </tr>
-                </thead>
-                <tbody class="text-black">
-                    <tr *ngFor="let invoice of filteredInvoices" class="border-t border-gray-200">
-                        <td class="px-4 py-2">{{ invoice.date }}</td>
-                        <td class="px-4 py-2">{{ invoice.documentType }}</td>
-                        <td class="px-4 py-2">{{ invoice.invoiceNumber }}</td>
-                        <td class="px-4 py-2">{{ invoice.client }}</td>
-                        <td class="px-4 py-2">{{ invoice.nit }}</td>
-                        <td class="px-4 py-2">{{ invoice.responsible }}</td>
-                        <td class="px-4 py-2">{{ invoice.totalValue }}</td>
-                        <td class="px-4 py-2" [ngClass]="{
-                        'text-green-600': invoice.status === 'Aceptada',
-                        'text-yellow-600': invoice.status === 'Pendiente' || invoice.status === 'Emitida',
-                        'text-red-600': invoice.status === 'Rechazada'
-            }">
-                            {{ invoice.status }}
-                        </td>
-                    </tr>
-                </tbody>
+        <div class="p-2">
+            <table mat-table [dataSource]="dataSource" class="w-full">
+                <ng-container matColumnDef="fecha">
+                    <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                    <td mat-cell *matCellDef="let i">{{ i.fecha }}</td>
+                </ng-container>
+                <ng-container matColumnDef="tipo">
+                    <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                    <td mat-cell *matCellDef="let i">Factura</td>
+                </ng-container>
+                <ng-container matColumnDef="numero">
+                    <th mat-header-cell *matHeaderCellDef>Número</th>
+                    <td mat-cell *matCellDef="let i">{{ i.numero }}</td>
+                </ng-container>
+                <ng-container matColumnDef="cliente">
+                    <th mat-header-cell *matHeaderCellDef>Cliente</th>
+                    <td mat-cell *matCellDef="let i">{{ i.cliente }}</td>
+                </ng-container>
+                <ng-container matColumnDef="nit">
+                    <th mat-header-cell *matHeaderCellDef>NIT</th>
+                    <td mat-cell *matCellDef="let i">&nbsp;</td>
+                </ng-container>
+                <ng-container matColumnDef="responsable">
+                    <th mat-header-cell *matHeaderCellDef>Responsable</th>
+                    <td mat-cell *matCellDef="let i">&nbsp;</td>
+                </ng-container>
+                <ng-container matColumnDef="total">
+                    <th mat-header-cell *matHeaderCellDef>Total</th>
+                    <td mat-cell *matCellDef="let i">{{ i.total | number:'1.0-0' }}</td>
+                </ng-container>
+                <ng-container matColumnDef="estado">
+                    <th mat-header-cell *matHeaderCellDef>Estado</th>
+                    <td mat-cell *matCellDef="let i">{{ i.estado }}</td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
+            <mat-paginator [pageSize]="10" [pageSizeOptions]="[10,20,50]"></mat-paginator>
         </div>
     </div>
 </main>

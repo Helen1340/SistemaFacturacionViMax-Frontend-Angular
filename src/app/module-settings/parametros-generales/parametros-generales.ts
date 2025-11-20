@@ -187,7 +187,7 @@ onSubmit() {
       this.showNotification('Registration completed successfully', 'success');
       console.log('✅ Backend response:', res);
       this.isLoading = false;
-      setTimeout(() => this.router.navigate(['/facturas-notas']), 1500);
+      setTimeout(() => this.router.navigate(['/configuracion']), 1500);
     },
     error: (err) => {
       console.error('❌ Error completing registration:', err.error);

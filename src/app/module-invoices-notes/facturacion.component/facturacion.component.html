@@ -39,13 +39,13 @@
         </div>
 
         <!-- Filtros agrupados -->
-        <div class="flex items-center space-x-2 w-full md:w-auto">
+        <div class="flex flex-col sm:flex-row items-center sm:space-x-2 space-y-2 sm:space-y-0 w-full md:w-auto">
             <label class="text-base font-semibold text-gray-900 whitespace-nowrap">Filtrar</label>
             
             <!-- Estado interno -->
             <div class="relative">
                 <select [(ngModel)]="filter.internal_status" (change)="applyFilters()"
-                    class="appearance-none border border-gray-300 rounded-2xl px-4 py-2 text-gray-700 pr-10 w-40 focus:ring-2 focus:ring-cyan-300">
+                    class="appearance-none border border-gray-300 rounded-2xl px-4 py-2 text-gray-700 pr-10 w-full sm:w-40 focus:ring-2 focus:ring-cyan-300">
                     <option value="">Estado Interno</option>
                     <option value="draft">Borrador</option>
                     <option value="issued">Emitido</option>
@@ -60,7 +60,7 @@
             <!-- Estado DIAN -->
             <div class="relative">
                 <select [(ngModel)]="filter.dian_status" (change)="applyFilters()"
-                    class="appearance-none border border-gray-300 rounded-2xl px-4 py-2 text-gray-700 pr-10 w-40 focus:ring-2 focus:ring-cyan-300">
+                    class="appearance-none border border-gray-300 rounded-2xl px-4 py-2 text-gray-700 pr-10 w-full sm:w-40 focus:ring-2 focus:ring-cyan-300">
                     <option value="">Estado DIAN</option>
                     <option value="pending">Pendiente</option>
                     <option value="accepted">Aceptado</option>
@@ -74,9 +74,9 @@
             </div>
 
             <!-- Fecha -->
-            <div>
+            <div class="w-full sm:w-auto">
                 <input type="date" [(ngModel)]="filter.date" (change)="applyFilters()"
-                    class="border border-gray-300 rounded-2xl px-4 py-2 text-gray-700 w-40 focus:ring-2 focus:ring-cyan-300" />
+                    class="border border-gray-300 rounded-2xl px-4 py-2 text-gray-700 w-full sm:w-40 focus:ring-2 focus:ring-cyan-300" />
             </div>
         </div>
     </div>
@@ -84,7 +84,7 @@
     <!-- TABLA -->
     <div class="bg-white rounded-2xl shadow overflow-hidden">
         <div class="overflow-x-auto overflow-y-auto max-h-[375px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-            <table class="w-full min-w-[800px] table-fixed text-xs sm:text-sm">
+            <table class="w-full min-w-[600px] table-fixed text-xs sm:text-sm">
                 <thead class="bg-gray-100 text-gray-800 text-left sticky top-0 z-10">
                     <tr>
                         <th class="px-4 py-3 font-semibold sm:w-16">#</th>

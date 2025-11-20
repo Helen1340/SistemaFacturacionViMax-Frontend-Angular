@@ -1,20 +1,42 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { ReportServices, Usuario } from '../services/report.service';
+import { NgApexchartsModule } from 'ng-apexcharts';
+import { ApexAxisChartSeries, ApexChart, ApexLegend, ApexPlotOptions, ApexTitleSubtitle, ApexXAxis } from 'ng-apexcharts';
+import { MatTableModule } from '@angular/material/table';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-reporte-usuarios',
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    NgApexchartsModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+  ],
   templateUrl: './reporte-usuarios.html',
   styleUrl: './reporte-usuarios.css',
 })
 export class ReporteUsuarios implements OnInit {
   usuarios: Usuario[] = [];
-  filteredUsers: Usuario[] = [];
+  dataSource = new MatTableDataSource<Usuario>([]);
+  displayedColumns: string[] = ['nombre','correo','documento','rol','estado','fecha'];
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   // Filtros
   searchQuery: string = '';
@@ -31,66 +53,35 @@ export class ReporteUsuarios implements OnInit {
   }
 
   getUsuarios(): void {
-    this.reportService.getUsuarios().subscribe({
-      next: (res) => {
-        this.usuarios = res;
-        this.filteredUsers = [...this.usuarios];
+    const params: any = {
+      usuario: this.searchQuery || undefined,
+      estado: this.status || undefined,
+      rol: this.role || undefined,
+      fecha_inicio: this.startDate || undefined,
+      fecha_fin: this.endDate || undefined,
+    };
+    this.reportService.getUsuarios(params).subscribe({
+      next: (res: any[]) => {
+        this.usuarios = res.map((item: any) => ({
+          id: item.id,
+          nombre: item.first_name || item.nombre || '',
+          correo: item.email || item.correo || '',
+          documento: item.document_number || item.documento || '',
+          estado: item.status || item.estado || '',
+          fecha_creacion: item.created_at || null,
+          ultimo_acceso: item.last_access || item.ultimo_acceso || null,
+          rol: item.role?.role_name || item.rol || '',
+        }));
+        this.dataSource.data = [...this.usuarios];
+        if (this.paginator) this.dataSource.paginator = this.paginator;
+        this.renderUserCharts();
       },
-      error: (err) => {
-        console.error('Error cargando usuarios', err);
-      },
+      error: () => {},
     });
   }
 
   applyFilters(): void {
-    this.filteredUsers = this.usuarios.filter((user) => {
-      // Búsqueda por nombre o documento
-      const matchesSearch =
-        !this.searchQuery ||
-        user.nombre?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        user.documento?.toString().includes(this.searchQuery);
-
-      // Búsqueda por correo
-      const matchesEmail =
-        !this.email ||
-        user.correo?.toLowerCase().includes(this.email.toLowerCase());
-
-      // Filtro por rol
-      const matchesRole =
-        !this.role || user.rol?.toLowerCase() === this.role.toLowerCase();
-
-      // Filtro por estado
-      const matchesStatus =
-        !this.status ||
-        user.estado?.toLowerCase() === this.status.toLowerCase();
-
-      // Manejo seguro de fechas
-      let matchesDate = true;
-
-      if (this.startDate) {
-        const inicio = new Date(this.startDate);
-        matchesDate =
-          matchesDate &&
-          !!user.fecha_creacion &&
-          new Date(user.fecha_creacion) >= inicio;
-      }
-
-      if (this.endDate) {
-        const fin = new Date(this.endDate);
-        matchesDate =
-          matchesDate &&
-          !!user.fecha_creacion &&
-          new Date(user.fecha_creacion) <= fin;
-      }
-
-      return (
-        matchesSearch &&
-        matchesEmail &&
-        matchesRole &&
-        matchesStatus &&
-        matchesDate
-      );
-    });
+    this.getUsuarios();
   }
 
   clearFilters(): void {
@@ -100,7 +91,7 @@ export class ReporteUsuarios implements OnInit {
     this.email = '';
     this.role = '';
     this.status = '';
-    this.filteredUsers = [...this.usuarios];
+    this.getUsuarios();
   }
 
   getStatusColor(status: string): string {
@@ -118,7 +109,7 @@ export class ReporteUsuarios implements OnInit {
 
   // Exportar toda la tabla filtrada
   exportToExcel(): void {
-    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.filteredUsers);
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.dataSource.data);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Usuarios');
     XLSX.writeFile(wb, 'usuarios.xlsx');
@@ -130,7 +121,7 @@ export class ReporteUsuarios implements OnInit {
       head: [
         ['Nombre', 'Correo', 'Documento', 'Rol', 'Estado', 'Fecha creación'],
       ],
-      body: this.filteredUsers.map((u) => [
+      body: this.dataSource.data.map((u) => [
         u.nombre,
         u.correo,
         u.documento,
@@ -164,6 +155,62 @@ export class ReporteUsuarios implements OnInit {
       });
       doc.save(`usuario_${user.id}.pdf`);
     }
+  }
+
+  downloadCsv(): void {
+    const params: any = {
+      usuario: this.searchQuery || undefined,
+      estado: this.status || undefined,
+      rol: this.role || undefined,
+      fecha_inicio: this.startDate || undefined,
+      fecha_fin: this.endDate || undefined,
+    };
+    this.reportService.downloadUsuariosCsv(params).subscribe((blob) => {
+      saveAs(blob, `usuarios_${new Date().toISOString().slice(0, 10)}.csv`);
+    });
+  }
+
+  roleSeries: ApexAxisChartSeries = [{ name: 'Usuarios', data: [] }];
+  roleChart: ApexChart = { type: 'bar', height: 280 };
+  roleXAxis: ApexXAxis = { categories: [] };
+  rolePlotOptions: ApexPlotOptions = { bar: { horizontal: false } };
+
+  private renderUserCharts(): void {
+    const byRole: Record<string, number> = {};
+    (this.dataSource.data || []).forEach((u) => {
+      const r = (u.rol || '').toLowerCase();
+      byRole[r] = (byRole[r] || 0) + 1;
+    });
+    this.roleXAxis = { categories: Object.keys(byRole) };
+    this.roleSeries = [{ name: 'Usuarios', data: Object.values(byRole) }];
+  }
+
+  downloadChartPng(id: string, filename: string): void {
+    const el = document.getElementById(id) as HTMLElement;
+    if (!el) return;
+    const canvas = el.querySelector('canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    const url = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+  }
+
+  exportChartsToPDF(): void {
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const addCanvas = (id: string, y: number, title: string) => {
+      const el = document.getElementById(id) as HTMLElement;
+      const canvas = el?.querySelector('canvas') as HTMLCanvasElement;
+      if (!canvas) return y;
+      const img = canvas.toDataURL('image/png', 1.0);
+      doc.text(title, 10, y);
+      doc.addImage(img, 'PNG', 10, y + 5, 190, 90);
+      return y + 100;
+    };
+    let y = 10;
+    y = addCanvas('chart-users-role', y, 'Usuarios por rol');
+    doc.save(`graficos_usuarios_${new Date().toISOString().slice(0,10)}.pdf`);
   }
 
   // Menú acciones

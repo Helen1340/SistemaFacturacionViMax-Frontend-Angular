@@ -2,21 +2,22 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResolutionService } from '../services/resolution.Service';
 
 // Interfaz para estructurar los datos de la resolución
 interface ResolutionData {
   id: number | null;
   prefix: string;
-  dianResolutionNumber: string;
-  documentType: string;
-  technicalKey: string;
-  resolutionDate: string;
-  validityStart: string;
-  validityEnd: string;
-  rangeStart: number;
-  rangeEnd: number;
-  isPrincipal: boolean;
-  observations?: string;
+  resolution_number: string;
+  document_type: string;
+  resolution_date: string;
+  validity_start_date: string;
+  validity_end_date: string;
+  start_number: number;
+  end_number: number;
+  current_status: string;
+  environment: string;
+  description?: string;
   resolutionFile?: File | null;
 }
 
@@ -36,38 +37,23 @@ export class EditarResolucion implements OnInit {
   resolutionData: ResolutionData = {
     id: null,
     prefix: '',
-    dianResolutionNumber: '',
-    documentType: '',
-    technicalKey: '',
-    resolutionDate: '',
-    validityStart: '',
-    validityEnd: '',
-    rangeStart: 0,
-    rangeEnd: 0,
-    isPrincipal: false,
-    observations: '',
+    resolution_number: '',
+    document_type: '',
+    resolution_date: '',
+    validity_start_date: '',
+    validity_end_date: '',
+    start_number: 0,
+    end_number: 0,
+    current_status: 'Activo',
+    environment: 'Pruebas',
+    description: '',
     resolutionFile: null
   };
 
-  // 🧪 Datos de ejemplo simulados para la carga (reemplazar con un servicio real)
-  private mockResolutions: ResolutionData[] = [
-    {
-      id: 1, prefix: 'FE', dianResolutionNumber: '187600019283', technicalKey: 'A1B2C3D4E5F6G7H8',
-      documentType: 'Factura_EL', resolutionDate: '2025-01-01', validityStart: '2025-01-01',
-      validityEnd: '2025-12-31', rangeStart: 1001, rangeEnd: 2000, isPrincipal: true,
-      observations: 'Resolución de prueba FE.', resolutionFile: null
-    },
-    {
-      id: 2, prefix: 'NC', dianResolutionNumber: '2001000101', technicalKey: 'H9G8F7E6D5C4B3A2',
-      documentType: 'Nota_Credito', resolutionDate: '2024-01-01', validityStart: '2024-01-01',
-      validityEnd: '2024-12-31', rangeStart: 1, rangeEnd: 100, isPrincipal: false,
-      observations: 'Resolución de prueba NC.', resolutionFile: null
-    }
-  ];
-
   constructor(
     private router: Router,
-    private route: ActivatedRoute // 🧭 Se usa para leer el ID de la URL
+    private route: ActivatedRoute,
+    private resolutionService: ResolutionService
   ) {}
 
   ngOnInit() {
@@ -94,18 +80,38 @@ export class EditarResolucion implements OnInit {
    */
   loadResolutionData(id: number) {
     this.isLoading = true;
-    
-    // Simula una llamada asíncrona a un servicio (API)
-    setTimeout(() => { 
-      const data = this.mockResolutions.find(r => r.id === id);
-      if (data) {
-        // Asigna los datos cargados al objeto de binding, usando una copia para no modificar el mock
-        this.resolutionData = { ...data, id: id };
-      } else {
-        console.warn(`Resolución con ID ${id} no encontrada. Inicializando formulario vacío.`);
+    this.resolutionService.getById(id).subscribe({
+      next: (data) => {
+        const r = data?.data ?? data;
+        if (!r) {
+          this.isLoading = false;
+          return;
+        }
+        const toDate = (val: string | null | undefined) => {
+          if (!val) return '';
+          return String(val).slice(0, 10);
+        };
+        this.resolutionData = {
+          id: r.id ?? id,
+          prefix: r.prefix ?? '',
+          resolution_number: r.resolution_number ?? '',
+          document_type: r.document_type ?? '',
+          resolution_date: toDate(r.resolution_date),
+          validity_start_date: toDate(r.validity_start_date),
+          validity_end_date: toDate(r.validity_end_date),
+          start_number: Number(r.start_number ?? 0),
+          end_number: Number(r.end_number ?? 0),
+          current_status: r.current_status ?? 'Activo',
+          environment: r.environment === 'Producción' ? 'Produccion' : (r.environment ?? 'Pruebas'),
+          description: r.description ?? '',
+          resolutionFile: null
+        };
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
       }
-      this.isLoading = false;
-    }, 500); 
+    });
   }
 
   /**
@@ -121,24 +127,63 @@ export class EditarResolucion implements OnInit {
    * Función que se ejecuta al enviar el formulario para actualizar la resolución.
    */
   updateResolution() {
-    if (this.isLoading) return; // Evita doble submit
-    
+    if (this.isLoading) return;
+    if (!this.resolutionId) return;
     this.isLoading = true;
-    console.log('Datos a actualizar:', this.resolutionData);
-    
-    // Simulación de envío de datos a la API
-    setTimeout(() => {
-      this.isLoading = false;
-      alert(`¡Resolución ${this.resolutionData.id} actualizada exitosamente!`);
-      // Redireccionar a la lista principal
-      this.router.navigate(['/configuracion/resoluciones']); 
-    }, 1500);
+    const hasFile = !!this.resolutionData.resolutionFile;
+    let req$;
+    if (hasFile) {
+      const formData = new FormData();
+      Object.entries({
+        prefix: this.resolutionData.prefix,
+        resolution_number: this.resolutionData.resolution_number,
+        document_type: this.resolutionData.document_type,
+        resolution_date: this.resolutionData.resolution_date,
+        validity_start_date: this.resolutionData.validity_start_date,
+        validity_end_date: this.resolutionData.validity_end_date,
+        start_number: this.resolutionData.start_number,
+        end_number: this.resolutionData.end_number,
+        current_status: this.resolutionData.current_status,
+        environment: this.resolutionData.environment,
+        description: this.resolutionData.description ?? ''
+      }).forEach(([k, v]) => {
+        if (v !== null && v !== undefined) formData.append(k, String(v));
+      });
+      formData.append('resolution_pdf_file', this.resolutionData.resolutionFile as File);
+      req$ = this.resolutionService.updateMultipart(this.resolutionId, formData);
+    } else {
+      const body = {
+        prefix: this.resolutionData.prefix,
+        resolution_number: this.resolutionData.resolution_number,
+        document_type: this.resolutionData.document_type,
+        resolution_date: this.resolutionData.resolution_date,
+        validity_start_date: this.resolutionData.validity_start_date,
+        validity_end_date: this.resolutionData.validity_end_date,
+        start_number: this.resolutionData.start_number,
+        end_number: this.resolutionData.end_number,
+        current_status: this.resolutionData.current_status,
+        environment: this.resolutionData.environment,
+        description: this.resolutionData.description ?? ''
+      };
+      req$ = this.resolutionService.updateJson(this.resolutionId, body);
+    }
+    req$.subscribe({
+      next: () => {
+        this.isLoading = false;
+        alert('Resolución actualizada exitosamente');
+        this.router.navigate(['/resolucion-facturas']);
+      },
+      error: () => {
+        this.isLoading = false;
+        alert('Error al actualizar la resolución');
+      }
+    });
   }
 
   /**
    * Cancela la edición y regresa a la lista.
    */
   cancel() {
-    this.router.navigate(['/configuracion/resoluciones']);
+    this.router.navigate(['/resolucion-facturas']);
   }
 }

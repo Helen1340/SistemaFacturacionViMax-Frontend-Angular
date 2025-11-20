@@ -1,21 +1,49 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
+export interface ElectronicDocument {
+  id: number;
+  electronic_invoice_id: number;
+  dian_numbering_id: number;
+  credit_debit_note_id?: number | null;
+  cufe: string;
+  cude: string;
+  xml_document: string;
+  dian_status: string;
+  validation_date?: string | null;
+  digital_signature?: string | null;
+  document_hash?: string | null;
+  description?: string | null;
+  environment: 'Pruebas' | 'Producción' | 'Produccion';
+  document_type: string;
+  qr_code?: string | null;
+  cdr?: string | null;
+  emission_mode: 'normal' | 'en contingencia';
+  created_at: string;
+  updated_at: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentsService {
-  private apiUrl = 'http://localhost/api'; // Reemplaza esto con la URL de tu API en Laravel
+  private apiUrl = 'http://localhost/api';
 
   constructor(private http: HttpClient) { }
+
+  private getAuthHeaders(): { headers: HttpHeaders } {
+    const raw = localStorage.getItem('token') || localStorage.getItem('access_token') || '';
+    const token = raw.startsWith('Bearer ') ? raw : `Bearer ${raw}`;
+    return { headers: new HttpHeaders({ Authorization: token }) };
+  }
 
   /**
    * Obtiene la lista de documentos recibidos para la empresa actual.
    * @returns Un Observable con el array de documentos.
    */
-  getReceivedDocuments(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/electronicDocuments`);
+  getReceivedDocuments(): Observable<ElectronicDocument[]> {
+    return this.http.get<ElectronicDocument[]>(`${this.apiUrl}/electronicDocuments`, this.getAuthHeaders());
   }
 
   /**
@@ -24,17 +52,15 @@ export class DocumentsService {
    * @param status El nuevo estado del documento ('Aceptado', 'Rechazado', etc.).
    * @returns Un Observable con la respuesta de la API.
    */
-  updateDocumentStatus(id: number, status: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/received-documents/${id}/status`, { status });
-  }
+  // No hay endpoint de estado en el controlador compartido; mantenemos solo detalle
 
   /**
    * Obtiene la información detallada de un solo documento.
    * @param id El ID del documento a obtener.
    * @returns Un Observable con los detalles del documento.
    */
-  getDocumentDetails(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/received-documents/${id}`);
+  getDocumentDetails(id: number): Observable<ElectronicDocument> {
+    return this.http.get<ElectronicDocument>(`${this.apiUrl}/electronicDocuments/${id}`, this.getAuthHeaders());
   }
 
 }

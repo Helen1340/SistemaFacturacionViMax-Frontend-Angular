@@ -43,4 +43,8 @@ export class Configuracion {
   navigateVideos() {
     this.router.navigate(['https://youtu.be/FsWTeKsdgzE']);
   }
+
+  navigateFacturacion() {
+    this.router.navigate(['/facturacion']);
+  }
 }

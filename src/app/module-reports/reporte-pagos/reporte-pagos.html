@@ -73,6 +73,10 @@
                 </button>
             </div>
             <div>
+                <button (click)="downloadCsv()"
+                    class="bg-blue-600 text-white text-sm px-6 py-2 rounded-xl hover:bg-blue-700 transition mr-3">
+                    Descargar CSV
+                </button>
                 <button (click)="exportToExcel()"
                     class="bg-green-600 text-white text-sm px-6 py-2 rounded-xl hover:bg-green-700 transition mr-3">
                     Exportar Excel
@@ -86,10 +90,21 @@
         </div>
     </div>
 
+    <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-xl shadow-md p-4">
+            <h3 class="text-sm font-semibold mb-3">Totales por mes</h3>
+            <canvas id="chart-payments-month"></canvas>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-4">
+            <h3 class="text-sm font-semibold mb-3">Totales por método</h3>
+            <canvas id="chart-payments-method"></canvas>
+        </div>
+    </div>
+
     <div class="mt-6 bg-white rounded-xl shadow-md overflow-x-auto">
         <div
             class="overflow-x-auto overflow-y-auto max-h-[325px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-            <table class="min-w-full text-sm text-left">
+            <table class="w-full min-w-[600px] table-fixed text-xs sm:text-sm text-left">
                 <thead class="bg-gray-100 text-gray-800 text-left sticky top-0 z-10">
                     <tr>
                         <th class="px-4 py-2">Fecha</th>

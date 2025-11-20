@@ -55,11 +55,6 @@ export class NuevaResolucion implements OnInit {
   constructor(private resolutionService: ResolutionService) {}
 
   ngOnInit(): void {
-    // 2. SIMULACIÓN DE CARGA DEL ID DE LA COMPAÑÍA (CÓDIGO CLAVE)
-    // 👉 REEMPLAZA '42' por la llamada a tu servicio de autenticación real.
-    console.log("Simulando carga de Company ID...");
-    this.companyId = 42; 
-
     this.calculateAvailable();
   }
 
@@ -89,45 +84,27 @@ export class NuevaResolucion implements OnInit {
   // GUARDAR RESOLUCIÓN (LÓGICA ACTUALIZADA)
   // ==============================
   saveResolution(): void {
-    if (this.isSaving || this.companyId === null) {
-      console.warn("No se puede guardar: Guardando en progreso o Company ID no cargado.");
-      return;
-    }
+    if (this.isSaving) return;
 
     this.isSaving = true;
     
-    const formData = new FormData();
-
-    // 1. ADJUNTAR company_id (CLAVE: Forzar a STRING)
-    if (this.companyId !== null) {
-      // ✅ Solución: Enviamos company_id como string, lo que la API espera en FormData.
-      formData.append('company_id', String(this.companyId));
-    } else {
-        // En un caso real, esto no debería pasar si la validación inicial funciona
-        console.error('El Company ID es nulo, no se puede enviar la petición.');
-        this.isSaving = false;
-        return;
-    }
-    
-    // 2. Iterar sobre resolutionData para el resto de campos 
-    Object.keys(this.resolutionData).forEach(key => {
-        // Excluimos company_id de la iteración si ya lo manejamos arriba o si es la propiedad opcional
-        if (key === 'company_id') return; 
-
+    const hasFile = !!this.resolutionFile;
+    let request$;
+    if (hasFile) {
+      const formData = new FormData();
+      Object.keys(this.resolutionData).forEach(key => {
         const value = (this.resolutionData as any)[key];
-        
-        // Adjuntamos solo si el valor no es nulo o indefinido
         if (value !== null && value !== undefined) {
-           formData.append(key, String(value)); // ✅ Todos los valores en FormData deben ser strings
+          formData.append(key, String(value));
         }
-    });
-
-    // 3. Agregar el archivo PDF si existe
-    if (this.resolutionFile) {
-      formData.append('resolution_pdf_file', this.resolutionFile, this.resolutionFile.name);
+      });
+      formData.append('resolution_pdf_file', this.resolutionFile as File);
+      request$ = this.resolutionService.createResolution(formData);
+    } else {
+      request$ = this.resolutionService.createResolutionJson(this.resolutionData);
     }
-    
-    this.resolutionService.createResolution(formData).pipe(
+
+    request$.pipe(
       finalize(() => this.isSaving = false),
       catchError(err => {
         // El manejo de errores ahora está centralizado en el servicio,

@@ -137,7 +137,8 @@ export class InvoiceDetail implements OnInit, OnDestroy {
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone: 'America/Bogota'
     });
   }
 
@@ -145,7 +146,8 @@ export class InvoiceDetail implements OnInit, OnDestroy {
     return new Date(date).toLocaleDateString('es-CO', {
       year: 'numeric',
       month: '2-digit',
-      day: '2-digit'
+      day: '2-digit',
+      timeZone: 'America/Bogota'
     });
   }
 

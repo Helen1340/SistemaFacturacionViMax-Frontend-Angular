@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -11,6 +11,12 @@ export class ResolutionService {
   private apiUrl = 'http://localhost/api/dianNumberings'; 
 
   constructor(private http: HttpClient) {}
+
+  private getAuthHeaders(): { headers: HttpHeaders } {
+    const raw = localStorage.getItem('token') || localStorage.getItem('access_token') || '';
+    const token = raw.startsWith('Bearer ') ? raw : `Bearer ${raw}`;
+    return { headers: new HttpHeaders({ Authorization: token }) };
+  }
 
   // ==============================
   // MANEJO DE ERRORES CENTRALIZADO (ACTUALIZADO)
@@ -46,8 +52,10 @@ export class ResolutionService {
            errorMessage = `Error de validación (422): ${error.error.message || 'Verifica los campos enviados.'}`;
         }
       } else {
-         // Otros errores de HTTP (500, 404, etc.)
-         errorMessage = `Error del servidor (${error.status}): ${error.statusText || 'Error al comunicarse con la API.'}`;
+         const backendMessage = (error.error && (error.error.message || error.message)) || '';
+         errorMessage = backendMessage
+           ? `Error del servidor (${error.status}): ${backendMessage}`
+           : `Error del servidor (${error.status}): ${error.statusText || 'Error al comunicarse con la API.'}`;
       }
     }
 
@@ -55,16 +63,52 @@ export class ResolutionService {
     return throwError(() => new Error(errorMessage));
   }
 
-  // ==============================
-  // MÉTODO PARA CREAR RESOLUCIÓN
-  // ==============================
+  // Crear resolución - multipart
   createResolution(formData: FormData): Observable<any> {
-    // Nota: Cuando se envía FormData, NO es necesario establecer el Content-Type. 
-    // Angular y el navegador lo manejan automáticamente como 'multipart/form-data'.
-    return this.http.post(this.apiUrl, formData).pipe(
+    return this.http.post(this.apiUrl, formData, this.getAuthHeaders()).pipe(
       catchError(this.handleError.bind(this))
     );
   }
 
-  // Si tienes otros métodos, añádelos aquí
+  // Crear resolución - JSON
+  createResolutionJson(body: any): Observable<any> {
+    return this.http.post(this.apiUrl, body, this.getAuthHeaders()).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  // Listar
+  list(): Observable<any> {
+    return this.http.get(this.apiUrl, this.getAuthHeaders()).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  // Obtener por ID
+  getById(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${id}`, this.getAuthHeaders()).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  // Actualizar - multipart
+  updateMultipart(id: number, formData: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, formData, this.getAuthHeaders()).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  // Actualizar - JSON
+  updateJson(id: number, body: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, body, this.getAuthHeaders()).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  // Eliminar
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`, this.getAuthHeaders()).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
 }
