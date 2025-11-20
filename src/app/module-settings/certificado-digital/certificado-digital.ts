@@ -36,9 +36,10 @@ export class CertificadoDigital implements OnInit {
       start_date: ['', Validators.required],
       end_date: ['', Validators.required],
       serial_number: ['', Validators.required],
-      issuer: [''],
+      issuer: ['', Validators.maxLength(100)],
       signature_type: ['', Validators.required],
-      description: ['']
+      description: [''],
+      password: ['', Validators.maxLength(255)]
     });
   }
 
@@ -46,10 +47,7 @@ export class CertificadoDigital implements OnInit {
     this.initForm();
     this.getCompanyFromAuth();
     
-    // Si no hay company_id, intentar obtenerlo del token o mostrar mensaje
     if (!this.companyId || this.companyId === 0) {
-      console.error('❌ No se encontró company_id. Verifica que hayas iniciado sesión correctamente.');
-      // Intentar obtener del token si existe
       this.getCompanyFromToken();
     }
     
@@ -98,27 +96,20 @@ export class CertificadoDigital implements OnInit {
    * Intentar obtener company_id del token JWT
    */
   getCompanyFromToken(): void {
-    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-    
-    if (!token) {
-      console.warn('⚠️ No hay token en localStorage');
+    const raw = localStorage.getItem('token') || localStorage.getItem('access_token');
+    if (!raw) return;
+    const t = raw.startsWith('Bearer ') ? raw.slice(7) : raw;
+    const parts = t.split('.');
+    if (parts.length !== 3) return;
+    let b = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    b += '==='.slice((b.length + 3) % 4);
+    let payload: any = null;
+    try {
+      payload = JSON.parse(atob(b));
+    } catch {
       return;
     }
-
-    try {
-      // Decodificar el token JWT (segunda parte)
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log('🔐 Payload del token:', payload);
-      
-      // Intentar obtener company_id del token
-      this.companyId = payload.company_id || payload.empresa_id || payload.companyId || 0;
-      
-      if (this.companyId > 0) {
-        console.log('✅ Company ID obtenido del token:', this.companyId);
-      }
-    } catch (error) {
-      console.error('❌ Error al decodificar token:', error);
-    }
+    this.companyId = payload.company_id || payload.empresa_id || payload.companyId || 0;
   }
 
   /**
@@ -131,9 +122,10 @@ export class CertificadoDigital implements OnInit {
       start_date: ['', Validators.required],
       end_date: ['', Validators.required],
       serial_number: ['', Validators.required],
-      issuer: [''],
+      issuer: ['', Validators.maxLength(100)],
       signature_type: ['', Validators.required],
-      description: ['']
+      description: [''],
+      password: ['', Validators.maxLength(255)]
     });
   }
 
@@ -219,12 +211,8 @@ export class CertificadoDigital implements OnInit {
       return;
     }
 
-    // Obtener company_id nuevamente por si acaso
-    this.getCompanyFromAuth();
-
-    if (!this.companyId || this.companyId === 0) {
-      alert('No se ha identificado la empresa. Por favor, inicie sesión nuevamente.');
-      console.error('❌ Company ID no válido:', this.companyId);
+    if (this.isDateRangeInvalid()) {
+      alert('La fecha de vencimiento debe ser posterior a la fecha de emisión');
       return;
     }
 
@@ -233,7 +221,6 @@ export class CertificadoDigital implements OnInit {
     const formValue = this.certificateForm.value;
 
     const payload: any = {
-      company_id: this.companyId,
       signature_type: formValue.signature_type,
       certificate_name: formValue.certificate_name,
       certificate_type: formValue.certificate_type,
@@ -242,8 +229,8 @@ export class CertificadoDigital implements OnInit {
       description: formValue.description || '',
       start_date: formValue.start_date,
       end_date: formValue.end_date,
-      archivo_certificado: this.selectedFile,
-      status: 'Vigente'
+      password: formValue.password || '',
+      archivo_certificado: this.selectedFile
     };
 
     console.log('📤 Enviando payload:', payload);
@@ -277,16 +264,12 @@ export class CertificadoDigital implements OnInit {
       return;
     }
 
-    if (!this.editingCertificate || !this.editingCertificate.id) {
+    if (this.isDateRangeInvalid()) {
+      alert('La fecha de vencimiento debe ser posterior a la fecha de emisión');
       return;
     }
 
-    // Obtener company_id nuevamente por si acaso
-    this.getCompanyFromAuth();
-
-    if (!this.companyId || this.companyId === 0) {
-      alert('No se ha identificado la empresa. Por favor, inicie sesión nuevamente.');
-      console.error('❌ Company ID no válido:', this.companyId);
+    if (!this.editingCertificate || !this.editingCertificate.id) {
       return;
     }
 
@@ -295,7 +278,6 @@ export class CertificadoDigital implements OnInit {
     const formValue = this.certificateForm.value;
 
     const payload: any = {
-      company_id: this.companyId,
       signature_type: formValue.signature_type,
       certificate_name: formValue.certificate_name,
       certificate_type: formValue.certificate_type,
@@ -303,7 +285,9 @@ export class CertificadoDigital implements OnInit {
       issuer: formValue.issuer || '',
       description: formValue.description || '',
       start_date: formValue.start_date,
-      end_date: formValue.end_date
+      end_date: formValue.end_date,
+      password: formValue.password || '',
+      company_id: this.companyId
     };
 
     if (this.selectedFile) {
@@ -403,4 +387,13 @@ export class CertificadoDigital implements OnInit {
     this.fileSize = '';
     this.submitAttempted = false;
   }
+
+  isDateRangeInvalid(): boolean {
+    const s = this.certificateForm.get('start_date')?.value;
+    const e = this.certificateForm.get('end_date')?.value;
+    if (!s || !e) return false;
+    return new Date(e) < new Date(s);
+  }
+
+  
 }

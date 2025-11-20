@@ -18,7 +18,7 @@
                         <label class="block text-base font-medium mb-1">Prefijo <span class="text-red-500">*</span></label>
                         <input type="text" name="prefix" [(ngModel)]="resolutionData.prefix" 
                             #prefixInput="ngModel"
-                            class="w-full border border-gray-300 rounded-xl px-4 py-3"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3" maxlength="10"
                             placeholder="Prefijo" required />
                         <div *ngIf="prefixInput.invalid && (prefixInput.dirty || prefixInput.touched)" class="text-red-500 text-sm mt-1">
                             El prefijo es obligatorio.
@@ -27,7 +27,7 @@
 
                     <div>
                         <label class="block text-base font-medium mb-1">Número de resolución DIAN <span class="text-red-500">*</span></label>
-                        <input type="text" name="resolution_number" [(ngModel)]="resolutionData.resolution_number" class="w-full border border-gray-300 rounded-xl px-4 py-3"
+                        <input type="text" name="resolution_number" [(ngModel)]="resolutionData.resolution_number" class="w-full border border-gray-300 rounded-xl px-4 py-3" maxlength="50"
                             placeholder="Número de resolución" required />
                     </div>
 
@@ -41,9 +41,9 @@
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium mb-1">Código tipo documento <span class="text-red-500">*</span></label>
-                        <input type="text" name="document_type_code" [(ngModel)]="resolutionData.document_type_code" class="w-full border border-gray-300 rounded-xl px-4 py-3"
-                            placeholder="Código" required />
+                        <label class="block text-base font-medium mb-1">Código tipo documento</label>
+                        <input type="text" name="document_type_code" [(ngModel)]="resolutionData.document_type_code" class="w-full border border-gray-300 rounded-xl px-4 py-3" maxlength="10"
+                            placeholder="Código" />
                     </div>
 
                     <div>
@@ -111,7 +111,7 @@
                     <div class="md:col-span-2">
                         <label class="block text-base font-medium mb-1">Observaciones</label>
                         <textarea name="description" [(ngModel)]="resolutionData.description"
-                            class="w-full border border-gray-300 rounded-xl px-4 py-3 min-h-[100px]"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3 min-h-[100px]" maxlength="255"
                             placeholder="Observaciones"></textarea>
                     </div>
 

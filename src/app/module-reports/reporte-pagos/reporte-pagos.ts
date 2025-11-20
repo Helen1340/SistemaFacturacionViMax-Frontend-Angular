@@ -6,6 +6,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { Chart, registerables } from 'chart.js';
 
 interface Payment {
   date: string;
@@ -49,58 +50,14 @@ export class ReportePagos implements OnInit {
   constructor(private reportService: ReportServices) {}
 
   ngOnInit(): void {
-    this.reportService.getPayments().subscribe({
-      next: (data) => {
-        this.payments = data.map((item: any) => ({
-          date: item.fecha_pago,
-          client: item.cliente_nombre,
-          nit: item.cliente_nit,
-          invoiceNumber: item.numero_factura,
-          value: item.valor_pagado,
-          method: item.payment_method?.nombre || '',
-          status: item.electronic_invoice?.estado_interno || '',
-          responsible: item.electronic_invoice?.user?.nombre || '',
-        }));
-        this.filteredPayments = [...this.payments];
-      },
-      error: (err) => console.error('Error cargando pagos:', err),
-    });
+    Chart.register(...registerables);
+    this.loadPayments();
+    this.loadPaymentSummary();
   }
 
   applyFilters(): void {
-    this.filteredPayments = this.payments.filter((p) => {
-      const matchesInvoice =
-        !this.invoiceNumber ||
-        p.invoiceNumber.toLowerCase() === this.invoiceNumber.toLowerCase();
-
-      const matchesClient =
-        !this.clientSearch ||
-        p.client.toLowerCase().includes(this.clientSearch.toLowerCase()) ||
-        p.nit.includes(this.clientSearch);
-
-      const matchesMethod =
-        this.paymentMethod === 'Todos' ||
-        p.method.toLowerCase() === this.paymentMethod.toLowerCase();
-
-      const matchesAssociated =
-        !this.associatedInvoice ||
-        p.invoiceNumber.toLowerCase() === this.associatedInvoice.toLowerCase();
-
-      const matchesStartDate =
-        !this.startDate || new Date(p.date) >= new Date(this.startDate);
-
-      const matchesEndDate =
-        !this.endDate || new Date(p.date) <= new Date(this.endDate);
-
-      return (
-        matchesInvoice &&
-        matchesClient &&
-        matchesMethod &&
-        matchesAssociated &&
-        matchesStartDate &&
-        matchesEndDate
-      );
-    });
+    this.loadPayments();
+    this.loadPaymentSummary();
   }
 
   clearFilters(): void {
@@ -110,7 +67,8 @@ export class ReportePagos implements OnInit {
     this.clientSearch = '';
     this.paymentMethod = 'Todos';
     this.associatedInvoice = '';
-    this.filteredPayments = [...this.payments];
+    this.loadPayments();
+    this.loadPaymentSummary();
   }
 
   exportToExcel(): void {
@@ -162,5 +120,82 @@ export class ReportePagos implements OnInit {
       default:
         return 'text-gray-600';
     }
+  }
+
+  downloadCsv(): void {
+    const params: any = {
+      cliente: this.clientSearch || undefined,
+      desde: this.startDate || undefined,
+      hasta: this.endDate || undefined,
+    };
+    this.reportService.downloadPaymentsCsv(params).subscribe((blob) => {
+      saveAs(blob, `pagos_${new Date().toISOString().slice(0, 10)}.csv`);
+    });
+  }
+
+  private loadPayments(): void {
+    const params: any = {
+      cliente: this.clientSearch || undefined,
+      desde: this.startDate || undefined,
+      hasta: this.endDate || undefined,
+    };
+    this.reportService.getPayments(params).subscribe({
+      next: (data) => {
+        this.payments = data.map((item: any) => ({
+          date: item.payment_date || item.fecha_pago || '',
+          client: item.buyer?.first_name || item.cliente_nombre || '',
+          nit: item.buyer?.document_number || item.cliente_nit || '',
+          invoiceNumber: item.invoice_number || item.numero_factura || '',
+          value: item.amount_paid || item.valor_pagado || '',
+          method: item.payment_method?.name || item.payment_method?.nombre || '',
+          status: item.internal_status || item.electronic_invoice?.estado_interno || '',
+          responsible: item.user?.first_name || item.electronic_invoice?.user?.nombre || '',
+        }));
+        this.filteredPayments = [...this.payments];
+      },
+      error: () => {},
+    });
+  }
+
+  private loadPaymentSummary(): void {
+    const params: any = {
+      desde: this.startDate || undefined,
+      hasta: this.endDate || undefined,
+    };
+    this.reportService.getPaymentSummary(params).subscribe({
+      next: (summary) => {
+        const byMonth = summary?.totales_por_mes || {};
+        const byMethod = summary?.totales_por_metodo || {};
+        this.renderPaymentsMonthChart(byMonth);
+        this.renderPaymentsMethodChart(byMethod);
+      },
+      error: () => {},
+    });
+  }
+
+  private renderPaymentsMonthChart(byMonth: any): void {
+    const labels = Object.keys(byMonth);
+    const data = Object.values(byMonth).map((v: any) => Number(v));
+    const ctx = document.getElementById('chart-payments-month') as HTMLCanvasElement;
+    if (!ctx) return;
+    if ((this as any)._paymentsMonthChart) (this as any)._paymentsMonthChart.destroy();
+    (this as any)._paymentsMonthChart = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets: [{ label: 'Pagos por mes', data, borderColor: '#3b82f6', backgroundColor: '#93c5fd' }] },
+      options: { responsive: true, scales: { y: { beginAtZero: true } } },
+    });
+  }
+
+  private renderPaymentsMethodChart(byMethod: any): void {
+    const labels = Object.keys(byMethod);
+    const data = Object.values(byMethod).map((v: any) => Number(v));
+    const ctx = document.getElementById('chart-payments-method') as HTMLCanvasElement;
+    if (!ctx) return;
+    if ((this as any)._paymentsMethodChart) (this as any)._paymentsMethodChart.destroy();
+    (this as any)._paymentsMethodChart = new Chart(ctx, {
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'Pagos por método', data, backgroundColor: '#f59e0b' }] },
+      options: { responsive: true, scales: { y: { beginAtZero: true } } },
+    });
   }
 }

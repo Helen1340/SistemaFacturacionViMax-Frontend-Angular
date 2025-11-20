@@ -5,18 +5,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { DocumentsService } from './services/documents.service';
+import { DocumentsService, ElectronicDocument } from './services/documents.service';
 
 
 // Interfaz actualizada para el tipo de documento recibido
-interface ReceivedDocument {
-  id: number;
-  tipo_documento: string;
-  ambiente: string;
-  modo_emision: string;
-  fecha_validacion: string;
-  estado_dian: string;
-}
+interface ReceivedDocument extends ElectronicDocument {}
 
 @Component({
   selector: 'app-recepcion-documentos',
@@ -31,7 +24,10 @@ export class RecepcionDocumentos implements AfterViewInit {
 
   // Estado de la búsqueda y filtro
   searchTerm: string = '';
-  filterValue: string = '';
+  envFilter: string = '';
+  envOptions: string[] = [];
+  // Valores de ambiente alineados: HABILITACION (Pruebas) y PRODUCCION
+  private readonly ENV_ALLOWED = ['HABILITACION','PRODUCCION'];
   startDate: string = '';
   endDate: string = '';
   isLoading: boolean = false;
@@ -67,7 +63,9 @@ export class RecepcionDocumentos implements AfterViewInit {
         return of([]); // Devuelve un array vacío en caso de error
       })
     ).subscribe(documents => {
-      this.allDocuments = documents;
+      this.allDocuments = Array.isArray(documents) ? documents : [];
+      this.envOptions = this.ENV_ALLOWED.slice();
+      if (!this.envOptions.includes(this.envFilter)) this.envFilter = '';
       this.totalItems = this.allDocuments.length;
       this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       this.updatePagination();
@@ -91,18 +89,16 @@ export class RecepcionDocumentos implements AfterViewInit {
 
     // Búsqueda por término
     if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
       filtered = filtered.filter(doc =>
-        doc.tipo_documento.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        doc.ambiente.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        doc.modo_emision.toLowerCase().includes(this.searchTerm.toLowerCase())
+        (doc.cufe?.toLowerCase().includes(term)) ||
+        (doc.document_type?.toLowerCase().includes(term)) ||
+        (doc.dian_status?.toLowerCase().includes(term))
       );
     }
 
-    // Filtrado por estado
-    if (this.filterValue) {
-      filtered = filtered.filter(doc =>
-        doc.estado_dian.toLowerCase() === this.filterValue.toLowerCase()
-      );
+    if (this.envFilter) {
+      filtered = filtered.filter(doc => this.normalizeEnv(doc.environment) === this.envFilter);
     }
     
     // Filtrado por rango de fechas
@@ -110,12 +106,19 @@ export class RecepcionDocumentos implements AfterViewInit {
       const start = new Date(this.startDate);
       const end = new Date(this.endDate);
       filtered = filtered.filter(doc => {
-        const docDate = new Date(doc.fecha_validacion);
+        const docDate = new Date(doc.validation_date || doc.created_at);
         return docDate >= start && docDate <= end;
       });
     }
 
     return filtered;
+  }
+
+  private normalizeEnv(value: string | null | undefined): string {
+    const s = (value || '').toString().toUpperCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+    if (s.includes('PRUEB')) return 'HABILITACION';
+    if (s.includes('PRODUC')) return 'PRODUCCION';
+    return s;
   }
 
   // --- Lógica de paginación ---
@@ -159,37 +162,6 @@ export class RecepcionDocumentos implements AfterViewInit {
   viewDocument(id: number): void {
     // Lógica para ver los detalles del documento
     this.router.navigate([`/recepcion/${id}`]);
-    this.openDropdownId = null;
-  }
-
-  acceptDocument(id: number): void {
-    // Lógica para aceptar el documento.
-    console.log(`Aceptando documento con ID: ${id}`);
-    this.documentsService.updateDocumentStatus(id, 'Aceptado').subscribe({
-      next: () => {
-        console.log('Documento aceptado exitosamente');
-        // Vuelve a cargar los documentos para reflejar el cambio
-        this.fetchDocuments();
-      },
-      error: (err) => {
-        console.error('Error al aceptar el documento', err);
-      }
-    });
-    this.openDropdownId = null;
-  }
-
-  rejectDocument(id: number): void {
-    // Lógica para rechazar el documento.
-    console.log(`Rechazando documento con ID: ${id}`);
-    this.documentsService.updateDocumentStatus(id, 'Rechazado').subscribe({
-      next: () => {
-        console.log('Documento rechazado exitosamente');
-        this.fetchDocuments();
-      },
-      error: (err) => {
-        console.error('Error al rechazar el documento', err);
-      }
-    });
     this.openDropdownId = null;
   }
 

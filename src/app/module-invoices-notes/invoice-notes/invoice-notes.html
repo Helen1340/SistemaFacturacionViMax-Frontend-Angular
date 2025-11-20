@@ -1,6 +1,6 @@
 <main class="w-full px-4 pb-4 flex-1 overflow-y-auto overflow-x-visible">
   <div>
-    <h2 class="text-4xl font-semibold mb-6 mt-2">Notas de Factura</h2>
+    <h2 class="text-3xl sm:text-4xl font-semibold mb-6 mt-2">Notas de Factura</h2>
   </div>
 
   <div class="border-b-2 border-gray-300 w-full mb-4"></div>
@@ -11,8 +11,8 @@
     {{ lastMessage }}
   </div>
 
-  <div class="flex justify-end gap-3 mb-4">
-    <button (click)="goBack()" class="bg-gray-200 text-black px-4 py-2 rounded-xl hover:bg-gray-300 text-sm">Volver</button>
+  <div class="flex flex-wrap sm:flex-nowrap justify-end gap-2 sm:gap-3 mb-4">
+    <button (click)="goBack()" class="bg-gray-200 text-black px-3 sm:px-4 py-2 rounded-xl hover:bg-gray-300 text-xs sm:text-sm w-full sm:w-auto">Volver</button>
   </div>
 
   <div *ngIf="loading" class="flex flex-col items-center justify-center py-20 bg-white rounded-2xl shadow">
@@ -20,9 +20,9 @@
     <p class="text-gray-600">Cargando notas...</p>
   </div>
 
-  <div *ngIf="!loading" class="bg-white rounded-2xl shadow overflow-hidden mb-6">
+    <div *ngIf="!loading" class="bg-white rounded-2xl shadow overflow-hidden mb-6">
     <div class="overflow-x-auto overflow-y-auto max-h-[375px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-      <table class="w-full min-w-[800px] table-fixed text-xs sm:text-sm">
+      <table class="w-full min-w-[600px] table-fixed text-xs sm:text-sm">
         <thead class="bg-gray-100 text-gray-800 text-left sticky top-0 z-10">
           <tr>
             <th class="px-4 py-3 font-semibold sm:w-16">#</th>
@@ -65,8 +65,8 @@
     </div>
   </div>
 
-  <div class="bg-white p-6 rounded-2xl border border-gray-200 mb-6">
-    <div class="flex justify-between items-center mb-4">
+    <div class="bg-white p-6 rounded-2xl border border-gray-200 mb-6">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
       <h3 class="text-lg font-semibold text-gray-800">Nueva nota</h3>
       <div *ngIf="invoiceTotal !== null" class="text-sm text-gray-700">
         Total factura: <span class="font-semibold">$ {{ invoiceTotal | number:'1.0-0' }}</span>
@@ -108,13 +108,13 @@
       </div>
 
       <div class="md:col-span-5">
-        <button type="submit" [disabled]="creating" class="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-2xl transition-colors">Crear</button>
+        <button type="submit" [disabled]="creating" class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 sm:px-6 py-2 rounded-2xl text-xs sm:text-sm w-full sm:w-auto transition-colors">Crear</button>
       </div>
     </form>
   </div>
 
   <div class="bg-white p-6 rounded-2xl border border-gray-200">
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
       <h3 class="text-lg font-semibold text-gray-800">Anular factura</h3>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
@@ -123,7 +123,7 @@
         <input [(ngModel)]="reason" name="annul_reason" [ngModelOptions]="{standalone: true}" class="w-full px-3 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500" />
       </div>
       <div>
-        <button (click)="annulInvoice()" [disabled]="creating" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-2xl transition-colors">Anular</button>
+        <button (click)="annulInvoice()" [disabled]="creating" class="bg-red-600 hover:bg-red-700 text-white px-4 sm:px-6 py-2 rounded-2xl text-xs sm:text-sm w-full sm:w-auto transition-colors">Anular</button>
       </div>
     </div>
   </div>

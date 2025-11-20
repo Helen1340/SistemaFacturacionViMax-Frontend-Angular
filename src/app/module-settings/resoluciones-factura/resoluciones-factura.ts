@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ResolutionService } from './services/resolution.Service';
 
 export interface Resolucion {
   id: number;
@@ -43,7 +44,8 @@ export class ResolucionesFactura implements OnInit {
   totalPages: number = 0;
 
   constructor(
-    private router: Router
+    private router: Router,
+    private resolutionService: ResolutionService
   ) {}
 
   ngOnInit() {
@@ -62,46 +64,42 @@ export class ResolucionesFactura implements OnInit {
 
   loadResoluciones() {
     this.isLoading = true;
-    
-    // DATOS DE EJEMPLO CORREGIDOS para incluir todos los campos de la interfaz
-    this.resoluciones = [
-      {
-        id: 1,
-        prefijo: 'FE',
-        numero_resolucion: '187600019283',
-        clave_tecnica: 'A1B2C3D4E5F6G7H8',
-        cantidad_disponible: 1000,
-        desde: 1001,
-        hasta: 2000,
-        tipo: 'Factura EL',
-        vigencia: '01/01/2025 - 31/12/2025',
-        vigencia_inicio: '01/01/2025',
-        vigencia_fin: '31/12/2025',
-        estado: 'Activa',
-        created_at: '2025-01-01',
-        updated_at: '2025-01-01'
+    this.resolutionService.list().subscribe({
+      next: (data) => {
+        const items = Array.isArray(data) ? data : (data?.data || []);
+        this.resoluciones = items.map((r: any) => {
+          const desde = Number(r.start_number || 0);
+          const hasta = Number(r.end_number || 0);
+          const cantidad = (hasta >= desde && desde > 0) ? (hasta - desde + 1) : 0;
+          const vi = r.validity_start_date ? new Date(r.validity_start_date) : null;
+          const vf = r.validity_end_date ? new Date(r.validity_end_date) : null;
+          const vigencia = (vi && vf) ? `${vi.toLocaleDateString('es-CO')} - ${vf.toLocaleDateString('es-CO')}` : '';
+          return {
+            id: r.id,
+            prefijo: r.prefix,
+            numero_resolucion: r.resolution_number,
+            clave_tecnica: '',
+            cantidad_disponible: cantidad,
+            desde,
+            hasta,
+            tipo: r.document_type,
+            vigencia,
+            vigencia_inicio: r.validity_start_date,
+            vigencia_fin: r.validity_end_date,
+            estado: r.current_status === 'Activo' ? 'Activa' : 'Inactiva',
+            created_at: r.created_at,
+            updated_at: r.updated_at,
+          } as Resolucion;
+        });
+        this.filteredResoluciones = [...this.resoluciones];
+        this.totalResoluciones = this.resoluciones.length;
+        this.calculatePagination();
+        this.isLoading = false;
       },
-      {
-        id: 2,
-        prefijo: 'NC',
-        numero_resolucion: '2001000101',
-        clave_tecnica: 'H9G8F7E6D5C4B3A2',
-        cantidad_disponible: 50,
-        desde: 1,
-        hasta: 100,
-        tipo: 'Nota Crédito',
-        vigencia: '01/01/2024 - 31/12/2024',
-        vigencia_inicio: '01/01/2024',
-        vigencia_fin: '31/12/2024',
-        estado: 'Inactiva',
-        created_at: '2024-01-01',
-        updated_at: '2025-01-01'
+      error: () => {
+        this.isLoading = false;
       }
-    ];
-    this.filteredResoluciones = [...this.resoluciones];
-    this.totalResoluciones = this.resoluciones.length;
-    this.calculatePagination();
-    this.isLoading = false;
+    });
   }
 
   onSearch() {
@@ -181,30 +179,29 @@ export class ResolucionesFactura implements OnInit {
         this.router.navigate(['/editar-resolucion', resolucion.id]);
         break;
       case 'Activar':
-        this.activarResolucion(resolucion);
+        this.actualizarEstado(resolucion, 'Activo');
         break;
       case 'Desactivar':
-        this.desactivarResolucion(resolucion);
+        this.actualizarEstado(resolucion, 'Inactivo');
         break;
     }
   }
 
-  activarResolucion(resolucion: Resolucion) {
-    if (!confirm(`¿Estás seguro de que deseas activar esta resolución?`)) {
-      return;
-    }
-    // Implementar lógica de activación
-    console.log('Activando resolución:', resolucion.id);
-    resolucion.estado = 'Activa';
-  }
-
-  desactivarResolucion(resolucion: Resolucion) {
-    if (!confirm(`¿Estás seguro de que deseas desactivar esta resolución?`)) {
-      return;
-    }
-    // Implementar lógica de desactivación
-    console.log('Desactivando resolución:', resolucion.id);
-    resolucion.estado = 'Inactiva';
+  private actualizarEstado(resolucion: Resolucion, nuevoEstadoApi: 'Activo' | 'Inactivo') {
+    const mensaje = nuevoEstadoApi === 'Activo' ? 'activar' : 'desactivar';
+    if (!confirm(`¿Estás seguro de que deseas ${mensaje} esta resolución?`)) return;
+    this.isLoading = true;
+    this.resolutionService.updateJson(resolucion.id, { current_status: nuevoEstadoApi }).subscribe({
+      next: () => {
+        this.isLoading = false;
+        resolucion.estado = nuevoEstadoApi === 'Activo' ? 'Activa' : 'Inactiva';
+        alert(`Resolución ${nuevoEstadoApi === 'Activo' ? 'activada' : 'desactivada'} correctamente.`);
+      },
+      error: () => {
+        this.isLoading = false;
+        alert('No se pudo actualizar el estado de la resolución.');
+      }
+    });
   }
 
   get paginatedResoluciones(): Resolucion[] {

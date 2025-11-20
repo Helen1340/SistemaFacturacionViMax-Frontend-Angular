@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -8,52 +8,61 @@ import { Observable } from 'rxjs';
 export class CertificateService {
 
   private apiUrl = 'http://localhost/api/digitalCertificates';
+  private userUrl = 'http://localhost/api/user';
 
   constructor(private http: HttpClient) {}
 
+  private getAuthHeaders(): { headers: HttpHeaders } {
+    const raw = localStorage.getItem('token') || localStorage.getItem('access_token') || '';
+    const token = raw.startsWith('Bearer ') ? raw : `Bearer ${raw}`;
+    return { headers: new HttpHeaders({ Authorization: token }) };
+  }
+
   getCertificates(): Observable<any> {
-    return this.http.get(this.apiUrl);
+    return this.http.get(this.apiUrl, this.getAuthHeaders());
   }
 
   uploadCertificate(data: any): Observable<any> {
     const fd = new FormData();
 
     Object.keys(data).forEach(k => {
-      if (data[k] !== null && data[k] !== undefined) {
-        if (k === 'archivo_certificado' && data[k] instanceof File) {
-          fd.append('certificate_file', data[k]);
-        } else {
-          fd.append(k, data[k]);
-        }
+      const v = data[k];
+      if (v === null || v === undefined) return;
+      if (k === 'archivo_certificado' && v instanceof File) {
+        fd.append('certificate_file', v);
+        return;
       }
+      if (k === 'company_id') return;
+      fd.append(k, v);
     });
 
-    return this.http.post(this.apiUrl, fd);
+    return this.http.post(this.apiUrl, fd, this.getAuthHeaders());
   }
 
   updateCertificate(id: number, data: any): Observable<any> {
     const fd = new FormData();
 
-    fd.append('_method', 'PUT');
-
     Object.keys(data).forEach(k => {
-      if (data[k] !== null && data[k] !== undefined) {
-        if (k === 'archivo_certificado' && data[k] instanceof File) {
-          fd.append('certificate_file', data[k]);
-        } else {
-          fd.append(k, data[k]);
-        }
+      const v = data[k];
+      if (v === null || v === undefined) return;
+      if (k === 'archivo_certificado' && v instanceof File) {
+        fd.append('certificate_file', v);
+        return;
       }
+      fd.append(k, v);
     });
-
-    return this.http.post(`${this.apiUrl}/${id}`, fd);
+    return this.http.put(`${this.apiUrl}/${id}`, fd, this.getAuthHeaders());
   }
 
   deleteCertificate(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}`, this.getAuthHeaders());
   }
 
   verifyCertificate(id: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/verify`, {});
+    return this.http.post(`${this.apiUrl}/${id}/verify`, {}, this.getAuthHeaders());
+  }
+
+  getCurrentUser(): Observable<any> {
+    return this.http.get(this.userUrl, this.getAuthHeaders());
   }
 }

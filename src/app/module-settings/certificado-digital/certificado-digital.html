@@ -1,19 +1,20 @@
 <main class="w-full p-4 flex-1 overflow-auto">
     <div class="flex-1 flex flex-col overflow-hidden">
-        
+
         <div class="-mt-2 mb-2">
             <h2 class="text-3xl md:text-4xl font-semibold md:text-left mb-5 mt-5 text-black">
                 Certificado Digital
             </h2>
             <p class="text-base text-gray-800 mb-4">
-            Gestione y registre la clave de seguridad (.PFX) que permite firmar y validar 
-            sus documentos ante la autoridad fiscal. Todos los datos del certificado (NIT, fechas, titular, etc.) deben ser ingresados manualmente para su gestión segura y seguimiento de vigencia.
-        </p>
+                Gestione y registre la clave de seguridad (.PFX) que permite firmar y validar
+                sus documentos ante la autoridad fiscal. Todos los datos del certificado (NIT, fechas, titular, etc.)
+                deben ser ingresados manualmente para su gestión segura y seguimiento de vigencia.
+            </p>
         </div>
 
         <div class="border-b-2 border-gray-300 w-full mb-6"></div>
 
-         
+
         <div *ngIf="loading" class="flex justify-center items-center py-8">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600"></div>
             <span class="ml-3 text-gray-600">Cargando estado...</span>
@@ -22,9 +23,8 @@
         <div class="w-full max-w-none mx-auto" *ngIf="!loading">
             <div class="bg-white rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 border border-gray-200 mx-2 lg:mx-4">
 
-                <form [formGroup]="certificateForm" 
-                      (ngSubmit)="editingCertificate ? actualizarCertificado() : cargarCertificado()" 
-                      class="space-y-6">
+                <form [formGroup]="certificateForm"
+                    (ngSubmit)="editingCertificate ? actualizarCertificado() : cargarCertificado()" class="space-y-6">
 
                     <!-- MODO EDICIÓN -->
                     <div *ngIf="editingCertificate" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -34,7 +34,8 @@
                                 Está editando el certificado:
                                 <strong>{{ editingCertificate.nombre_certificado }}</strong>
                             </span>
-                            <button type="button" (click)="resetForm()" class="ml-auto text-blue-600 hover:text-blue-800">
+                            <button type="button" (click)="resetForm()"
+                                class="ml-auto text-blue-600 hover:text-blue-800">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
@@ -47,9 +48,9 @@
                         </label>
 
                         <div class="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center">
-                            
-                            <input type="file" #fileInput (change)="onFileSelected($event)"
-                                   class="hidden" accept=".pfx" />
+
+                            <input type="file" #fileInput (change)="onFileSelected($event)" class="hidden"
+                                accept=".pfx" />
 
                             <!-- SIN ARCHIVO -->
                             <div *ngIf="!selectedFile">
@@ -66,7 +67,7 @@
                                 <p class="text-sm text-gray-700 font-medium">{{ fileName }}</p>
                                 <p class="text-xs text-gray-500">{{ fileSize }}</p>
 
-                                <button type="button" (click)="resetFile()" 
+                                <button type="button" (click)="resetFile()"
                                     class="text-red-600 hover:text-red-800 text-sm mt-2">
                                     <i class="fas fa-times mr-1"></i> Quitar archivo
                                 </button>
@@ -135,9 +136,12 @@
                                 </label>
                                 <input type="date" formControlName="end_date"
                                     class="w-full px-4 py-3 border rounded-lg text-gray-700"
-                                    [class.border-red-500]="isFieldInvalid('end_date')" />
+                                    [class.border-red-500]="isFieldInvalid('end_date') || isDateRangeInvalid()" />
                                 <div *ngIf="isFieldInvalid('end_date')" class="text-red-500 text-sm">
                                     La fecha de vencimiento es requerida
+                                </div>
+                                <div *ngIf="isDateRangeInvalid()" class="text-red-600 text-sm">
+                                    La fecha de vencimiento debe ser posterior a la fecha de emisión
                                 </div>
                             </div>
 
@@ -191,9 +195,11 @@
                                 </div>
 
                                 <p class="text-xs text-gray-500 mt-1">
-                                    <strong class="text-gray-700">Digital:</strong> Certificado emitido por entidad certificadora (DIAN).
+                                    <strong class="text-gray-700">Digital:</strong> Certificado emitido por entidad
+                                    certificadora (DIAN).
                                     <br>
-                                    <strong class="text-gray-700">Electrónica:</strong> Firma simple o autenticación básica.
+                                    <strong class="text-gray-700">Electrónica:</strong> Firma simple o autenticación
+                                    básica.
                                 </p>
                             </div>
 
@@ -202,25 +208,34 @@
                                 <label class="block text-sm font-medium text-black">Descripción</label>
                                 <textarea formControlName="description"
                                     class="w-full px-4 py-3 border rounded-lg text-gray-700 placeholder:text-gray-400"
-                                    placeholder="Notas adicionales sobre este certificado..."
-                                    rows="4"></textarea>
+                                    placeholder="Notas adicionales sobre este certificado..." rows="4"></textarea>
                             </div>
 
+                        </div>
+
+                    </div>
+
+                    <!-- PASSWORD -->
+                    <div class="grid grid-cols-1 gap-6 mb-6">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-black">Contraseña del certificado
+                                (opcional)</label>
+                            <input type="password" formControlName="password"
+                                class="w-[49%] px-4 py-3 border rounded-lg text-gray-700"
+                                placeholder="Contraseña PFX/P12 (máx 255 caracteres)" />
                         </div>
                     </div>
 
                     <!-- BOTÓN -->
                     <div class="pt-6 border-t border-gray-200 flex justify-end">
-                        <button type="submit"
-                            [disabled]="isSubmitting"
+                        <button type="submit" [disabled]="isSubmitting || isDateRangeInvalid()"
                             class="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-400 text-white px-8 py-3 rounded-2xl font-medium flex items-center space-x-2 shadow-lg transition-colors">
-                            <i class="fas" 
-                               [class.fa-spinner]="isSubmitting"
-                               [class.animate-spin]="isSubmitting"
-                               [class.fa-save]="!isSubmitting && editingCertificate"
-                               [class.fa-cloud-upload-alt]="!isSubmitting && !editingCertificate"></i>
+                            <i class="fas" [class.fa-spinner]="isSubmitting" [class.animate-spin]="isSubmitting"
+                                [class.fa-save]="!isSubmitting && editingCertificate"
+                                [class.fa-cloud-upload-alt]="!isSubmitting && !editingCertificate"></i>
                             <span>
-                                {{ isSubmitting ? 'Procesando...' : (editingCertificate ? 'Guardar Cambios' : 'Cargar Certificado') }}
+                                {{ isSubmitting ? 'Procesando...' : (editingCertificate ? 'Guardar Cambios' : 'Cargar
+                                Certificado') }}
                             </span>
                         </button>
                     </div>
@@ -236,25 +251,29 @@
                     </div>
 
                     <div *ngIf="certificates.length > 0" class="overflow-x-auto">
-                        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                        <table class="w-full min-w-[600px] table-fixed text-xs sm:text-sm bg-white border border-gray-200 rounded-lg">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-black uppercase">Certificado</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-black uppercase">Certificado
+                                    </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-black uppercase">Tipo</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-black uppercase">Estado</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-black uppercase">Vigencia</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-black uppercase">Acciones</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-black uppercase">Vigencia
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-black uppercase">Acciones
+                                    </th>
                                 </tr>
                             </thead>
 
                             <tbody class="divide-y divide-gray-200">
                                 <tr *ngFor="let cert of certificates" class="hover:bg-gray-50 transition-colors">
-                                    
+
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
                                             <i class="fas fa-certificate text-cyan-500 mr-3 text-lg"></i>
                                             <div>
-                                                <div class="font-medium text-gray-900">{{ cert.nombre_certificado }}</div>
+                                                <div class="font-medium text-gray-900">{{ cert.nombre_certificado }}
+                                                </div>
                                                 <div class="text-sm text-gray-500">
                                                     <i class="fas fa-building text-xs mr-1"></i>
                                                     {{ cert.entidad_emisora || 'Sin emisor' }}
@@ -290,9 +309,9 @@
                                                 'bg-yellow-100 text-yellow-800': cert.estado_actual === 'bloqueado'
                                             }">
                                             <i class="fas mr-1"
-                                               [class.fa-check-circle]="cert.estado_actual === 'valido'"
-                                               [class.fa-times-circle]="cert.estado_actual === 'vencido'"
-                                               [class.fa-exclamation-circle]="cert.estado_actual === 'bloqueado'"></i>
+                                                [class.fa-check-circle]="cert.estado_actual === 'valido'"
+                                                [class.fa-times-circle]="cert.estado_actual === 'vencido'"
+                                                [class.fa-exclamation-circle]="cert.estado_actual === 'bloqueado'"></i>
                                             {{ cert.estado_actual }}
                                         </span>
                                     </td>
@@ -310,14 +329,14 @@
 
                                     <td class="px-6 py-4 text-sm">
                                         <div class="flex flex-col space-y-2">
-                                            <button (click)="editarCertificado(cert)" 
+                                            <button (click)="editarCertificado(cert)"
                                                 class="text-blue-600 hover:text-blue-800 text-left transition-colors">
                                                 <i class="fas fa-edit mr-1"></i> Editar
                                             </button>
 
-                                        
 
-                                            <button (click)="eliminarCertificado(cert.id)" 
+
+                                            <button (click)="eliminarCertificado(cert.id)"
                                                 class="text-red-600 hover:text-red-800 text-left transition-colors">
                                                 <i class="fas fa-trash mr-1"></i> Eliminar
                                             </button>

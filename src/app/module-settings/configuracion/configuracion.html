@@ -5,10 +5,12 @@
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Header -->
-        <div class="-mt-2 mb-2">
-            <h2 class="text-4xl font-semibold mb-5 mt-4">
-                Configuraciones
-            </h2>
+        <div class="-mt-2 mb-2 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <h2 class="text-3xl sm:text-4xl font-semibold mb-5 mt-4">Configuraciones</h2>
+            <button (click)="navigateFacturacion()"
+                class="bg-cyan-600 hover:bg-cyan-700 text-white px-3 sm:px-5 py-2 rounded-xl font-medium shadow text-xs sm:text-sm w-full sm:w-auto">
+                Ir a Facturas
+            </button>
         </div>
 
         <div class="border-b-2 border-gray-300 w-full "></div>

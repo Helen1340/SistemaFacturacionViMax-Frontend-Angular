@@ -22,15 +22,15 @@ constructor(
     this.router.navigate(['/reportes-facturas']);
   }
 
-  navigateReportImpuestos() {
-    this.router.navigate(['/reporte-impuestos']);
-  }
-
-  navigateReportPagos() {
-    this.router.navigate(['/reporte-pagos']);
-  }
-
   navigateReportUsers() {
     this.router.navigate(['reporte-usuarios']);
+  }
+
+  navigateReportProductos() {
+    this.router.navigate(['reporte-productos']);
+  }
+
+  navigateReportServicios() {
+    this.router.navigate(['reporte-servicios']);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import {  NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { Sidebar } from './sidebar/sidebar';
 import { CommonModule } from '@angular/common';
@@ -13,7 +13,6 @@ import { filter } from 'rxjs';
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('FacturacionAngularPantallas');
 
   isSidebarOpen = false;
   showLayout = true;
@@ -26,8 +25,16 @@ export class App {
                 '/parametros-generales', '/config-correo', '/eventos', '/historial-notificaciones',
                 '/notificaciones-email', '/certificado-digital', '/resolucion-facturas',
                 '/retencion-respaldo', '/cambios-normativos', '/impuestos-retenciones',
-                '/nuevo-impuesto', '/nueva-resolucion', '/editar-resolucion/:id',];
-        this.showLayout = !hiddenRoutes.includes(event.urlAfterRedirects);
+                '/nuevo-impuesto', '/nueva-resolucion', '/editar-resolucion/:id'];
+        const url = String(event.urlAfterRedirects || '').split('?')[0];
+        const isHidden = hiddenRoutes.some(r => {
+          if (r.includes('/:')) {
+            const base = r.split('/:')[0];
+            return url.startsWith(base + '/');
+          }
+          return url === r;
+        });
+        this.showLayout = !isHidden;
       });
   }
 

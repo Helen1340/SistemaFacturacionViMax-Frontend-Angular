@@ -41,7 +41,6 @@ export class NuevoUsuario implements OnInit {
 
   initForm() {
     this.usuarioForm = this.fb.group({
-      //company_id: [''], // nullable - coincide con API
       role_id: [null, Validators.required], // required en el template, nullable en API
       first_name: ['', [Validators.required, Validators.maxLength(100)]], // ✓ coincide
       document_type: ['', Validators.required], // ✓ required en template, nullable en API pero requerido en UI
@@ -90,7 +89,6 @@ export class NuevoUsuario implements OnInit {
     
     // Mapear los datos según lo que espera la API
     const payload = {
-      company_id: formValue.company_id || null,
       role_id: formValue.role_id || null,
       first_name: formValue.first_name,
       document_type: formValue.document_type || null,

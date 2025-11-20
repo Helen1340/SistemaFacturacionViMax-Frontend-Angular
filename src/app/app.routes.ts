@@ -10,6 +10,7 @@ import { Usuarios } from './module-users/usuarios/usuarios';
 import { Contingencia } from './module-contingency/contingencia/Contingency/contingencia';
 import { FacturaContingencia } from './module-contingency/contingencia/Contingency/Contingency invoices/factura-contingencia';
 import { RecepcionDocumentos } from './module-document-reception/recepcion-documentos/recepcion-documentos';
+import { DocumentoDetalle } from './module-document-reception/recepcion-documentos/documento-detalle';
 import { Configuracion } from './module-settings/configuracion/configuracion';
 
 
@@ -17,10 +18,10 @@ import { NuevoUsuario } from './module-users/nuevo-usuario/nuevo-usuario';
 import { EditUsuario } from './module-users/edit-usuario/edit-usuario';
 import { VerUsuario } from './module-users/ver-usuario/ver-usuario';
 import { ReporteFacturas } from './module-reports/reporte-facturas/reporte-facturas';
-import { ReportePagos } from './module-reports/reporte-pagos/reporte-pagos';
 import { ReporteClientes } from './module-reports/reporte-clientes/reporte-clientes';
 import { ReporteUsuarios } from './module-reports/reporte-usuarios/reporte-usuarios';
-import { ReporteImpuestos } from './module-reports/reporte-impuestos/reporte-impuestos';
+import { ReporteProductos } from './module-reports/reporte-productos/reporte-productos';
+import { ReporteServicios } from './module-reports/reporte-servicios/reporte-servicios';
 import { CertificadoDigital } from './module-settings/certificado-digital/certificado-digital';
 import { NotificacionesEmails } from './module-settings/notificaciones-emails/notificaciones-emails';
 import { Acceder } from './module-home/acceder/acceder';
@@ -182,10 +183,10 @@ export const routes: Routes = [
   {path: 'ver-usuario/:id', component: VerUsuario},
 
   {path: 'reportes-facturas', component: ReporteFacturas},
-  {path: 'reporte-pagos', component: ReportePagos},
   {path: 'reporte-clientes', component: ReporteClientes },
   {path: 'reporte-usuarios', component: ReporteUsuarios},
-  {path: 'reporte-impuestos', component: ReporteImpuestos},
+  {path: 'reporte-productos', component: ReporteProductos},
+  {path: 'reporte-servicios', component: ReporteServicios},
 
 
 
@@ -228,6 +229,7 @@ export const routes: Routes = [
 {path: 'contingencia',component: Contingencia},
 {path: 'facturas-contingencia',component: FacturaContingencia},
 {path: 'recepción-documentos',component: RecepcionDocumentos},
+{path: 'recepcion/:id', component: DocumentoDetalle},
 {path: 'notificaciones',component: Notificaciones},
 {path: 'historial-tecnico',component: HistorialTecnico},
 

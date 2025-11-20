@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { User } from '../usuarios/usuarios';
@@ -38,40 +38,48 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
+  private getAuthHeaders(): { headers: HttpHeaders } {
+    const raw = localStorage.getItem('token') || localStorage.getItem('access_token') || '';
+    const token = raw.startsWith('Bearer ') ? raw : `Bearer ${raw}`;
+    return { headers: new HttpHeaders({ Authorization: token }) };
+  }
+
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.apiUrl);
+    return this.http.get<User[]>(this.apiUrl, this.getAuthHeaders());
   }
 
   getRoles(): Observable<Role[]> {
-    return this.http.get<Role[]>(this.rolesUrl);
+    return this.http.get<Role[]>(this.rolesUrl, this.getAuthHeaders());
   }
 
   testApiConnection(): Observable<any> {
-    return this.http.get(this.apiUrl);
+    return this.http.get(this.apiUrl, this.getAuthHeaders());
   }
 
   getUserById(id: number): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/${id}`);
+    return this.http.get<User>(`${this.apiUrl}/${id}`, this.getAuthHeaders());
   }
 
   // Método actualizado con tipado correcto
   createUser(userPayload: CreateUserPayload): Observable<User> {
-    return this.http.post<User>(this.apiUrl, userPayload);
+    return this.http.post<User>(this.apiUrl, userPayload, this.getAuthHeaders());
   }
 
   updateUser(user: User): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/${user.id}`, user);
+    return this.http.put<User>(`${this.apiUrl}/${user.id}`, user, this.getAuthHeaders());
+  }
+
+  patchUser(id: number, partial: Partial<User>): Observable<User> {
+    return this.http.patch<User>(`${this.apiUrl}/${id}`, partial, this.getAuthHeaders());
   }
 
   deleteUser(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, this.getAuthHeaders());
   }
 
   // Método para activar/desactivar usuario (cambiar estado)
   toggleUserStatus(id: number, newStatus: 'Active' | 'Inactive'): Observable<User> {
-    return this.http.patch<User>(`${this.apiUrl}/${id}`, {
-      status: newStatus
-    });
+    return this.http.patch<User>(`${this.apiUrl}/${id}`, { status: newStatus }, this.getAuthHeaders());
   }
 
   // Funciones para manejar el nombre comercial temporal en la descripción
@@ -90,11 +98,11 @@ export class UserService {
 
   // Método para verificar si un usuario existe por email
   getUserByEmail(email: string): Observable<User[]> {
-    return this.http.get<User[]>(`${this.apiUrl}?email=${email}`);
+    return this.http.get<User[]>(`${this.apiUrl}?email=${email}`, this.getAuthHeaders());
   }
 
   // Método para verificar si un documento ya existe
   getUserByDocument(documentNumber: string): Observable<User[]> {
-    return this.http.get<User[]>(`${this.apiUrl}?document_number=${documentNumber}`);
+    return this.http.get<User[]>(`${this.apiUrl}?document_number=${documentNumber}`, this.getAuthHeaders());
   }
 }
