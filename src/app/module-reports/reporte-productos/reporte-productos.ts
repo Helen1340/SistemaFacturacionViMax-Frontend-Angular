@@ -15,6 +15,7 @@ import { ReportServices, ProductoItem, ResumenProductos } from '../services/repo
 
 @Component({
   selector: 'app-reporte-productos',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,

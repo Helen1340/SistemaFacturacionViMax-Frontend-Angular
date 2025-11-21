@@ -1,46 +1,70 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import * as Ably from 'ably';
 import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificacionesService {
-  private apiUrl = 'http://localhost/api/notifications'; // URL del backend Laravel
+  private apiUrl = 'http://localhost/api/notifications';
+  private apiBase = 'http://localhost/api';
   private ably!: Ably.Realtime;
   private channel!: Ably.RealtimeChannel; // ✅ Cambio 1: RealtimeChannel en lugar de Types.RealtimeChannelCallbacks
 
   constructor(private http: HttpClient) {}
 
+  private getAuthHeaders(): { headers: HttpHeaders } {
+    const raw = localStorage.getItem('token') || localStorage.getItem('access_token') || '';
+    const token = raw.startsWith('Bearer ') ? raw : `Bearer ${raw}`;
+    return { headers: new HttpHeaders({ Authorization: token }) };
+  }
+
   // ✅ Inicializa Ably y escucha el canal del usuario
-  initRealtime(userId: number, callback: (data: any) => void): void { // ✅ Cambio 2: Agregado void como tipo de retorno
-    const ablyKey ='piNYEw.Zy5OQQ:eJNENobDIG0-KQ2Y29nSnmF7KAnJsmu4V5mRs56ZbFE'; // 👈 pon aquí tu clave pública (antes de los ":")
-    this.ably = new Ably.Realtime(ablyKey);
+  initRealtime(userId: number, callback: (data: any) => void): void {
+    this.ably = new Ably.Realtime({
+      authUrl: `${this.apiBase}/ably/auth`,
+      authHeaders: this.getAuthHeaders().headers as any
+    });
     const channelName = `notifications:${userId}`;
     this.channel = this.ably.channels.get(channelName);
-
     this.channel.subscribe('new_alert', (message) => {
-      console.log('📩 Nueva notificación:', message.data);
       callback(message.data);
     });
   }
 
   disconnect(): void {
-    if (this.ably) this.ably.close();
+    try { if (this.channel) this.channel.unsubscribe(); } catch {}
+    try { if (this.ably) this.ably.close(); } catch {}
   }
 
   // ✅ Métodos API REST
-  getAll(): Observable<any> {
-    return this.http.get(this.apiUrl);
+  getAll(companyId?: number, filter?: { type?: string; from?: string; to?: string; limit?: number }): Observable<any> {
+    let params = new HttpParams();
+    if (companyId && companyId > 0) params = params.set('company_id', String(companyId));
+    if (filter?.type) params = params.set('type', filter.type);
+    if (filter?.from) params = params.set('from', filter.from);
+    if (filter?.to) params = params.set('to', filter.to);
+    if (filter?.limit) params = params.set('limit', String(filter.limit));
+    const options = { ...this.getAuthHeaders(), params };
+    return this.http.get(this.apiUrl, options);
   }
 
   markAllAsRead(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/mark-all-read`, {});
+    return this.http
+      .post(`${this.apiUrl}/mark-all-read`, {}, this.getAuthHeaders())
+      .pipe(catchError(() => this.http.post(`${this.apiUrl}/read-all`, {}, this.getAuthHeaders())));
   }
 
   deleteAll(): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/delete-all`);
+    return this.http
+      .delete(`${this.apiUrl}/delete-all`, this.getAuthHeaders())
+      .pipe(catchError(() => this.http.delete(`${this.apiUrl}`, this.getAuthHeaders())));
+  }
+
+  getLogs(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/logs`, this.getAuthHeaders());
   }
 }
 

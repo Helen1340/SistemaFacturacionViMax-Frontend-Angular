@@ -32,6 +32,7 @@ interface Invoice {
 
 @Component({
   selector: 'app-reporte-facturas',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,

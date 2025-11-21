@@ -18,6 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-reporte-usuarios',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,

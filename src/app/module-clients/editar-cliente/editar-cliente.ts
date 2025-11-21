@@ -158,8 +158,8 @@ export class EditarCliente implements OnInit {
       ...(this.clienteForm.phone && { phone: this.clienteForm.phone.trim() })
     };
 
-    // Llamar al servicio para actualizar el cliente
-    this.clientService.updateCliente(this.clienteId!, clienteData).subscribe({
+    // Actualización parcial para evitar requerir current_password
+    this.clientService.patchCliente(this.clienteId!, clienteData).subscribe({
       next: (response) => {
         this.isLoading = false;
         this.mostrarAlerta('Cliente actualizado exitosamente', 'success');

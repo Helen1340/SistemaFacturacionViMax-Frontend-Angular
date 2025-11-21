@@ -62,6 +62,7 @@ export class Acceder {
 
           // 🔥 Guardar el userId y inicializar Firebase
           if (res.user && res.user.id) {
+            this.authService.setUser(res.user);
             localStorage.setItem('userId', res.user.id.toString());
             await this.firebaseService.init(res.user.id);
           }

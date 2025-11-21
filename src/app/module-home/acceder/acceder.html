@@ -1,4 +1,4 @@
-<body class="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4 relative">
+<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4 relative">
     
     <!-- Logo -->
     <div class="flex flex-col items-center mt-8 mb-4">
@@ -70,7 +70,7 @@
         </div>
 
         <!-- Botón de ingresar -->
-        <button type="submit" [disabled]="loginForm.invalid || isLoading"
+        <button type="submit"
             class="w-full text-white font-semibold py-2 rounded-lg transition-colors duration-200 text-base mt-2 block text-center disabled:opacity-50 disabled:cursor-not-allowed"
             style="background-color: #0799B6;">
             <span *ngIf="!isLoading">Ingresar</span>
@@ -98,4 +98,4 @@
         <span>{{ notification.message }}</span>
     </div>
 
-</body>
+</div>
