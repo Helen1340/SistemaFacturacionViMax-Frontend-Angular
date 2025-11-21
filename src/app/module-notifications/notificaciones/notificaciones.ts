@@ -166,7 +166,23 @@ export class Notificaciones implements OnInit, OnDestroy {
   }
 
   viewNotification(notification: any) {
-    alert(`📄 ${notification.descripcion}`);
+    const id = notification.resource_id || notification.id;
+    const table = notification.table_source || '';
+    if (id && table) {
+      this.notiService.markAsRead(id, table).subscribe({
+        next: () => {
+          this.notifications = this.notifications.map(n => {
+            if ((n.resource_id === notification.resource_id && n.table_source === notification.table_source) || n.id === notification.id) {
+              return { ...n, estado: 'Leído' };
+            }
+            return n;
+          });
+          this.applyFilters();
+          this.unreadCount = this.notifications.filter(n => n.estado === 'No leído').length;
+        },
+        error: () => {}
+      });
+    }
   }
 
   private normalize(items: any[]): any[] {
@@ -175,7 +191,7 @@ export class Notificaciones implements OnInit, OnDestroy {
       fecha_hora: it.fecha_hora ?? it.created_at ?? it.date ?? '',
       tipo: it.tipo ?? it.type ?? it.subject ?? '',
       descripcion: it.descripcion ?? it.body ?? it.message ?? '',
-      estado: it.estado ?? it.status ?? (it.read ? 'Leído' : 'No leído'),
+      estado: it.estado ?? it.status ?? ((it.read || it.is_read) ? 'Leído' : 'No leído'),
       resource_id: it.resource_id ?? it.resourceId ?? undefined,
       table_source: it.table_source ?? it.source ?? ''
     }));

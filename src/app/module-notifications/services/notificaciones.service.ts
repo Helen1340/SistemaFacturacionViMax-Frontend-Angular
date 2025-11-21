@@ -66,6 +66,12 @@ export class NotificacionesService {
   getLogs(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/logs`, this.getAuthHeaders());
   }
+
+  markAsRead(id: string | number, table_source: string): Observable<any> {
+    const params = new HttpParams().set('table_source', table_source);
+    const options = { ...this.getAuthHeaders(), params } as any;
+    return this.http.patch(`${this.apiUrl}/${id}`, {}, options);
+  }
 }
 
 

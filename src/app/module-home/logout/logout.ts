@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/Auth.Service';
+import { FirebaseService } from '../../module-notifications/services/firebase-service';
+import { NotificacionesService } from '../../module-notifications/services/notificaciones.service';
 
 
 @Component({
@@ -8,18 +10,18 @@ import { AuthService } from '../services/Auth.Service';
   template: `<p>Cerrando sesión...</p>`
 })
 export class Logout implements OnInit {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private firebaseService: FirebaseService, private notiService: NotificacionesService) {}
 
   ngOnInit(): void {
     this.authService.logout().subscribe({
       next: (res) => {
-        console.log(res.message);
-        this.authService.clearToken();
-        this.router.navigate(['/login']); // Ajusta la ruta de tu login
+        this.notiService.disconnect();
+        this.firebaseService.logout();
+        this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.error(err);
-        this.authService.clearToken();
+        this.notiService.disconnect();
+        this.firebaseService.logout();
         this.router.navigate(['/login']);
       }
     });

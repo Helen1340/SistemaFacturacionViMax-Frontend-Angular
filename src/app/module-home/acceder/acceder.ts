@@ -57,15 +57,17 @@ export class Acceder {
         this.isLoading = false;
 
         if (res && res.access_token) {
-          // Guardar token en localStorage con AuthService
           this.authService.setToken(res.access_token);
-
-          // 🔥 Guardar el userId y inicializar Firebase
-          if (res.user && res.user.id) {
-            this.authService.setUser(res.user);
-            localStorage.setItem('userId', res.user.id.toString());
-            await this.firebaseService.init(res.user.id);
-          }
+          this.authService.me().subscribe({
+            next: async (user) => {
+              if (user && user.id) {
+                this.authService.setUser(user);
+                localStorage.setItem('userId', String(user.id));
+                await this.firebaseService.init(user.id);
+              }
+            },
+            error: () => {}
+          });
 
           this.showNotification('Inicio de sesión exitoso 🚀', 'success');
           console.log(res);

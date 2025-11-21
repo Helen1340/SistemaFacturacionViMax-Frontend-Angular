@@ -6,93 +6,99 @@
 
   <div class="bg-white rounded-xl shadow-md p-4">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-      <mat-form-field appearance="outline">
-        <mat-label>Buscar</mat-label>
-        <input matInput [(ngModel)]="texto" placeholder="Código o nombre" />
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Estado</mat-label>
-        <mat-select [(ngModel)]="estado">
-          <mat-option value="">Todos</mat-option>
-          <mat-option value="emitido">Emitido</mat-option>
-          <mat-option value="anulado">Anulado</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Desde</mat-label>
-        <input matInput type="date" [(ngModel)]="desde" />
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Hasta</mat-label>
-        <input matInput type="date" [(ngModel)]="hasta" />
-      </mat-form-field>
-    </div>
-    <div class="flex justify-between mt-6">
       <div>
-        <button (click)="reset()" class="bg-gray-400 text-white text-sm px-6 py-2 rounded-xl mr-3">Limpiar</button>
-        <button (click)="apply()" class="bg-cyan-600 text-white text-sm px-6 py-2 rounded-xl">Buscar</button>
+        <label class="text-sm font-medium text-black block mb-1">Buscar</label>
+        <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-cyan-500">
+          <svg class="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" />
+          </svg>
+          <input type="text" [(ngModel)]="texto" placeholder="Código o nombre" class="w-full border-none outline-none text-black text-sm placeholder-gray-400" />
+        </div>
       </div>
       <div>
-        <button (click)="downloadCsv()" class="bg-blue-600 text-white text-sm px-6 py-2 rounded-xl">Descargar CSV</button>
+        <label class="text-sm font-medium text-black block mb-1">Estado</label>
+        <select [(ngModel)]="estado" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black bg-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
+          <option value="">Todos</option>
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-sm font-medium text-black block mb-1">Desde</label>
+        <input type="date" [(ngModel)]="desde" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black bg-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+      </div>
+      <div>
+        <label class="text-sm font-medium text-black block mb-1">Hasta</label>
+        <input type="date" [(ngModel)]="hasta" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black bg-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6">
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button (click)="reset()" class="w-full sm:w-auto bg-gray-400 text-white text-sm px-6 py-2 rounded-xl">Limpiar</button>
+        <button (click)="apply()" class="w-full sm:w-auto bg-cyan-600 text-white text-sm px-6 py-2 rounded-xl">Buscar</button>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button (click)="downloadCsv()" class="w-full sm:w-auto bg-blue-600 text-white text-sm px-6 py-2 rounded-xl">Descargar CSV</button>
+        <button (click)="exportChartsToPDF()" class="w-full sm:w-auto bg-red-600 text-white text-sm px-6 py-2 rounded-xl">Exportar gráficos a PDF</button>
       </div>
     </div>
   </div>
 
   <div class="mt-6 bg-white rounded-2xl shadow overflow-hidden">
-    <div class="p-2">
-      <table mat-table [dataSource]="dataSource" class="w-full">
+    <div class="p-2 overflow-x-auto">
+      <table mat-table [dataSource]="dataSource" matSort class="w-full min-w-[900px] text-xs sm:text-sm">
         <ng-container matColumnDef="codigo">
-          <th mat-header-cell *matHeaderCellDef>Código</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-left">Código</th>
           <td mat-cell *matCellDef="let p">{{ p.codigo }}</td>
         </ng-container>
         <ng-container matColumnDef="nombre">
-          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-left">Nombre</th>
           <td mat-cell *matCellDef="let p">{{ p.nombre }}</td>
         </ng-container>
         <ng-container matColumnDef="unidad">
-          <th mat-header-cell *matHeaderCellDef>Unidad</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-left">Unidad</th>
           <td mat-cell *matCellDef="let p">{{ p.unidad }}</td>
         </ng-container>
         <ng-container matColumnDef="cantidad_vendida">
-          <th mat-header-cell *matHeaderCellDef>Cantidad</th>
-          <td mat-cell *matCellDef="let p">{{ p.cantidad_vendida }}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">Cantidad</th>
+          <td mat-cell *matCellDef="let p" class="text-right">{{ p.cantidad_vendida }}</td>
         </ng-container>
         <ng-container matColumnDef="subtotal">
-          <th mat-header-cell *matHeaderCellDef>Subtotal</th>
-          <td mat-cell *matCellDef="let p">{{ p.subtotal | number:'1.0-0' }}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">Subtotal</th>
+          <td mat-cell *matCellDef="let p" class="text-right">{{ p.subtotal | number:'1.0-0' }}</td>
         </ng-container>
         <ng-container matColumnDef="impuestos">
-          <th mat-header-cell *matHeaderCellDef>Impuestos</th>
-          <td mat-cell *matCellDef="let p">{{ p.impuestos | number:'1.0-0' }}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">Impuestos</th>
+          <td mat-cell *matCellDef="let p" class="text-right">{{ p.impuestos | number:'1.0-0' }}</td>
         </ng-container>
         <ng-container matColumnDef="total">
-          <th mat-header-cell *matHeaderCellDef>Total</th>
-          <td mat-cell *matCellDef="let p">{{ p.total | number:'1.0-0' }}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">Total</th>
+          <td mat-cell *matCellDef="let p" class="text-right">{{ p.total | number:'1.0-0' }}</td>
         </ng-container>
         <ng-container matColumnDef="precio_promedio">
-          <th mat-header-cell *matHeaderCellDef>Precio promedio</th>
-          <td mat-cell *matCellDef="let p">{{ p.precio_promedio | number:'1.0-0' }}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">Precio promedio</th>
+          <td mat-cell *matCellDef="let p" class="text-right">{{ p.precio_promedio | number:'1.0-0' }}</td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns" class="bg-gray-100"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50"></tr>
       </table>
-      <mat-paginator [pageSize]="10" [pageSizeOptions]="[10,20,50]"></mat-paginator>
+      <mat-paginator [pageSize]="20" [pageSizeOptions]="[10,20,50,100]"></mat-paginator>
     </div>
   </div>
 
-  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="mt-8 grid grid-cols-1 gap-6">
     <div class="bg-white rounded-xl shadow-md p-4">
       <div class="flex justify-between items-center mb-2">
-        <h3 class="text-sm font-semibold">Ventas mensuales</h3>
+        <h3 class="text-sm font-semibold">Top 5 servicios por cantidad</h3>
+        <button (click)="downloadChartPng('servicesTopChart','top_servicios.png')" [disabled]="!hasTopData" class="text-xs px-3 py-1 rounded bg-blue-600 text-white disabled:opacity-50">Descargar PNG</button>
       </div>
-      <apx-chart [series]="lineSeries" [xaxis]="lineXAxis" [chart]="lineChart"></apx-chart>
-    </div>
-    <div class="bg-white rounded-xl shadow-md p-4">
-      <div class="flex justify-between items-center mb-2">
-        <h3 class="text-sm font-semibold">Top 5 servicios</h3>
+      <div *ngIf="hasTopData; else noDataServices">
+        <apx-chart [series]="topSeries" [xaxis]="topXAxis" [chart]="topChart" [plotOptions]="topPlotOptions"></apx-chart>
       </div>
-      <apx-chart [series]="topSeries" [xaxis]="topXAxis" [chart]="topChart" [plotOptions]="topPlotOptions"></apx-chart>
+      <ng-template #noDataServices>
+        <div class="p-6 text-center text-gray-600">No hay datos para el gráfico de servicios</div>
+      </ng-template>
     </div>
   </div>
 </main>

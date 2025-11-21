@@ -243,12 +243,11 @@
 
         <!-- Código QR -->
         <div class="flex flex-col items-center justify-center">
-          <div *ngIf="loadingQR" class="text-center">
-            <div class="w-12 h-12 border-4 border-gray-200 border-t-cyan-600 rounded-full animate-spin mx-auto mb-2">
-            </div>
+          <div *ngIf="loadingQR && !qrCodeUrl" class="text-center">
+            <div class="w-12 h-12 border-4 border-gray-200 border-t-cyan-600 rounded-full animate-spin mx-auto mb-2"></div>
             <p class="text-sm text-gray-600">Cargando código QR...</p>
           </div>
-          <div *ngIf="!loadingQR && qrCodeUrl" class="text-center">
+          <div *ngIf="qrCodeUrl" class="text-center">
             <p class="text-sm font-semibold text-gray-700 mb-3">Código QR de Verificación</p>
             <div class="relative inline-block">
               <img [src]="qrCodeUrl" alt="Código QR de la factura"

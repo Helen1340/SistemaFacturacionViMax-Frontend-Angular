@@ -8,9 +8,11 @@ import autoTable from 'jspdf-autotable';
 import { ReportServices, Usuario } from '../services/report.service';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { ApexAxisChartSeries, ApexChart, ApexLegend, ApexPlotOptions, ApexTitleSubtitle, ApexXAxis } from 'ng-apexcharts';
+import ApexCharts from 'apexcharts';
 import { MatTableModule } from '@angular/material/table';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -25,6 +27,7 @@ import { MatButtonModule } from '@angular/material/button';
     NgApexchartsModule,
     MatTableModule,
     MatPaginatorModule,
+    MatSortModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -38,6 +41,7 @@ export class ReporteUsuarios implements OnInit {
   dataSource = new MatTableDataSource<Usuario>([]);
   displayedColumns: string[] = ['nombre','correo','documento','rol','estado','fecha'];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   // Filtros
   searchQuery: string = '';
@@ -69,12 +73,13 @@ export class ReporteUsuarios implements OnInit {
           correo: item.email || item.correo || '',
           documento: item.document_number || item.documento || '',
           estado: item.status || item.estado || '',
-          fecha_creacion: item.created_at || null,
+          fecha_creacion: item.created_at || item.createdAt || item.creation_date || item.fecha_creacion || item.fecha || null,
           ultimo_acceso: item.last_access || item.ultimo_acceso || null,
           rol: item.role?.role_name || item.rol || '',
         }));
         this.dataSource.data = [...this.usuarios];
         if (this.paginator) this.dataSource.paginator = this.paginator;
+        if (this.sort) this.dataSource.sort = this.sort;
         this.renderUserCharts();
       },
       error: () => {},
@@ -172,7 +177,7 @@ export class ReporteUsuarios implements OnInit {
   }
 
   roleSeries: ApexAxisChartSeries = [{ name: 'Usuarios', data: [] }];
-  roleChart: ApexChart = { type: 'bar', height: 280 };
+  roleChart: ApexChart = { type: 'bar', height: 280, id: 'usersRoleChart', toolbar: { show: true } };
   roleXAxis: ApexXAxis = { categories: [] };
   rolePlotOptions: ApexPlotOptions = { bar: { horizontal: false } };
 
@@ -186,32 +191,27 @@ export class ReporteUsuarios implements OnInit {
     this.roleSeries = [{ name: 'Usuarios', data: Object.values(byRole) }];
   }
 
-  downloadChartPng(id: string, filename: string): void {
-    const el = document.getElementById(id) as HTMLElement;
-    if (!el) return;
-    const canvas = el.querySelector('canvas') as HTMLCanvasElement;
-    if (!canvas) return;
-    const url = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.click();
+  downloadChartPng(chartId: string, filename: string): void {
+    ApexCharts.exec(chartId, 'dataURI').then((data: any) => {
+      const url = data?.imgURI;
+      if (!url) return;
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.click();
+    });
   }
 
   exportChartsToPDF(): void {
     const doc = new jsPDF('p', 'mm', 'a4');
-    const addCanvas = (id: string, y: number, title: string) => {
-      const el = document.getElementById(id) as HTMLElement;
-      const canvas = el?.querySelector('canvas') as HTMLCanvasElement;
-      if (!canvas) return y;
-      const img = canvas.toDataURL('image/png', 1.0);
-      doc.text(title, 10, y);
-      doc.addImage(img, 'PNG', 10, y + 5, 190, 90);
-      return y + 100;
-    };
-    let y = 10;
-    y = addCanvas('chart-users-role', y, 'Usuarios por rol');
-    doc.save(`graficos_usuarios_${new Date().toISOString().slice(0,10)}.pdf`);
+    ApexCharts.exec('usersRoleChart', 'dataURI').then((data: any) => {
+      const img = data?.imgURI;
+      if (img) {
+        doc.text('Usuarios por rol', 10, 10);
+        doc.addImage(img, 'PNG', 10, 15, 190, 90);
+      }
+      doc.save(`graficos_usuarios_${new Date().toISOString().slice(0,10)}.pdf`);
+    });
   }
 
   // Menú acciones
