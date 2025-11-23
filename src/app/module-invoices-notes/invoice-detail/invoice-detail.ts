@@ -23,6 +23,14 @@ export class InvoiceDetail implements OnInit, OnDestroy {
   showQRScanner = false;
   scanResult: string | null = null;
   html5QrCode: Html5Qrcode | null = null;
+  qrData: string = '';
+  
+  async generateLocalQR(text: string): Promise<void> {
+    const qr = await import('qrcode');
+    const fn: any = (qr as any).toDataURL || (qr as any).default?.toDataURL;
+    const dataUrl: string = await fn(text, { width: 180 });
+    this.qrCodeUrl = dataUrl;
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -55,9 +63,9 @@ export class InvoiceDetail implements OnInit, OnDestroy {
         }
         
         this.invoice = invoice;
+        this.setSimulatedQR();
         this.loading = false;
-        // Cargar QR si la factura ya fue enviada a DIAN y tiene UUID
-        if (invoice.uuid && (invoice.dian_status === 'accepted' || invoice.dian_status === 'pending')) {
+        if (invoice.uuid) {
           this.loadQRCode(id);
         }
       },
@@ -72,19 +80,44 @@ export class InvoiceDetail implements OnInit, OnDestroy {
     this.loadingQR = true;
     this.invoiceService.generateQR(id).subscribe({
       next: (response) => {
-        // Laravel devuelve: { qr_url: "...", cufe: "..." }
-        if (response?.qr_url) {
-          this.qrCodeUrl = response.qr_url;
-        } else if (response?.data?.qr_url) {
-          this.qrCodeUrl = response.data.qr_url;
+        const text = (
+          response?.qr_text ||
+          response?.qr_code ||
+          response?.cufe ||
+          response?.data?.qr_text ||
+          response?.data?.qr_code ||
+          response?.data?.cufe ||
+          ''
+        ) as string;
+        if (typeof text === 'string' && text.trim().length > 0) {
+          this.generateLocalQR(text).then(() => {
+            this.qrData = text;
+            this.loadingQR = false;
+          }).catch(() => {
+            this.setSimulatedQR();
+            this.loadingQR = false;
+          });
+        } else {
+          this.setSimulatedQR();
+          this.loadingQR = false;
         }
-        this.loadingQR = false;
       },
       error: (err) => {
-        // No mostrar error al usuario si el QR no está disponible
+        this.setSimulatedQR();
         this.loadingQR = false;
       }
     });
+  }
+
+  private async setSimulatedQR(): Promise<void> {
+    const num = this.invoice?.invoice_number || '';
+    const uuid = this.invoice?.uuid || 'NO-UUID';
+    const total = this.invoice?.payable_amount ?? 0;
+    const date = this.invoice?.issue_date || '';
+    const buyer = this.invoice?.buyer?.document_number || '';
+    const text = `DIAN|NUM:${num}|UUID:${uuid}|TOTAL:${total}|CLIENT:${buyer}|DATE:${date}`;
+    await this.generateLocalQR(text);
+    this.qrData = text;
   }
 
   sendToDian(): void {

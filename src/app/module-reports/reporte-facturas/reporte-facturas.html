@@ -10,66 +10,73 @@
     <!-- 🔹 Filtros -->
     <div class="bg-white rounded-xl shadow-md p-4">
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-            <mat-form-field appearance="outline" class="md:col-span-2">
-                <mat-label>Número de factura</mat-label>
-                <input matInput [(ngModel)]="invoiceNumber" placeholder="Ej: FAC-001" />
-            </mat-form-field>
+            <div class="md:col-span-2">
+                <label class="text-sm font-medium text-black block mb-1">Número de factura</label>
+                <input type="text" [(ngModel)]="invoiceNumber" placeholder="Ej: FAC-001"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black placeholder-gray-400" />
+            </div>
 
-            <mat-form-field appearance="outline">
-                <mat-label>Estado</mat-label>
-                <mat-select [(ngModel)]="status" (selectionChange)="applyFilters()">
-                    <mat-option *ngFor="let s of statusOptions" [value]="s">{{ s }}</mat-option>
-                </mat-select>
-            </mat-form-field>
+            <div>
+                <label class="text-sm font-medium text-black block mb-1">Estado</label>
+                <select [(ngModel)]="status" (change)="applyFilters()"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black bg-white">
+                    <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
+                </select>
+            </div>
 
-            <mat-form-field appearance="outline">
-                <mat-label>Desde</mat-label>
-                <input matInput type="date" [(ngModel)]="startDate" />
-            </mat-form-field>
+            <div>
+                <label class="text-sm font-medium text-black block mb-1">Desde</label>
+                <input type="date" [(ngModel)]="startDate"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black bg-white" />
+            </div>
 
-            <mat-form-field appearance="outline">
-                <mat-label>Hasta</mat-label>
-                <input matInput type="date" [(ngModel)]="endDate" />
-            </mat-form-field>
+            <div>
+                <label class="text-sm font-medium text-black block mb-1">Hasta</label>
+                <input type="date" [(ngModel)]="endDate"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black bg-white" />
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <mat-form-field appearance="outline">
-                <mat-label>Cliente</mat-label>
-                <input matInput [(ngModel)]="clientName" placeholder="Nombre" />
-            </mat-form-field>
+            <div>
+                <label class="text-sm font-medium text-black block mb-1">Cliente</label>
+                <input type="text" [(ngModel)]="clientName" placeholder="Nombre"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black placeholder-gray-400" />
+            </div>
 
-            <mat-form-field appearance="outline">
-                <mat-label>Responsable</mat-label>
-                <input matInput [(ngModel)]="responsible" placeholder="Usuario" />
-            </mat-form-field>
+            <div>
+                <label class="text-sm font-medium text-black block mb-1">Responsable</label>
+                <input type="text" [(ngModel)]="responsible" placeholder="Usuario"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black placeholder-gray-400" />
+            </div>
 
-            <mat-form-field appearance="outline">
-                <mat-label>Tipo de documento</mat-label>
-                <mat-select [(ngModel)]="documentType" (selectionChange)="applyFilters()">
-                    <mat-option *ngFor="let d of documentOptions" [value]="d">{{ d }}</mat-option>
-                </mat-select>
-            </mat-form-field>
+            <div>
+                <label class="text-sm font-medium text-black block mb-1">Tipo de documento</label>
+                <select [(ngModel)]="documentType" (change)="applyFilters()"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black bg-white">
+                    <option *ngFor="let d of documentOptions" [value]="d">{{ d }}</option>
+                </select>
+            </div>
         </div>
 
-        <div class="flex justify-between mt-6 space-x-4">
-            <div>
+        <div class="flex flex-wrap justify-between mt-6 gap-3">
+            <div class="flex flex-wrap gap-3">
                 <button (click)="resetFilters()"
-                    class="bg-gray-400 text-white text-sm px-8 py-2 rounded-xl hover:bg-gray-600 transition mr-3">
+                    class="w-full md:w-auto bg-gray-200 text-gray-800 text-sm px-6 py-2 rounded-xl hover:bg-gray-300 transition">
                     Limpiar filtros
                 </button>
                 <button (click)="applyFilters()"
-                    class="bg-cyan-600 text-white text-sm px-8 py-2 rounded-xl hover:bg-cyan-700 transition mr-3">
+                    class="w-full md:w-auto bg-cyan-200 text-cyan-900 text-sm px-6 py-2 rounded-xl border border-cyan-300 hover:bg-cyan-300 transition">
                     Buscar
                 </button>
             </div>
-            <div>
+            <div class="flex flex-wrap gap-3">
                 <button (click)="downloadCsv()"
-                    class="bg-blue-600 text-white text-sm px-8 py-2 rounded-xl hover:bg-blue-700 transition mr-3">
+                    class="w-full md:w-auto bg-blue-200 text-blue-900 text-sm px-6 py-2 rounded-xl border border-blue-300 hover:bg-blue-300 transition">
                     Descargar CSV
                 </button>
                 <button (click)="exportFullReportPDF()"
-                    class="bg-purple-600 text-white text-sm px-8 py-2 rounded-xl hover:bg-purple-700 transition mr-3">
+                    class="w-full md:w-auto bg-purple-200 text-purple-900 text-sm px-6 py-2 rounded-xl border border-purple-300 hover:bg-purple-300 transition">
                     Reporte completo (PDF)
                 </button>
             </div>
@@ -80,38 +87,49 @@
         <div class="bg-white rounded-xl shadow-md p-4">
             <h3 class="text-sm font-semibold mb-3">Totales por estado</h3>
             <div class="flex justify-end mb-2">
-                <button (click)="downloadChartPng('chart-invoices-status','facturas_estado.png')" class="text-xs px-3 py-1 rounded bg-blue-600 text-white">Descargar PNG</button>
+                <button (click)="downloadChartPng('chart-invoices-status','facturas_estado.png')"
+                    class="text-xs px-3 py-1 rounded bg-blue-200 text-blue-900 border border-blue-300 hover:bg-blue-300">Descargar
+                    PNG</button>
             </div>
             <div id="chart-invoices-status">
-                <apx-chart [series]="statusSeries" [labels]="statusLabels" [chart]="statusChart"></apx-chart>
+                <apx-chart #statusChartComp [series]="statusSeries" [labels]="statusLabels" [chart]="statusChart"
+                    [colors]="statusColors"></apx-chart>
             </div>
         </div>
         <div class="bg-white rounded-xl shadow-md p-4">
-            <h3 class="text-sm font-semibold mb-3">Totales por mes</h3>
+            <h3 class="text-sm font-semibold mb-3">Número de facturas por mes</h3>
             <div class="flex justify-end mb-2">
-                <button (click)="downloadChartPng('chart-invoices-month','facturas_mes.png')" class="text-xs px-3 py-1 rounded bg-blue-600 text-white">Descargar PNG</button>
+                <button (click)="downloadChartPng('chart-invoices-month','facturas_mes.png')"
+                    class="text-xs px-3 py-1 rounded bg-blue-200 text-blue-900 border border-blue-300 hover:bg-blue-300">Descargar
+                    PNG</button>
             </div>
             <div id="chart-invoices-month">
-                <apx-chart [series]="monthSeries" [xaxis]="monthXAxis" [chart]="monthChart"></apx-chart>
+                <apx-chart #monthChartComp [series]="monthSeries" [xaxis]="monthXAxis" [chart]="monthChart"
+                    [colors]="monthColors"></apx-chart>
             </div>
         </div>
         <div class="bg-white rounded-xl shadow-md p-4">
-            <h3 class="text-sm font-semibold mb-3">Top clientes</h3>
+            <h3 class="text-sm font-semibold mb-3">Top clientes por cantidad</h3>
             <div class="flex justify-end mb-2">
-                <button (click)="downloadChartPng('chart-invoices-topclients','top_clientes.png')" class="text-xs px-3 py-1 rounded bg-blue-600 text-white">Descargar PNG</button>
+                <button (click)="downloadChartPng('chart-invoices-topclients','top_clientes.png')"
+                    class="text-xs px-3 py-1 rounded bg-blue-200 text-blue-900 border border-blue-300 hover:bg-blue-300">Descargar
+                    PNG</button>
             </div>
             <div id="chart-invoices-topclients">
-                <apx-chart [series]="topSeries" [xaxis]="topXAxis" [chart]="topChart" [plotOptions]="topPlotOptions"></apx-chart>
+                <apx-chart #topChartComp [series]="topSeries" [xaxis]="topXAxis" [chart]="topChart"
+                    [plotOptions]="topPlotOptions" [colors]="topColors"></apx-chart>
             </div>
         </div>
     </div>
 
-    <div class="mt-4 flex justify-end">
-        <button (click)="exportChartsToPDF()" class="text-xs px-4 py-2 rounded bg-red-600 text-white">Exportar gráficos a PDF</button>
+    <div class="mt-4 flex flex-wrap justify-end gap-3">
+        <button (click)="exportChartsToPDF()"
+            class="w-full md:w-auto text-xs px-4 py-2 rounded bg-red-200 text-red-900 border border-red-300 hover:bg-red-300">Exportar
+            gráficos a PDF</button>
     </div>
 
     <!-- 🔹 Tabla -->
-    <div class="mt-6 bg-white rounded-2xl shadow overflow-hidden">
+    <div class="mt-6 bg-white rounded-2xl shadow overflow-x-auto">
         <div class="p-2">
             <table mat-table [dataSource]="dataSource" class="w-full">
                 <ng-container matColumnDef="fecha">
@@ -130,13 +148,9 @@
                     <th mat-header-cell *matHeaderCellDef>Cliente</th>
                     <td mat-cell *matCellDef="let i">{{ i.cliente }}</td>
                 </ng-container>
-                <ng-container matColumnDef="nit">
-                    <th mat-header-cell *matHeaderCellDef>NIT</th>
-                    <td mat-cell *matCellDef="let i">&nbsp;</td>
-                </ng-container>
-                <ng-container matColumnDef="responsable">
-                    <th mat-header-cell *matHeaderCellDef>Responsable</th>
-                    <td mat-cell *matCellDef="let i">&nbsp;</td>
+                <ng-container matColumnDef="cc">
+                    <th mat-header-cell *matHeaderCellDef>CC</th>
+                    <td mat-cell *matCellDef="let i">{{ i.cc }}</td>
                 </ng-container>
                 <ng-container matColumnDef="total">
                     <th mat-header-cell *matHeaderCellDef>Total</th>
@@ -144,7 +158,7 @@
                 </ng-container>
                 <ng-container matColumnDef="estado">
                     <th mat-header-cell *matHeaderCellDef>Estado</th>
-                    <td mat-cell *matCellDef="let i">{{ i.estado }}</td>
+                    <td mat-cell *matCellDef="let i"><span [ngClass]="estadoClass(i.estado)">{{ i.estado }}</span></td>
                 </ng-container>
 
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

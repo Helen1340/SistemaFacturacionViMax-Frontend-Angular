@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ToastService } from './toast.service';
 
@@ -59,10 +59,10 @@ export class FirebaseService {
 
   private async saveToken(userId: number, token: string): Promise<void> {
     try {
+      const headers = this.getAuthHeaders();
       await this.http.post(`${this.apiUrl}/fcm-token`, {
-        user_id: userId,
         fcm_token: token
-      }).toPromise();
+      }, headers).toPromise();
       console.log('✅ Token guardado en backend');
     } catch (error) {
       console.error('Error guardando token:', error);
@@ -97,10 +97,15 @@ export class FirebaseService {
 
   logout(): void {
     const userId = localStorage.getItem('userId');
-    if (userId) {
-      this.http.delete(`${this.apiUrl}/fcm-token?user_id=${userId}`).subscribe();
-    }
+    const headers = this.getAuthHeaders();
+    this.http.delete(`${this.apiUrl}/fcm-token`, headers).subscribe();
     localStorage.clear();
     this.router.navigate(['/login']);
+  }
+
+  private getAuthHeaders(): { headers: HttpHeaders } {
+    const raw = localStorage.getItem('token') || localStorage.getItem('access_token') || '';
+    const token = raw.startsWith('Bearer ') ? raw : `Bearer ${raw}`;
+    return { headers: new HttpHeaders({ Authorization: token }) };
   }
 }

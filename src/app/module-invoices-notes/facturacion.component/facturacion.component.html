@@ -83,8 +83,8 @@
 
     <!-- TABLA -->
     <div class="bg-white rounded-2xl shadow overflow-hidden">
-        <div class="overflow-x-auto overflow-y-auto max-h-[375px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-            <table class="w-full min-w-[600px] table-fixed text-xs sm:text-sm">
+        <div class="overflow-x-auto overflow-y-auto max-h-[340px] md:max-h-[375px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+            <table class="w-full min-w-[520px] sm:min-w-[720px] table-fixed text-xs sm:text-sm">
                 <thead class="bg-gray-100 text-gray-800 text-left sticky top-0 z-10">
                     <tr>
                         <th class="px-4 py-3 font-semibold sm:w-16">#</th>
@@ -102,7 +102,7 @@
                         class="border-t border-gray-200 hover:bg-gray-50">
                         <td class="px-4 py-3">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                         <td class="px-4 py-3 font-semibold text-gray-800">{{ factura.invoice_number }}</td>
-                        <td class="px-4 py-3 text-gray-700">
+                        <td class="px-4 py-3 text-gray-700 whitespace-normal break-words">
                           {{ getBuyerDisplay(factura) }}
                         </td>
                         <td class="px-4 py-3 text-right text-gray-800">$ {{ factura.payable_amount |
