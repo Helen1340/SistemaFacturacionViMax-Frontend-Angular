@@ -136,8 +136,8 @@ export class ReportePagos implements OnInit {
   private loadPayments(): void {
     const params: any = {
       cliente: this.clientSearch || undefined,
-      desde: this.startDate || undefined,
-      hasta: this.endDate || undefined,
+      desde: this.fmt(this.startDate) || undefined,
+      hasta: this.fmt(this.endDate) || undefined,
     };
     this.reportService.getPayments(params).subscribe({
       next: (data) => {
@@ -159,14 +159,15 @@ export class ReportePagos implements OnInit {
 
   private loadPaymentSummary(): void {
     const params: any = {
-      desde: this.startDate || undefined,
-      hasta: this.endDate || undefined,
+      desde: this.fmt(this.startDate) || undefined,
+      hasta: this.fmt(this.endDate) || undefined,
     };
     this.reportService.getPaymentSummary(params).subscribe({
       next: (summary) => {
         const byMonth = summary?.totales_por_mes || {};
+        const labels = Object.keys(byMonth).sort();
         const byMethod = summary?.totales_por_metodo || {};
-        this.renderPaymentsMonthChart(byMonth);
+        this.renderPaymentsMonthChart({ labels, values: labels.map(k => Number((byMonth as any)[k])) });
         this.renderPaymentsMethodChart(byMethod);
       },
       error: () => {},
@@ -174,8 +175,8 @@ export class ReportePagos implements OnInit {
   }
 
   private renderPaymentsMonthChart(byMonth: any): void {
-    const labels = Object.keys(byMonth);
-    const data = Object.values(byMonth).map((v: any) => Number(v));
+    const labels = Array.isArray(byMonth.labels) ? byMonth.labels : Object.keys(byMonth);
+    const data = Array.isArray(byMonth.values) ? byMonth.values : Object.values(byMonth).map((v: any) => Number(v));
     const ctx = document.getElementById('chart-payments-month') as HTMLCanvasElement;
     if (!ctx) return;
     if ((this as any)._paymentsMonthChart) (this as any)._paymentsMonthChart.destroy();
@@ -184,6 +185,13 @@ export class ReportePagos implements OnInit {
       data: { labels, datasets: [{ label: 'Pagos por mes', data, borderColor: '#3b82f6', backgroundColor: '#93c5fd' }] },
       options: { responsive: true, scales: { y: { beginAtZero: true } } },
     });
+  }
+
+  private fmt(d: string): string {
+    if (!d) return '';
+    const t = new Date(d);
+    if (isNaN(t.getTime())) return d;
+    return t.toISOString().slice(0, 10);
   }
 
   private renderPaymentsMethodChart(byMethod: any): void {

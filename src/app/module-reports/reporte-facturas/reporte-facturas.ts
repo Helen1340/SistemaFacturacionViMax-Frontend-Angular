@@ -7,7 +7,8 @@ import { saveAs } from 'file-saver';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexLegend, ApexPlotOptions, ApexTitleSubtitle, ApexXAxis } from 'ng-apexcharts';
+import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexLegend, ApexPlotOptions, ApexTitleSubtitle, ApexXAxis, ChartComponent } from 'ng-apexcharts';
+import ApexCharts from 'apexcharts';
 import { MatTableModule } from '@angular/material/table';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -32,6 +33,7 @@ interface Invoice {
 
 @Component({
   selector: 'app-reporte-facturas',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -52,7 +54,7 @@ interface Invoice {
 export class ReporteFacturas implements OnInit {
   invoices: Factura[] = [];
   dataSource = new MatTableDataSource<Factura>([]);
-  displayedColumns: string[] = ['fecha', 'tipo', 'numero', 'cliente', 'nit', 'responsable', 'total', 'estado'];
+  displayedColumns: string[] = ['fecha', 'tipo', 'numero', 'cliente', 'cc', 'total', 'estado'];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   // filtros
@@ -65,7 +67,7 @@ export class ReporteFacturas implements OnInit {
   documentType = 'Todos';
 
   // opciones para selects
-  statusOptions = ['Todos', 'Borrador', 'Emitida', 'Anulada'];
+  statusOptions = ['Todos', 'draft', 'issued', 'cancelled'];
   documentOptions = ['Todos', 'Factura Electrónica', 'Nota Crédito', 'Nota Débito'];
 
   loading = false;
@@ -73,7 +75,6 @@ export class ReporteFacturas implements OnInit {
 
   ngOnInit(): void {
     this.loadInvoices();
-    this.loadInvoiceSummary();
   }
 
   mapEstado(estado: string): string {
@@ -91,7 +92,6 @@ export class ReporteFacturas implements OnInit {
 
   applyFilters(): void {
     this.loadInvoices();
-    this.loadInvoiceSummary();
   }
 
   // 🔹 limpiar filtros
@@ -179,17 +179,17 @@ export class ReporteFacturas implements OnInit {
     const params: any = {
       numero_factura: this.invoiceNumber || undefined,
       cliente: this.clientName || undefined,
-      desde: this.startDate || undefined,
-      hasta: this.endDate || undefined,
+      desde: this.fmt(this.startDate) || undefined,
+      hasta: this.fmt(this.endDate) || undefined,
       estado: this.status && this.status !== 'Todos' ? this.status : undefined,
     };
     this.loading = true;
     this.invoiceService.getInvoices(params).subscribe({
       next: (data) => {
         this.invoices = data.map((item: any) => {
-          const subtotal = this.toNumber(item.subtotal || item.valor_subtotal);
-          const impuestos = this.toNumber(item.impuestos || item.valor_impuestos);
-          const totalPrimario = this.toNumber(item.total || item.valor_total || item.payment?.valor_pagado);
+          const subtotal = this.toNumber(item.sub_total || item.subtotal || item.valor_subtotal);
+          const impuestos = this.toNumber(item.total_tax || item.impuestos || item.valor_impuestos);
+          const totalPrimario = this.toNumber(item.total_invoice || item.total || item.valor_total || item.payment?.valor_pagado);
           const total = totalPrimario > 0 ? totalPrimario : subtotal + impuestos;
           return {
             numero: item.invoice_number || item.numero_factura || '',
@@ -199,10 +199,13 @@ export class ReporteFacturas implements OnInit {
             impuestos,
             total,
             cliente: (item.buyer?.first_name || item.cliente_nombre || item.buyer_name || ''),
+            cc: (item.buyer?.document_number || item.cliente_documento || ''),
           } as Factura;
         });
         this.dataSource.data = [...this.invoices];
         if (this.paginator) this.dataSource.paginator = this.paginator;
+        this.updateChartsFromData();
+        this.loadInvoiceSummary();
         this.loading = false;
       },
       error: () => { this.loading = false; },
@@ -211,68 +214,119 @@ export class ReporteFacturas implements OnInit {
 
   statusSeries: number[] = [];
   statusLabels: string[] = [];
-  statusChart: ApexChart = { type: 'pie', height: 280 };
+  statusColors: string[] = ['#10b981', '#f59e0b', '#ef4444'];
+  statusChart: ApexChart = { type: 'pie', height: 280, id: 'chart-invoices-status' };
 
   monthSeries: ApexAxisChartSeries = [{ name: 'Cantidad', data: [] }];
-  monthChart: ApexChart = { type: 'line', height: 280 };
+  monthChart: ApexChart = { type: 'line', height: 280, id: 'chart-invoices-month' };
   monthXAxis: ApexXAxis = { categories: [] };
+  monthColors: string[] = ['#0891b2'];
 
-  topSeries: ApexAxisChartSeries = [{ name: 'Total', data: [] }];
-  topChart: ApexChart = { type: 'bar', height: 280 };
+  topSeries: ApexAxisChartSeries = [{ name: 'Cantidad', data: [] }];
+  topChart: ApexChart = { type: 'bar', height: 280, id: 'chart-invoices-topclients' };
   topXAxis: ApexXAxis = { categories: [] };
   topPlotOptions: ApexPlotOptions = { bar: { horizontal: true } };
+  topColors: string[] = ['#0891b2'];
+
+  @ViewChild('statusChartComp') statusChartComp!: ChartComponent;
+  @ViewChild('monthChartComp') monthChartComp!: ChartComponent;
+  @ViewChild('topChartComp') topChartComp!: ChartComponent;
 
   private loadInvoiceSummary(): void {
     const params: any = {
-      desde: this.startDate || undefined,
-      hasta: this.endDate || undefined,
+      desde: this.fmt(this.startDate) || undefined,
+      hasta: this.fmt(this.endDate) || undefined,
     };
     this.invoiceService.getInvoiceSummary(params).subscribe({
       next: (summary) => {
         const byStatus = summary?.totales_por_estado || {};
         const byMonth = summary?.cantidad_por_mes || {};
+        const hasStatus = byStatus && Object.keys(byStatus).length > 0;
+        const hasMonth = byMonth && Object.keys(byMonth).length > 0;
+        const monthKeys = Object.keys(byMonth || {}).sort();
         const topClients = summary?.top_clientes || [];
-        this.statusLabels = Object.keys(byStatus);
-        this.statusSeries = Object.values(byStatus).map((v: any) => Number(v));
-        this.monthXAxis = { categories: Object.keys(byMonth) };
-        this.monthSeries = [{ name: 'Cantidad', data: Object.values(byMonth).map((v: any) => Number(v)) }];
+        if (hasStatus) {
+          this.statusLabels = Object.keys(byStatus);
+          this.statusSeries = Object.values(byStatus).map((v: any) => Number(v));
+          this.statusColors = this.statusLabels.map((l) => this.colorForEstado(l));
+        }
+        if (hasMonth) {
+          this.monthXAxis = { categories: monthKeys };
+          this.monthSeries = [{ name: 'Cantidad', data: monthKeys.map((k) => Number((byMonth as any)[k])) }];
+        }
         this.topXAxis = { categories: topClients.map((c: any) => c?.cliente || c?.buyer || '') };
-        this.topSeries = [{ name: 'Total', data: topClients.map((c: any) => Number(c?.total || c?.monto || 0)) }];
+        this.topSeries = [{ name: 'Cantidad', data: topClients.map((c: any) => Number(c?.cantidad || c?.count || 0)) }];
       },
       error: () => {},
     });
   }
 
-  downloadChartPng(id: string, filename: string): void {
-    const el = document.getElementById(id) as HTMLElement;
-    if (!el) return;
-    const canvas = el.querySelector('canvas') as HTMLCanvasElement;
-    if (!canvas) return;
-    const url = canvas.toDataURL('image/png');
+  private updateChartsFromData(): void {
+    const byStatus: Record<string, number> = {};
+    const byMonth: Record<string, number> = {};
+    (this.dataSource.data || []).forEach((f) => {
+      const e = (f.estado || '').toLowerCase();
+      byStatus[e] = (byStatus[e] || 0) + 1;
+      const d = (f.fecha || '').slice(0, 7);
+      if (d) byMonth[d] = (byMonth[d] || 0) + 1;
+    });
+    const monthKeys = Object.keys(byMonth).sort();
+    this.statusLabels = Object.keys(byStatus);
+    this.statusSeries = Object.values(byStatus).map((v) => Number(v));
+    this.statusColors = this.statusLabels.map((l) => this.colorForEstado(l));
+    this.monthXAxis = { categories: monthKeys };
+    this.monthSeries = [{ name: 'Cantidad', data: monthKeys.map((k) => Number(byMonth[k])) }];
+  }
+
+  estadoClass(e: string): string {
+    const k = (e || '').toLowerCase();
+    if (k === 'emitida') return 'estado-chip estado-emitida-chip';
+    if (k === 'borrador') return 'estado-chip estado-borrador-chip';
+    if (k === 'anulada') return 'estado-chip estado-anulada-chip';
+    return 'estado-chip';
+  }
+
+  private colorForEstado(e: string): string {
+    const k = (e || '').toLowerCase();
+    if (k === 'emitida') return '#10b981';
+    if (k === 'borrador') return '#f59e0b';
+    if (k === 'anulada') return '#ef4444';
+    return '#0891b2';
+  }
+
+  private fmt(d: string): string {
+    if (!d) return '';
+    const t = new Date(d);
+    if (isNaN(t.getTime())) return d;
+    return t.toISOString().slice(0, 10);
+  }
+
+  async downloadChartPng(id: string, filename: string): Promise<void> {
+    const url = await this.getChartImageDataUrl(id);
+    if (!url) return;
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
     link.click();
   }
 
-  exportChartsToPDF(): void {
+  async exportChartsToPDF(): Promise<void> {
     const doc = new jsPDF('p', 'mm', 'a4');
-    const addCanvas = (id: string, y: number, title: string) => {
-      const canvas = document.getElementById(id) as HTMLCanvasElement;
-      if (!canvas) return y;
-      const img = canvas.toDataURL('image/png', 1.0);
+    const addImg = async (id: string, y: number, title: string) => {
+      const img = await this.getChartImageDataUrl(id);
+      if (!img) return y;
       doc.text(title, 10, y);
       doc.addImage(img, 'PNG', 10, y + 5, 190, 90);
       return y + 100;
     };
     let y = 10;
-    y = addCanvas('chart-invoices-status', y, 'Totales por estado');
-    y = addCanvas('chart-invoices-month', y, 'Totales por mes');
-    y = addCanvas('chart-invoices-topclients', y, 'Top clientes');
+    y = await addImg('chart-invoices-status', y, 'Totales por estado');
+    y = await addImg('chart-invoices-month', y, 'Número de facturas por mes');
+    y = await addImg('chart-invoices-topclients', y, 'Top clientes por cantidad');
     doc.save(`graficos_facturas_${new Date().toISOString().slice(0,10)}.pdf`);
   }
 
-  exportFullReportPDF(): void {
+  async exportFullReportPDF(): Promise<void> {
     const doc = new jsPDF('p', 'mm', 'a4');
     let y = 10;
     const title = 'Reporte de Facturas';
@@ -280,10 +334,9 @@ export class ReporteFacturas implements OnInit {
     doc.text(title, 10, y);
     y += 8;
 
-    const addCanvas = (id: string, title2: string) => {
-      const canvas = document.getElementById(id) as HTMLCanvasElement;
-      if (!canvas) return;
-      const img = canvas.toDataURL('image/png', 1.0);
+    const addImg = async (id: string, title2: string) => {
+      const img = await this.getChartImageDataUrl(id);
+      if (!img) return;
       doc.setFontSize(12);
       doc.text(title2, 10, y);
       y += 5;
@@ -291,9 +344,9 @@ export class ReporteFacturas implements OnInit {
       y += 85;
     };
 
-    addCanvas('chart-invoices-month', 'Número de facturas por mes');
-    addCanvas('chart-invoices-status', 'Estado de facturas');
-    addCanvas('chart-invoices-topclients', 'Top clientes');
+    await addImg('chart-invoices-month', 'Número de facturas por mes');
+    await addImg('chart-invoices-status', 'Estado de facturas');
+    await addImg('chart-invoices-topclients', 'Top clientes');
 
     const byStatusHeader = [['Estado', 'Total']];
     const byStatus = (this as any)._statusChart?.data || { labels: [], datasets: [{ data: [] }] };
@@ -315,5 +368,25 @@ export class ReporteFacturas implements OnInit {
     autoTable(doc, { startY: afterStatus + 6, head: topHeader, body: topBody });
 
     doc.save(`reporte_facturas_${new Date().toISOString().slice(0,10)}.pdf`);
+  }
+
+  private async getChartImageDataUrl(id: string): Promise<string | null> {
+    let comp: ChartComponent | undefined;
+    if (id === 'chart-invoices-status') comp = this.statusChartComp;
+    else if (id === 'chart-invoices-month') comp = this.monthChartComp;
+    else if (id === 'chart-invoices-topclients') comp = this.topChartComp;
+    // 1) Intento con instancia del componente
+    if (comp && comp.chart) {
+      try {
+        const res = await (comp.chart as any).dataURI();
+        return (res?.imgURI as string) || (res?.blobURI as string) || null;
+      } catch {}
+    }
+    // 2) Fallback usando ApexCharts.exec y el id del chart
+    try {
+      const res2 = await (ApexCharts as any).exec(id, 'dataURI');
+      return (res2?.imgURI as string) || (res2?.blobURI as string) || null;
+    } catch {}
+    return null;
   }
 }

@@ -21,7 +21,7 @@
   </div>
 
   <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-4 mb-4">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">Buscar</label>
         <div class="relative">
@@ -38,14 +38,14 @@
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Filtro</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
         <select [(ngModel)]="filterValue" (change)="onFilter()"
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
           <option value="">Todos</option>
-          <option value="factura">Factura</option>
-          <option value="nota_credito">Nota de Crédito</option>
-          <option value="nota_debito">Nota de Débito</option>
           <option value="sistema">Sistema</option>
+          <option value="dian_operativa">DIAN Operativa</option>
+          <option value="cumplimiento">Cumplimiento</option>
+          <option value="operativa">Operativa</option>
         </select>
       </div>
 
@@ -59,6 +59,16 @@
         <label class="block text-sm font-medium text-gray-700 mb-2">Hasta</label>
         <input type="date" [(ngModel)]="fechaHasta" (change)="onFilter()"
                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Límite</label>
+        <div class="flex gap-2">
+          <input type="number" min="1" [(ngModel)]="limitValue"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                 placeholder="100">
+          <button (click)="refresh()" class="px-4 py-2 text-sm bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200">Refrescar</button>
+        </div>
       </div>
     </div>
   </div>

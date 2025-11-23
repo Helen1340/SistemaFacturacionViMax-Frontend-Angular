@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reportes',
+  standalone: true,
   imports: [ CommonModule ],
   templateUrl: './reportes.html',
   styleUrl: './reportes.css'

@@ -21,6 +21,8 @@ export interface Factura {
   impuestos: number;
   total: number;
   cliente: string;
+  cc?: string;
+  responsable?: string;
 }
 
 export interface ResumenFacturas {
@@ -148,7 +150,7 @@ export class ReportServices {
     return this.http.get(`${this.baseUrl}/usuarios`, { params: httpParams, responseType: 'blob' });
   }
 
-  getProductos(params?: { texto?: string; estado?: string; desde?: string; hasta?: string; page?: number; per_page?: number }): Observable<{ data: ProductoItem[]; total: number }> {
+  getProductos(params?: { texto?: string; estado?: string; desde?: string; hasta?: string; page?: number; perPage?: number }): Observable<{ data: ProductoItem[]; total: number }> {
     let httpParams = new HttpParams();
     if (params) {
       Object.entries(params).forEach(([k, v]) => {
@@ -176,7 +178,7 @@ export class ReportServices {
     return this.http.get<ResumenProductos>(`${this.baseUrl}/resumen/productos`, { params: httpParams });
   }
 
-  getServicios(params?: { texto?: string; estado?: string; desde?: string; hasta?: string; page?: number; per_page?: number }): Observable<{ data: ServicioItem[]; total: number }> {
+  getServicios(params?: { texto?: string; estado?: string; desde?: string; hasta?: string; page?: number; perPage?: number }): Observable<{ data: ServicioItem[]; total: number }> {
     let httpParams = new HttpParams();
     if (params) {
       Object.entries(params).forEach(([k, v]) => {

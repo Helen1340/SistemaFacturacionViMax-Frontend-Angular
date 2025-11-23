@@ -42,7 +42,11 @@ export class InvoiceCreate implements OnInit {
   error: string | null = null;
   success: string | null = null;
   createdInvoiceId: number | null = null;
+  createdInvoiceNumber: string | null = null;
   sendingToDian = false;
+  showQR = false;
+  qrText = '';
+  qrUrl = '';
   
   // Totales calculados
   subtotal = 0;
@@ -358,6 +362,7 @@ export class InvoiceCreate implements OnInit {
         this.success = `Factura ${invoice.invoice_number} creada exitosamente`;
         this.loading = false;
         this.createdInvoiceId = invoice.id; // Guardar el ID de la factura creada
+        this.createdInvoiceNumber = invoice.invoice_number || null;
         
         // Limpiar mensaje de éxito después de 5 segundos
         setTimeout(() => {
@@ -402,6 +407,7 @@ export class InvoiceCreate implements OnInit {
       }
     });
   }
+
 
   resetForm(): void {
     this.invoiceForm.reset({

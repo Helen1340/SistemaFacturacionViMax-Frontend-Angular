@@ -78,8 +78,17 @@ export class ClientService {
 
   /** Actualizar cliente */
   updateCliente(id: number, clienteData: any): Observable<any> {
+    const data = { ...clienteData, role_id: 4 };
     return this.http
-      .put<any>(`${this.apiUrl}/${id}`, clienteData, this.httpOptions)
+      .put<any>(`${this.apiUrl}/${id}`, data, this.httpOptions)
+      .pipe(catchError(this.handleError.bind(this)));
+  }
+
+  /** Actualización parcial (evita exigir current_password cuando no hay cambio de contraseña) */
+  patchCliente(id: number, clienteData: any): Observable<any> {
+    const data = { ...clienteData, role_id: 4 };
+    return this.http
+      .patch<any>(`${this.apiUrl}/${id}`, data, this.httpOptions)
       .pipe(catchError(this.handleError.bind(this)));
   }
 

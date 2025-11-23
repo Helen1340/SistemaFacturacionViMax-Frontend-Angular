@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -22,15 +22,19 @@ export class AuthService {
   }
 
   // 🔹 Perfil actual (requiere token)
+  private getAuthHeaders(): { headers: HttpHeaders } {
+    const raw = localStorage.getItem('token') || localStorage.getItem('access_token') || '';
+    const token = raw?.startsWith('Bearer ') ? raw : `Bearer ${raw}`;
+    return { headers: new HttpHeaders({ Authorization: token }) };
+  }
+
   me(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/me`);
+    return this.http.get(`${this.apiUrl}/me`, this.getAuthHeaders());
   }
 
   // 🔹 Logout
   logout(): Observable<any> {
-    this.clearToken();
-    this.clearUser();
-    return this.http.post(`${this.apiUrl}/logout`, {});
+    return this.http.post(`${this.apiUrl}/logout`, {}, this.getAuthHeaders());
   }
 
   // 🧠 TOKEN

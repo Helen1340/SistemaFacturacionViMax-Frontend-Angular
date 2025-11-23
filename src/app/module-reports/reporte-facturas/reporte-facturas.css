@@ -24,22 +24,60 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Scrollbar fino */
+/* Scrollbar sencillo */
 ::-webkit-scrollbar {
-    width: 6px;              /* ancho del scroll vertical */
-    height: 6px;             /* alto del scroll horizontal */
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: #f1f1f1;     /* fondo */
-    border-radius: 4px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: #9da6a8b7;     /* color del scroll */
-    border-radius: 4px;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: #718096;     /* color al pasar el mouse */
-  }
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
+}
+
+/* Tabla Material: encabezado y filas */
+.mat-header-row {
+  background-color: #f8fafc;
+}
+.mat-header-cell {
+  font-weight: 600;
+  color: #1f2937;
+}
+.mat-row:nth-child(even) {
+  background-color: #fafafa;
+}
+.mat-row:hover {
+  background-color: #f3f4f6;
+}
+.mat-cell, .mat-header-cell {
+  padding: 12px 16px;
+}
+.mat-column-total {
+  text-align: right;
+  font-weight: 600;
+  color: #0f172a;
+}
+.estado-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 12px;
+}
+.estado-emitida-chip {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+.estado-borrador-chip {
+  background-color: #fde68a;
+  color: #92400e;
+}
+.estado-anulada-chip {
+  background-color: #fecaca;
+  color: #7f1d1d;
+}
