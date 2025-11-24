@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, map } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ItemTable {
   id: number;
@@ -70,7 +71,7 @@ interface MeasurementUnit {
   providedIn: 'root'
 })
 export class ProductosServicioService {
-  private apiUrl = 'http://localhost/api';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 // Interfaces
 export interface Product {
@@ -140,7 +141,7 @@ export interface ApiResponse<T> {
   providedIn: 'root'
 })
 export class InvoiceService {
-  private apiUrl = 'http://localhost/api/invoices'; // Ajusta según tu configuración
+  private apiUrl = `${environment.apiUrl}/invoices`;
 
   constructor(private http: HttpClient) {}
 

@@ -5,13 +5,14 @@ import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ToastService } from './toast.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
   private messaging: any;
-  private apiUrl = 'http://localhost/api'; // 👈 Cambia por tu URL de producción
+  private apiUrl = environment.apiUrl;
 
   private vapidKey = 'BEoMuStchY28dADWOzU97hz_EaU7T_w6bWUAiPlz5d-ENum6Ptpwy4cMrLHwwOGgEn4CyrJQnki1fp-iRvOKDrQ';
 

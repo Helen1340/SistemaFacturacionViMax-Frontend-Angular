@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ViMax</string>
+    <string name="title_activity_main">ViMax</string>
+    <string name="package_name">com.Vimax.miapp</string>
+    <string name="custom_url_scheme">com.Vimax.miapp</string>
+</resources>

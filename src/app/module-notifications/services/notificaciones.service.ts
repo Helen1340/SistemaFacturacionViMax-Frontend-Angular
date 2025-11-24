@@ -3,13 +3,14 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import * as Ably from 'ably';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificacionesService {
-  private apiUrl = 'http://localhost/api/notifications';
-  private apiBase = 'http://localhost/api';
+  private apiUrl = `${environment.apiUrl}/notifications`;
+  private apiBase = environment.apiUrl;
   private ably!: Ably.Realtime;
   private channel!: Ably.RealtimeChannel; // ✅ Cambio 1: RealtimeChannel en lugar de Types.RealtimeChannelCallbacks
 

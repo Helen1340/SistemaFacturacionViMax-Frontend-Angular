@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 export interface BackupPayload {
   location: 'local' | 'drive';
@@ -17,7 +18,7 @@ export interface BackupItem {
 
 @Injectable({ providedIn: 'root' })
 export class BackupService {
-  private readonly baseUrl = 'http://localhost/api/backups';
+  private readonly baseUrl = `${environment.apiUrl}/backups`;
 
   constructor(private http: HttpClient) {}
 
