@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 export type NoteType = 'credit' | 'debit';
 
@@ -32,7 +33,7 @@ export interface CreateNotePayload {
 
 @Injectable({ providedIn: 'root' })
 export class NoteService {
-  private baseUrl = 'http://localhost/api';
+  private baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
