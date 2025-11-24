@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { User } from '../usuarios/usuarios';
+import { environment } from '../../../environments/environment';
 
 export interface Role {
   id: number;
@@ -33,8 +34,8 @@ export interface CreateUserPayload {
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost/api/users';
-  private rolesUrl = 'http://localhost/api/roles';
+  private apiUrl = `${environment.apiUrl}/users`;
+  private rolesUrl = `${environment.apiUrl}/roles`;
 
   constructor(private http: HttpClient) {}
 

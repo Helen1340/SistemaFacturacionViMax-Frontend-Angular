@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 // Ajusta según la URL base de tu API Laravel
-const API_URL = 'http://localhost/api';
+const API_URL = environment.apiUrl;
 
 export interface NotificationPreference {
     notify_invoice_accepted: boolean;

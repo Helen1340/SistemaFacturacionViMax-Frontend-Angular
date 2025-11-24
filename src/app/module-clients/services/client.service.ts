@@ -7,12 +7,13 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { Cliente } from '../clientes/clientes';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClientService {
-  private apiUrl = 'http://localhost/api/users';
+  private apiUrl = `${environment.apiUrl}/users`;
 
   private httpOptions = {
     headers: new HttpHeaders({

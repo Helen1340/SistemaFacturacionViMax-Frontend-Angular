@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ResolutionService {
-  // 👉 URL DE LA API: Asegúrate de que esta URL sea correcta y tu servidor backend esté corriendo.
-  private apiUrl = 'http://localhost/api/dianNumberings'; 
+  private apiUrl = `${environment.apiUrl}/dianNumberings`;
 
   constructor(private http: HttpClient) {}
 

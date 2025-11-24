@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subject } from 'rxjs'; // 👈 Importamos Subject
+import { Observable, Subject } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImpuestosRetencionesService {
-
-  private apiUrl = 'http://localhost/api/taxes'; // AsegÃºrate que coincida con tus rutas Laravel
+  private apiUrl = `${environment.apiUrl}/taxes`;
 
   // 🌟 AÃ±adimos el Subject y el Observable pÃºblico
   private impuestoCreadoSource = new Subject<void>();
