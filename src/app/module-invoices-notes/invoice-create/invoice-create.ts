@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InvoiceService, Product, Service, Client, InvoiceItem } from '../services/invoice.service';
 import { LocalNotifications } from '@capacitor/local-notifications';
+import { ForegroundNotificationService } from '../../module-notifications/services/foreground-notification.service';
 
 interface SelectedItem {
   type: 'product' | 'service';
@@ -58,7 +59,8 @@ export class InvoiceCreate implements OnInit {
   constructor(
     private fb: FormBuilder,
     private invoiceService: InvoiceService,
-    private router: Router
+    private router: Router,
+    private foregroundNotification: ForegroundNotificationService
   ) {
     this.invoiceForm = this.fb.group({
       buyer_id: ['', Validators.required],
@@ -73,6 +75,79 @@ export class InvoiceCreate implements OnInit {
   ngOnInit(): void {
     this.loadCreateData();
     this.requestNotificationPermissions(); 
+  }
+
+  // ✅ MÉTODO PARA SOLICITAR PERMISOS
+  private async requestNotificationPermissions(): Promise<boolean> {
+    try {
+      console.log('🔔 Solicitando permisos de notificación...');
+      
+      const currentPermissions = await LocalNotifications.checkPermissions();
+      console.log('Permisos actuales:', currentPermissions);
+      
+      if (currentPermissions.display === 'granted') {
+        console.log('✅ Permisos ya concedidos');
+        return true;
+      }
+      
+      console.log('📱 Mostrando diálogo de permisos...');
+      const newPermissions = await LocalNotifications.requestPermissions();
+      console.log('Resultado de permisos:', newPermissions);
+      
+      if (newPermissions.display !== 'granted') {
+        console.log('❌ Usuario denegó permisos');
+        
+        setTimeout(() => {
+          if (confirm('Para recibir notificaciones de facturas, necesitas activar los permisos en Configuración de la app. ¿Quieres abrir configuración ahora?')) {
+            this.openAppSettings();
+          }
+        }, 1000);
+        
+        return false;
+      }
+      
+      console.log('✅ Permisos concedidos por el usuario');
+      return true;
+      
+    } catch (error) {
+      console.error('❌ Error solicitando permisos:', error);
+      return false;
+    }
+  }
+
+  // ✅ MÉTODO PARA NOTIFICACIÓN DE FACTURA CREADA
+  private async showInvoiceCreatedNotification(invoiceNumber: string, total: number): Promise<void> {
+    const formattedTotal = this.formatCurrency(total);
+    
+    await this.foregroundNotification.showForegroundNotification(
+      '✅ FACTURA CREADA', 
+      `Factura #${invoiceNumber} por ${formattedTotal}`
+    );
+  }
+
+  // ✅ MÉTODO PARA NOTIFICACIÓN DE ENVÍO A DIAN
+  private async showDianNotification(): Promise<void> {
+    await this.foregroundNotification.showForegroundNotification(
+      '📤 Factura enviada a DIAN', 
+      `Factura #${this.createdInvoiceNumber} enviada correctamente`
+    );
+  }
+
+  private async openAppSettings(): Promise<void> {
+    try {
+      console.log('Abre manualmente: Ajustes > Apps > [Tu App] > Notificaciones');
+      alert('Por ve a: Ajustes > Apps > [Nombre de tu App] > Notificaciones > Activar notificaciones');
+    } catch (error) {
+      console.error('Error abriendo configuración:', error);
+    }
+  }
+
+  // ✅ MÉTODO DE PRUEBA TEMPORAL
+  async probarNotificacion(): Promise<void> {
+    await this.foregroundNotification.showForegroundNotification(
+      '🎉 PRUEBA EXITOSA', 
+      'La notificación se muestra en PRIMER PLANO'
+    );
   }
 
   loadCreateData(): void {
@@ -148,32 +223,27 @@ export class InvoiceCreate implements OnInit {
       return;
     }
 
-    // Verificar si el item ya está agregado
     const existingIndex = this.selectedItems.findIndex(
       si => si.type === type && si.item.id === itemId
     );
 
     if (existingIndex >= 0) {
-      // Si ya existe, aumentar cantidad
       this.selectedItems[existingIndex].quantity += 1;
       this.updateItemTotals(existingIndex);
     } else {
-      // Agregar nuevo item
       const selectedItem: SelectedItem = {
         type,
         item,
         quantity: 1,
         discount: 0,
-        subtotal: 0, // Se calculará en updateItemTotals
+        subtotal: 0,
         taxes: 0,
         total: 0
       };
       
-      // Calcular totales del item
       this.updateItemTotalsForItem(selectedItem);
       this.selectedItems.push(selectedItem);
       
-      // Agregar al FormArray
       const itemFormGroup = this.fb.group({
         type: [type],
         id: [itemId],
@@ -194,7 +264,6 @@ export class InvoiceCreate implements OnInit {
 
   updateItemQuantity(index: number, quantity: number): void {
     if (quantity < 1 || isNaN(quantity)) {
-      // Restaurar valor anterior si es inválido
       const control = this.itemsFormArray.at(index);
       control.patchValue({ quantity: this.selectedItems[index].quantity });
       return;
@@ -204,7 +273,6 @@ export class InvoiceCreate implements OnInit {
     this.updateItemTotals(index);
     this.calculateTotals();
     
-    // Actualizar FormArray
     const control = this.itemsFormArray.at(index);
     control.patchValue({ quantity: this.selectedItems[index].quantity });
   }
@@ -219,7 +287,6 @@ export class InvoiceCreate implements OnInit {
     this.updateItemTotals(index);
     this.calculateTotals();
     
-    // Actualizar FormArray
     const control = this.itemsFormArray.at(index);
     control.patchValue({ discount: this.selectedItems[index].discount });
   }
@@ -230,14 +297,11 @@ export class InvoiceCreate implements OnInit {
   }
 
   updateItemTotalsForItem(item: SelectedItem): void {
-    // 1. Calcular subtotal: (precio unitario * cantidad) - descuento
     const lineSubtotal = (item.item.unit_price * item.quantity) - (item.discount || 0);
     item.subtotal = Math.max(0, Math.round(lineSubtotal * 100) / 100);
     
-    // 2. Calcular impuestos sobre el subtotal
     this.calculateItemTaxes(item);
     
-    // 3. Calcular total: subtotal + impuestos
     item.total = Math.round((item.subtotal + item.taxes) * 100) / 100;
   }
 
@@ -246,7 +310,6 @@ export class InvoiceCreate implements OnInit {
     
     if (item.item.taxes && item.item.taxes.length > 0) {
       item.item.taxes.forEach(tax => {
-        // Saltar impuestos inactivos
         if (tax.status && tax.status !== 'Activo') return;
         
         switch (tax.application_type) {
@@ -256,14 +319,12 @@ export class InvoiceCreate implements OnInit {
             }
             break;
           case 'ValorFijo':
-            // Buscar fixed_value en el objeto tax
             const fixedValue = tax.fixed_value || 0;
             if (fixedValue > 0) {
               taxes += fixedValue;
             }
             break;
           case 'Retencion':
-            // Las retenciones son negativas (restan del total)
             if (tax.percentage && tax.percentage > 0) {
               taxes -= (item.subtotal * tax.percentage) / 100;
             }
@@ -272,58 +333,45 @@ export class InvoiceCreate implements OnInit {
       });
     }
     
-    // Redondear a 2 decimales
     item.taxes = Math.round(taxes * 100) / 100;
   }
 
   calculateTotals(): void {
-    // Calcular subtotal (suma de todos los subtotales de items)
     this.subtotal = this.selectedItems.reduce((sum, item) => {
       return sum + (item.subtotal || 0);
     }, 0);
     
-    // Calcular total de impuestos (puede ser negativo si hay retenciones)
     this.totalTaxes = this.selectedItems.reduce((sum, item) => {
       return sum + (item.taxes || 0);
     }, 0);
     
-    // Calcular total de descuentos
     this.totalDiscount = this.selectedItems.reduce((sum, item) => {
       return sum + (item.discount || 0);
     }, 0);
     
-    // Calcular total: subtotal + impuestos (los impuestos pueden ser negativos por retenciones)
     this.total = this.subtotal + this.totalTaxes;
     
-    // Redondear a 2 decimales
     this.subtotal = Math.round(this.subtotal * 100) / 100;
     this.totalTaxes = Math.round(this.totalTaxes * 100) / 100;
     this.totalDiscount = Math.round(this.totalDiscount * 100) / 100;
     this.total = Math.round(this.total * 100) / 100;
     
-    // Asegurar que subtotal y descuentos no sean negativos
     this.subtotal = Math.max(0, this.subtotal);
     this.totalDiscount = Math.max(0, this.totalDiscount);
-    
-    // El total puede ser negativo si hay muchas retenciones, pero normalmente debería ser positivo
-    // No forzamos que sea positivo porque podría ser un caso válido
   }
 
   onSubmit(): void {
-    // Validar formulario
     if (this.invoiceForm.invalid) {
       this.error = 'Por favor complete todos los campos requeridos';
       this.invoiceForm.markAllAsTouched();
       return;
     }
 
-    // Validar que haya items
     if (this.selectedItems.length === 0) {
       this.error = 'Debe agregar al menos un producto o servicio a la factura';
       return;
     }
 
-    // Validar que todos los items tengan cantidad válida
     const invalidItems = this.selectedItems.filter(item => 
       !item.quantity || item.quantity < 1 || isNaN(item.quantity)
     );
@@ -333,7 +381,6 @@ export class InvoiceCreate implements OnInit {
       return;
     }
 
-    // Recalcular todos los totales antes de enviar
     this.selectedItems.forEach((item, index) => {
       this.updateItemTotals(index);
     });
@@ -343,7 +390,6 @@ export class InvoiceCreate implements OnInit {
     this.error = null;
     this.success = null;
 
-    // Preparar items para el backend
     const items: InvoiceItem[] = this.selectedItems.map(item => ({
       type: item.type,
       id: item.item.id,
@@ -363,11 +409,12 @@ export class InvoiceCreate implements OnInit {
       next: (invoice) => {
         this.success = `Factura ${invoice.invoice_number} creada exitosamente`;
         this.loading = false;
-        this.createdInvoiceId = invoice.id; // Guardar el ID de la factura creada
+        this.createdInvoiceId = invoice.id;
         this.createdInvoiceNumber = invoice.invoice_number || null;
         
+        // ✅ NOTIFICACIÓN CUANDO SE CREA LA FACTURA
         this.showInvoiceCreatedNotification(invoice.invoice_number, this.total);
-        // Limpiar mensaje de éxito después de 5 segundos
+        
         setTimeout(() => {
           this.success = null;
         }, 5000);
@@ -398,9 +445,9 @@ export class InvoiceCreate implements OnInit {
         this.sendingToDian = false;
         this.success = 'Factura enviada a la DIAN exitosamente. Redirigiendo...';
 
-        this.showLocalNotification('📤 Factura enviada a DIAN', `Factura #${this.createdInvoiceNumber} enviada correctamente`);
+        // ✅ NOTIFICACIÓN CUANDO SE ENVÍA A DIAN
+        this.showDianNotification();
         
-        // Redirigir a la vista de facturación después de 2 segundos
         setTimeout(() => {
           this.router.navigate(['/facturacion']);
         }, 2000);
@@ -413,7 +460,6 @@ export class InvoiceCreate implements OnInit {
     });
   }
 
-
   resetForm(): void {
     this.invoiceForm.reset({
       payment_means_code: '10',
@@ -422,7 +468,7 @@ export class InvoiceCreate implements OnInit {
     this.selectedItems = [];
     this.itemsFormArray.clear();
     this.calculateTotals();
-    this.createdInvoiceId = null; // Limpiar el ID de factura creada
+    this.createdInvoiceId = null;
     this.success = null;
     this.error = null;
   }
@@ -446,118 +492,4 @@ export class InvoiceCreate implements OnInit {
       minimumFractionDigits: 0
     }).format(value);
   }
-  private async requestNotificationPermissions(): Promise<boolean> {
-    try {
-      console.log('🔔 Solicitando permisos de notificación...');
-      
-      // 1. Primero verificar el estado actual
-      const currentPermissions = await LocalNotifications.checkPermissions();
-      console.log('Permisos actuales:', currentPermissions);
-      
-      // 2. Si ya están concedidos, no hacer nada
-      if (currentPermissions.display === 'granted') {
-        console.log('✅ Permisos ya concedidos');
-        return true;
-      }
-      
-      // 3. Si NO están concedidos, MOSTRAR DIÁLOGO NATIVO
-      console.log('📱 Mostrando diálogo de permisos...');
-      const newPermissions = await LocalNotifications.requestPermissions();
-      console.log('Resultado de permisos:', newPermissions);
-      
-      // 4. Si el usuario deniega, mostrar alerta
-      if (newPermissions.display !== 'granted') {
-        console.log('❌ Usuario denegó permisos');
-        
-        // Mostrar alerta para guiar al usuario
-        setTimeout(() => {
-          if (confirm('Para recibir notificaciones de facturas, necesitas activar los permisos en Configuración de la app. ¿Quieres abrir configuración ahora?')) {
-            // Abrir configuración de la app
-            this.openAppSettings();
-          }
-        }, 1000);
-        
-        return false;
-      }
-      
-      console.log('✅ Permisos concedidos por el usuario');
-      return true;
-      
-    } catch (error) {
-      console.error('❌ Error solicitando permisos:', error);
-      return false;
-    }
-  }
-
-  // ✅ NUEVO MÉTODO: Mostrar notificación local
-  private async showLocalNotification(title: string, body: string): Promise<void> {
-  try {
-    // 1. Crear canal con máxima prioridad
-    await LocalNotifications.createChannel({
-      id: 'urgent_facturas',
-      name: 'Facturas Urgentes',
-      description: 'Notificaciones urgentes de facturas',
-      importance: 5, // ✅ MAX importance - siempre muestra
-      visibility: 1, // Public
-      sound: 'default',
-      vibration: true,
-    });
-
-    // 2. Programar notificación
-    await LocalNotifications.schedule({
-      notifications: [
-        {
-          title: title,
-          body: body,
-          id: new Date().getTime(),
-          schedule: { at: new Date(Date.now() + 500) }, // Más rápido
-          channelId: 'urgent_facturas', // ✅ Usar el canal de máxima prioridad
-          sound: 'default',
-          smallIcon: 'ic_stat_icon', // Asegurar icono
-          largeIcon: 'ic_launcher',
-        }
-      ]
-    });
-
-    console.log('🎯 Notificación URGENTE programada');
-    
-  } catch (error) {
-    console.error('❌ Error notificación urgente:', error);
-    
-    // ✅ FALLBACK: Intentar método normal
-    try {
-      await LocalNotifications.schedule({
-        notifications: [
-          {
-            title: title,
-            body: body,
-            id: new Date().getTime() + 1,
-            schedule: { at: new Date(Date.now() + 1000) },
-          }
-        ]
-      });
-    } catch (fallbackError) {
-      console.error('❌ Fallback también falló:', fallbackError);
-    }
-  }
 }
-
-  private async showInvoiceCreatedNotification(invoiceNumber: string, total: number): Promise<void> {
-    const formattedTotal = this.formatCurrency(total);
-    
-    await this.showLocalNotification(
-      '✅ Factura Creada', 
-      `Factura #${invoiceNumber} por ${formattedTotal} creada exitosamente`
-    );
-  }
-
-  private async openAppSettings(): Promise<void> {
-    try {
-      console.log('Abre manualmente: Ajustes > Apps > [Tu App] > Notificaciones');
-      alert('Por ve a: Ajustes > Apps > [Nombre de tu App] > Notificaciones > Activar notificaciones');
-    } catch (error) {
-      console.error('Error abriendo configuración:', error);
-    }
-  }
-}
-
