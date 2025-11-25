@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InvoiceService, Product, Service, Client, InvoiceItem } from '../services/invoice.service';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 interface SelectedItem {
   type: 'product' | 'service';
@@ -71,6 +72,7 @@ export class InvoiceCreate implements OnInit {
 
   ngOnInit(): void {
     this.loadCreateData();
+    this.requestNotificationPermissions(); 
   }
 
   loadCreateData(): void {
@@ -364,6 +366,7 @@ export class InvoiceCreate implements OnInit {
         this.createdInvoiceId = invoice.id; // Guardar el ID de la factura creada
         this.createdInvoiceNumber = invoice.invoice_number || null;
         
+        this.showInvoiceCreatedNotification(invoice.invoice_number, this.total);
         // Limpiar mensaje de éxito después de 5 segundos
         setTimeout(() => {
           this.success = null;
@@ -394,6 +397,8 @@ export class InvoiceCreate implements OnInit {
       next: (response) => {
         this.sendingToDian = false;
         this.success = 'Factura enviada a la DIAN exitosamente. Redirigiendo...';
+
+        this.showLocalNotification('📤 Factura enviada a DIAN', `Factura #${this.createdInvoiceNumber} enviada correctamente`);
         
         // Redirigir a la vista de facturación después de 2 segundos
         setTimeout(() => {
@@ -441,5 +446,50 @@ export class InvoiceCreate implements OnInit {
       minimumFractionDigits: 0
     }).format(value);
   }
+   private async requestNotificationPermissions(): Promise<void> {
+    try {
+      const permissions = await LocalNotifications.requestPermissions();
+      if (permissions.display === 'granted') {
+        console.log('Permisos para notificaciones concedidos');
+      } else {
+        console.log('Permisos para notificaciones no concedidos');
+      }
+    } catch (error) {
+      console.error('Error solicitando permisos:', error);
+    }
+  }
+
+  // ✅ NUEVO MÉTODO: Mostrar notificación local
+  private async showLocalNotification(title: string, body: string): Promise<void> {
+    try {
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: title,
+            body: body,
+            id: new Date().getTime(), // ID único
+            schedule: { at: new Date(Date.now() + 1000) }, // 1 segundo después
+            sound: undefined,
+            attachments: undefined,
+            actionTypeId: '',
+            extra: null
+          }
+        ]
+      });
+      console.log('Notificación local mostrada');
+    } catch (error) {
+      console.error('Error mostrando notificación local:', error);
+    }
+  }
+
+  private async showInvoiceCreatedNotification(invoiceNumber: string, total: number): Promise<void> {
+    const formattedTotal = this.formatCurrency(total);
+    
+    await this.showLocalNotification(
+      '✅ Factura Creada', 
+      `Factura #${invoiceNumber} por ${formattedTotal} creada exitosamente`
+    );
+  }
+
 }
 
