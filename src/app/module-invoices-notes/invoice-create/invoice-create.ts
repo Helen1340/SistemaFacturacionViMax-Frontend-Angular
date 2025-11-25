@@ -446,41 +446,101 @@ export class InvoiceCreate implements OnInit {
       minimumFractionDigits: 0
     }).format(value);
   }
-   private async requestNotificationPermissions(): Promise<void> {
+  private async requestNotificationPermissions(): Promise<boolean> {
     try {
-      const permissions = await LocalNotifications.requestPermissions();
-      if (permissions.display === 'granted') {
-        console.log('Permisos para notificaciones concedidos');
-      } else {
-        console.log('Permisos para notificaciones no concedidos');
+      console.log('🔔 Solicitando permisos de notificación...');
+      
+      // 1. Primero verificar el estado actual
+      const currentPermissions = await LocalNotifications.checkPermissions();
+      console.log('Permisos actuales:', currentPermissions);
+      
+      // 2. Si ya están concedidos, no hacer nada
+      if (currentPermissions.display === 'granted') {
+        console.log('✅ Permisos ya concedidos');
+        return true;
       }
+      
+      // 3. Si NO están concedidos, MOSTRAR DIÁLOGO NATIVO
+      console.log('📱 Mostrando diálogo de permisos...');
+      const newPermissions = await LocalNotifications.requestPermissions();
+      console.log('Resultado de permisos:', newPermissions);
+      
+      // 4. Si el usuario deniega, mostrar alerta
+      if (newPermissions.display !== 'granted') {
+        console.log('❌ Usuario denegó permisos');
+        
+        // Mostrar alerta para guiar al usuario
+        setTimeout(() => {
+          if (confirm('Para recibir notificaciones de facturas, necesitas activar los permisos en Configuración de la app. ¿Quieres abrir configuración ahora?')) {
+            // Abrir configuración de la app
+            this.openAppSettings();
+          }
+        }, 1000);
+        
+        return false;
+      }
+      
+      console.log('✅ Permisos concedidos por el usuario');
+      return true;
+      
     } catch (error) {
-      console.error('Error solicitando permisos:', error);
+      console.error('❌ Error solicitando permisos:', error);
+      return false;
     }
   }
 
   // ✅ NUEVO MÉTODO: Mostrar notificación local
   private async showLocalNotification(title: string, body: string): Promise<void> {
+  try {
+    // 1. Crear canal con máxima prioridad
+    await LocalNotifications.createChannel({
+      id: 'urgent_facturas',
+      name: 'Facturas Urgentes',
+      description: 'Notificaciones urgentes de facturas',
+      importance: 5, // ✅ MAX importance - siempre muestra
+      visibility: 1, // Public
+      sound: 'default',
+      vibration: true,
+    });
+
+    // 2. Programar notificación
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          title: title,
+          body: body,
+          id: new Date().getTime(),
+          schedule: { at: new Date(Date.now() + 500) }, // Más rápido
+          channelId: 'urgent_facturas', // ✅ Usar el canal de máxima prioridad
+          sound: 'default',
+          smallIcon: 'ic_stat_icon', // Asegurar icono
+          largeIcon: 'ic_launcher',
+        }
+      ]
+    });
+
+    console.log('🎯 Notificación URGENTE programada');
+    
+  } catch (error) {
+    console.error('❌ Error notificación urgente:', error);
+    
+    // ✅ FALLBACK: Intentar método normal
     try {
       await LocalNotifications.schedule({
         notifications: [
           {
             title: title,
             body: body,
-            id: new Date().getTime(), // ID único
-            schedule: { at: new Date(Date.now() + 1000) }, // 1 segundo después
-            sound: undefined,
-            attachments: undefined,
-            actionTypeId: '',
-            extra: null
+            id: new Date().getTime() + 1,
+            schedule: { at: new Date(Date.now() + 1000) },
           }
         ]
       });
-      console.log('Notificación local mostrada');
-    } catch (error) {
-      console.error('Error mostrando notificación local:', error);
+    } catch (fallbackError) {
+      console.error('❌ Fallback también falló:', fallbackError);
     }
   }
+}
 
   private async showInvoiceCreatedNotification(invoiceNumber: string, total: number): Promise<void> {
     const formattedTotal = this.formatCurrency(total);
@@ -491,5 +551,13 @@ export class InvoiceCreate implements OnInit {
     );
   }
 
+  private async openAppSettings(): Promise<void> {
+    try {
+      console.log('Abre manualmente: Ajustes > Apps > [Tu App] > Notificaciones');
+      alert('Por ve a: Ajustes > Apps > [Nombre de tu App] > Notificaciones > Activar notificaciones');
+    } catch (error) {
+      console.error('Error abriendo configuración:', error);
+    }
+  }
 }
 
