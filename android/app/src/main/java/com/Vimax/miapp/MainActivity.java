@@ -1,8 +1,12 @@
 package com.Vimax.miapp;
 
+import android.app.DownloadManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.view.Window;
+import android.webkit.DownloadListener;
 import android.webkit.WebView;
 
 import com.getcapacitor.BridgeActivity;
