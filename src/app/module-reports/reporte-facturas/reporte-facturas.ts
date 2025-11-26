@@ -3,11 +3,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ReportServices, Factura } from '../services/report.service';
 import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexLegend, ApexPlotOptions, ApexTitleSubtitle, ApexXAxis, ChartComponent } from 'ng-apexcharts';
+import { ApexAxisChartSeries, ApexChart, ApexPlotOptions, ApexXAxis, ChartComponent } from 'ng-apexcharts';
 import ApexCharts from 'apexcharts';
 import { MatTableModule } from '@angular/material/table';
 import { MatTableDataSource } from '@angular/material/table';
@@ -19,6 +18,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { FileDownloadService } from '../services/file-download.service';
+import { PermissionsService } from '../services/permissions.service';
 
 interface Invoice {
   date: string;
@@ -71,10 +72,24 @@ export class ReporteFacturas implements OnInit {
   documentOptions = ['Todos', 'Factura Electrónica', 'Nota Crédito', 'Nota Débito'];
 
   loading = false;
-  constructor(private invoiceService: ReportServices) {}
+
+  constructor(
+    private invoiceService: ReportServices,
+    private downloadService: FileDownloadService,
+    private permissionsService: PermissionsService
+  ) { }
 
   ngOnInit(): void {
     this.loadInvoices();
+    this.permissionsService.checkPermissions(); // ← AÑADIR
+  }
+
+  // ✅ VERIFICAR PERMISOS AL INICIAR
+  async checkStoragePermissions(): Promise<void> {
+    const hasPermissions = await this.permissionsService.checkPermissions();
+    if (!hasPermissions) {
+      console.log('⚠️ No hay permisos de almacenamiento');
+    }
   }
 
   mapEstado(estado: string): string {
@@ -94,7 +109,6 @@ export class ReporteFacturas implements OnInit {
     this.loadInvoices();
   }
 
-  // 🔹 limpiar filtros
   resetFilters(): void {
     this.invoiceNumber = '';
     this.status = 'Todos';
@@ -106,66 +120,309 @@ export class ReporteFacturas implements OnInit {
     this.dataSource.data = [...this.invoices];
   }
 
-  // 🔹 Exportar Excel (solo filtradas)
-  exportExcel(): void {
-    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.dataSource.data);
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Facturas');
-    const excelBuffer: any = XLSX.write(wb, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-    const data: Blob = new Blob([excelBuffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
-    });
-    saveAs(data, `Reporte_Facturas_${new Date().getTime()}.xlsx`);
+  // ✅ EXPORTAR EXCEL - Adaptado
+  // ✅ PEDIR PERMISOS ANTES DE DESCARGAR
+  async exportExcel(): Promise<void> {
+    // Pedir permisos primero
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+
+    try {
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.dataSource.data);
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Facturas');
+
+      const excelBuffer: any = XLSX.write(wb, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
+
+      const data: Blob = new Blob([excelBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+
+      const fileUrl = URL.createObjectURL(data);
+      const fileName = `Reporte_Facturas_${Date.now()}.xlsx`;
+
+      const success = await this.downloadService.download(fileUrl, fileName);
+
+      URL.revokeObjectURL(fileUrl);
+
+      if (success) {
+        console.log('✅ Excel exportado exitosamente');
+      }
+
+    } catch (error) {
+      console.error('❌ Error exportando Excel:', error);
+      alert('Error al exportar Excel');
+    }
   }
 
-  // 🔹 Exportar PDF (solo filtradas)
-  exportPDF(): void {
-    const doc = new jsPDF();
-    doc.text('Reporte de Facturas', 14, 10);
+  // ✅ EXPORTAR PDF - Adaptado
+  async exportPDF(): Promise<void> {
 
-    autoTable(doc, {
-      head: [
-        [
-          'Fecha',
-          'Tipo Doc',
-          'No. Factura',
-          'Cliente',
-          'NIT',
-          'Responsable',
-          'Valor',
-          'Estado',
-        ],
-      ],
-      body: this.dataSource.data.map((f) => [
-        f.fecha,
-        'Factura',
-        f.numero,
-        f.cliente,
-        '',
-        '',
-        f.total,
-        f.estado,
-      ]),
-    });
+    // Pedir permisos primero
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+    try {
+      const doc = new jsPDF();
+      doc.text('Reporte de Facturas', 14, 10);
 
-    doc.save(`Reporte_Facturas_${new Date().getTime()}.pdf`);
+      autoTable(doc, {
+        head: [['Fecha', 'Tipo Doc', 'No. Factura', 'Cliente', 'NIT', 'Valor', 'Estado']],
+        body: this.dataSource.data.map((f) => [
+          f.fecha,
+          'Factura',
+          f.numero,
+          f.cliente,
+          f.cc || '',
+          f.total,
+          f.estado,
+        ]),
+      });
+
+      const pdfBlob = doc.output('blob');
+      const fileUrl = URL.createObjectURL(pdfBlob);
+      const fileName = `Reporte_Facturas_${Date.now()}.pdf`;
+
+      const success = await this.downloadService.download(fileUrl, fileName);
+
+      URL.revokeObjectURL(fileUrl);
+
+      if (success) {
+        console.log('✅ PDF exportado exitosamente');
+      }
+
+    } catch (error) {
+      console.error('❌ Error exportando PDF:', error);
+      alert('Error al exportar PDF');
+    }
   }
 
-  downloadCsv(): void {
-    const params: any = {
-      numero_factura: this.invoiceNumber || undefined,
-      cliente: this.clientName || undefined,
-      desde: this.startDate || undefined,
-      hasta: this.endDate || undefined,
-      estado: this.status && this.status !== 'Todos' ? this.status : undefined,
-    };
-    this.invoiceService.downloadInvoicesCsv(params).subscribe((blob) => {
-      saveAs(blob, `facturas_${new Date().toISOString().slice(0, 10)}.csv`);
-    });
+  // ✅ DESCARGAR CSV - Adaptado
+  // ✅ PEDIR PERMISOS ANTES DE DESCARGAR
+  async downloadCsv(): Promise<void> {
+    // Pedir permisos primero
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+    try {
+      const params: any = {
+        numero_factura: this.invoiceNumber || undefined,
+        cliente: this.clientName || undefined,
+        desde: this.startDate || undefined,
+        hasta: this.endDate || undefined,
+        estado: this.status && this.status !== 'Todos' ? this.status : undefined,
+      };
+
+      this.invoiceService.downloadInvoicesCsv(params).subscribe(async (blob) => {
+        const fileUrl = URL.createObjectURL(blob);
+        const fileName = `facturas_${new Date().toISOString().slice(0, 10)}.csv`;
+
+        const success = await this.downloadService.download(fileUrl, fileName);
+
+        URL.revokeObjectURL(fileUrl);
+
+        if (success) {
+          console.log('✅ CSV descargado exitosamente');
+        }
+      }, (error) => {
+        console.error('❌ Error descargando CSV:', error);
+        alert('Error al descargar CSV');
+      });
+
+    } catch (error) {
+      console.error('❌ Error en downloadCsv:', error);
+      alert('Error al descargar CSV');
+    }
   }
+
+  // ✅ DESCARGAR GRÁFICO PNG - Adaptado
+  async downloadChartPng(id: string, filename: string): Promise<void> {
+    // Pedir permisos primero
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+    try {
+      const dataUrl = await this.getChartImageDataUrl(id);
+      if (!dataUrl) {
+        alert('No se pudo obtener la imagen del gráfico');
+        return;
+      }
+
+      // Convertir data URL a blob
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const fileUrl = URL.createObjectURL(blob);
+
+      const success = await this.downloadService.download(fileUrl, filename);
+
+      URL.revokeObjectURL(fileUrl);
+
+      if (success) {
+        console.log('✅ Gráfico PNG descargado exitosamente');
+      }
+
+    } catch (error) {
+      console.error('❌ Error descargando gráfico PNG:', error);
+      alert('Error al descargar gráfico');
+    }
+  }
+
+  // ✅ EXPORTAR GRÁFICOS A PDF - Adaptado
+  async exportChartsToPDF(): Promise<void> {
+    // Pedir permisos primero
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+    try {
+      const doc = new jsPDF('p', 'mm', 'a4');
+
+      const addImg = async (id: string, y: number, title: string) => {
+        const img = await this.getChartImageDataUrl(id);
+        if (!img) return y;
+        doc.text(title, 10, y);
+        doc.addImage(img, 'PNG', 10, y + 5, 190, 90);
+        return y + 100;
+      };
+
+      let y = 10;
+      y = await addImg('chart-invoices-status', y, 'Totales por estado');
+      y = await addImg('chart-invoices-month', y, 'Número de facturas por mes');
+      y = await addImg('chart-invoices-topclients', y, 'Top clientes por cantidad');
+
+      const pdfBlob = doc.output('blob');
+      const fileUrl = URL.createObjectURL(pdfBlob);
+      const fileName = `graficos_facturas_${new Date().toISOString().slice(0, 10)}.pdf`;
+
+      const success = await this.downloadService.download(fileUrl, fileName);
+
+      URL.revokeObjectURL(fileUrl);
+
+      if (success) {
+        console.log('✅ Gráficos PDF exportados exitosamente');
+      }
+
+    } catch (error) {
+      console.error('❌ Error exportando gráficos a PDF:', error);
+      alert('Error al exportar gráficos a PDF');
+    }
+  }
+
+  // ✅ EXPORTAR REPORTE COMPLETO PDF - Versión más robusta
+  async exportFullReportPDF(): Promise<void> {
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+
+    try {
+      const doc = new jsPDF('p', 'mm', 'a4');
+      let y = 10;
+      const title = 'Reporte de Facturas';
+      doc.setFontSize(16);
+      doc.text(title, 10, y);
+      y += 8;
+
+      // Agregar gráficos si están disponibles
+      const addImg = async (id: string, title2: string) => {
+        try {
+          const img = await this.getChartImageDataUrl(id);
+          if (!img) return y;
+          doc.setFontSize(12);
+          doc.text(title2, 10, y);
+          y += 5;
+          doc.addImage(img, 'PNG', 10, y, 190, 80);
+          return y + 85;
+        } catch (error) {
+          console.warn(`No se pudo agregar gráfico ${id}:`, error);
+          return y;
+        }
+      };
+
+      y = await addImg('chart-invoices-month', 'Número de facturas por mes');
+      y = await addImg('chart-invoices-status', 'Estado de facturas');
+      y = await addImg('chart-invoices-topclients', 'Top clientes');
+
+      // ✅ VERIFICACIONES MÁS ROBUSTAS PARA LOS DATOS
+      const byMonthHeader = [['Mes', 'Total']];
+      let monthBody: any[][] = [];
+      if (this.monthXAxis?.categories && this.monthSeries[0]?.data) {
+        monthBody = this.monthXAxis.categories.map((category: string, i: number) => {
+          const dataValue = this.monthSeries[0].data[i] || 0;
+          return [category, String(dataValue)];
+        });
+      }
+
+      const byStatusHeader = [['Estado', 'Total']];
+      let statusBody: any[][] = [];
+      if (this.statusLabels && this.statusSeries) {
+        statusBody = this.statusLabels.map((label, i) => [label, String(this.statusSeries[i] || 0)]);
+      }
+
+      const topHeader = [['Cliente', 'Total']];
+      let topBody: any[][] = [];
+      if (this.topXAxis?.categories && this.topSeries[0]?.data) {
+        topBody = this.topXAxis.categories.map((category: string, i: number) => {
+          const dataValue = this.topSeries[0].data[i] || 0;
+          return [category, String(dataValue)];
+        });
+      }
+
+      doc.setFontSize(12);
+
+      // Agregar tablas solo si tienen datos
+      if (monthBody.length > 0) {
+        autoTable(doc, { startY: y, head: byMonthHeader, body: monthBody });
+        y = (doc as any).lastAutoTable.finalY + 10;
+      }
+
+      if (statusBody.length > 0) {
+        autoTable(doc, { startY: y, head: byStatusHeader, body: statusBody });
+        y = (doc as any).lastAutoTable.finalY + 10;
+      }
+
+      if (topBody.length > 0) {
+        autoTable(doc, { startY: y, head: topHeader, body: topBody });
+      }
+
+      // Si no hay datos en las tablas, mostrar mensaje
+      if (monthBody.length === 0 && statusBody.length === 0 && topBody.length === 0) {
+        doc.text('No hay datos disponibles para mostrar en las tablas', 10, y);
+      }
+
+      const pdfBlob = doc.output('blob');
+      const fileUrl = URL.createObjectURL(pdfBlob);
+      const fileName = `reporte_facturas_${new Date().toISOString().slice(0, 10)}.pdf`;
+
+      const success = await this.downloadService.download(fileUrl, fileName);
+
+      URL.revokeObjectURL(fileUrl);
+
+      if (success) {
+        console.log('✅ Reporte completo PDF exportado exitosamente');
+      }
+
+    } catch (error) {
+      console.error('❌ Error exportando reporte completo:', error);
+      alert('Error al exportar reporte completo: ' + (error as Error).message);
+    }
+  }
+
+  // ========== MÉTODOS SIN CAMBIOS ==========
 
   private toNumber(v: any): number {
     if (v === null || v === undefined) return 0;
@@ -257,7 +514,7 @@ export class ReporteFacturas implements OnInit {
         this.topXAxis = { categories: topClients.map((c: any) => c?.cliente || c?.buyer || '') };
         this.topSeries = [{ name: 'Cantidad', data: topClients.map((c: any) => Number(c?.cantidad || c?.count || 0)) }];
       },
-      error: () => {},
+      error: () => { },
     });
   }
 
@@ -301,92 +558,26 @@ export class ReporteFacturas implements OnInit {
     return t.toISOString().slice(0, 10);
   }
 
-  async downloadChartPng(id: string, filename: string): Promise<void> {
-    const url = await this.getChartImageDataUrl(id);
-    if (!url) return;
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.click();
-  }
-
-  async exportChartsToPDF(): Promise<void> {
-    const doc = new jsPDF('p', 'mm', 'a4');
-    const addImg = async (id: string, y: number, title: string) => {
-      const img = await this.getChartImageDataUrl(id);
-      if (!img) return y;
-      doc.text(title, 10, y);
-      doc.addImage(img, 'PNG', 10, y + 5, 190, 90);
-      return y + 100;
-    };
-    let y = 10;
-    y = await addImg('chart-invoices-status', y, 'Totales por estado');
-    y = await addImg('chart-invoices-month', y, 'Número de facturas por mes');
-    y = await addImg('chart-invoices-topclients', y, 'Top clientes por cantidad');
-    doc.save(`graficos_facturas_${new Date().toISOString().slice(0,10)}.pdf`);
-  }
-
-  async exportFullReportPDF(): Promise<void> {
-    const doc = new jsPDF('p', 'mm', 'a4');
-    let y = 10;
-    const title = 'Reporte de Facturas';
-    doc.setFontSize(16);
-    doc.text(title, 10, y);
-    y += 8;
-
-    const addImg = async (id: string, title2: string) => {
-      const img = await this.getChartImageDataUrl(id);
-      if (!img) return;
-      doc.setFontSize(12);
-      doc.text(title2, 10, y);
-      y += 5;
-      doc.addImage(img, 'PNG', 10, y, 190, 80);
-      y += 85;
-    };
-
-    await addImg('chart-invoices-month', 'Número de facturas por mes');
-    await addImg('chart-invoices-status', 'Estado de facturas');
-    await addImg('chart-invoices-topclients', 'Top clientes');
-
-    const byStatusHeader = [['Estado', 'Total']];
-    const byStatus = (this as any)._statusChart?.data || { labels: [], datasets: [{ data: [] }] };
-    const statusBody = (byStatus.labels as string[]).map((l, i) => [l, String((byStatus.datasets[0].data as number[])[i] || 0)]);
-
-    const byMonthHeader = [['Mes', 'Total']];
-    const byMonth = (this as any)._monthChart?.data || { labels: [], datasets: [{ data: [] }] };
-    const monthBody = (byMonth.labels as string[]).map((l, i) => [l, String((byMonth.datasets[0].data as number[])[i] || 0)]);
-
-    const topHeader = [['Cliente', 'Total']];
-    const top = (this as any)._topClientsChart?.data || { labels: [], datasets: [{ data: [] }] };
-    const topBody = (top.labels as string[]).map((l, i) => [l, String((top.datasets[0].data as number[])[i] || 0)]);
-
-    doc.setFontSize(12);
-    autoTable(doc, { startY: y, head: byMonthHeader, body: monthBody });
-    const afterMonth = (doc as any).lastAutoTable.finalY || y + 10;
-    autoTable(doc, { startY: afterMonth + 6, head: byStatusHeader, body: statusBody });
-    const afterStatus = (doc as any).lastAutoTable.finalY || afterMonth + 16;
-    autoTable(doc, { startY: afterStatus + 6, head: topHeader, body: topBody });
-
-    doc.save(`reporte_facturas_${new Date().toISOString().slice(0,10)}.pdf`);
-  }
-
   private async getChartImageDataUrl(id: string): Promise<string | null> {
     let comp: ChartComponent | undefined;
     if (id === 'chart-invoices-status') comp = this.statusChartComp;
     else if (id === 'chart-invoices-month') comp = this.monthChartComp;
     else if (id === 'chart-invoices-topclients') comp = this.topChartComp;
-    // 1) Intento con instancia del componente
+
+    // Intento con instancia del componente
     if (comp && comp.chart) {
       try {
         const res = await (comp.chart as any).dataURI();
         return (res?.imgURI as string) || (res?.blobURI as string) || null;
-      } catch {}
+      } catch { }
     }
-    // 2) Fallback usando ApexCharts.exec y el id del chart
+
+    // Fallback usando ApexCharts.exec y el id del chart
     try {
       const res2 = await (ApexCharts as any).exec(id, 'dataURI');
       return (res2?.imgURI as string) || (res2?.blobURI as string) || null;
-    } catch {}
+    } catch { }
+
     return null;
   }
 }
