@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost/api'
+  apiUrl: 'https://facturacion-vimax-api-production.up.railway.app/api'
 };
