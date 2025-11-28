@@ -73,6 +73,27 @@ export class ReporteFacturas implements OnInit {
 
   loading = false;
 
+  // Propiedades de gráficos
+  statusSeries: number[] = [];
+  statusLabels: string[] = [];
+  statusColors: string[] = ['#10b981', '#f59e0b', '#ef4444'];
+  statusChart: ApexChart = { type: 'pie', height: 280, id: 'chart-invoices-status' };
+
+  monthSeries: ApexAxisChartSeries = [{ name: 'Cantidad', data: [] }];
+  monthChart: ApexChart = { type: 'line', height: 280, id: 'chart-invoices-month' };
+  monthXAxis: ApexXAxis = { categories: [] };
+  monthColors: string[] = ['#0891b2'];
+
+  topSeries: ApexAxisChartSeries = [{ name: 'Cantidad', data: [] }];
+  topChart: ApexChart = { type: 'bar', height: 280, id: 'chart-invoices-topclients' };
+  topXAxis: ApexXAxis = { categories: [] };
+  topPlotOptions: ApexPlotOptions = { bar: { horizontal: true } };
+  topColors: string[] = ['#0891b2'];
+
+  @ViewChild('statusChartComp') statusChartComp!: ChartComponent;
+  @ViewChild('monthChartComp') monthChartComp!: ChartComponent;
+  @ViewChild('topChartComp') topChartComp!: ChartComponent;
+
   constructor(
     private invoiceService: ReportServices,
     private downloadService: FileDownloadService,
@@ -81,7 +102,7 @@ export class ReporteFacturas implements OnInit {
 
   ngOnInit(): void {
     this.loadInvoices();
-    this.permissionsService.checkPermissions(); // ← AÑADIR
+    this.permissionsService.checkPermissions();
   }
 
   // ✅ VERIFICAR PERMISOS AL INICIAR
@@ -121,9 +142,7 @@ export class ReporteFacturas implements OnInit {
   }
 
   // ✅ EXPORTAR EXCEL - Adaptado
-  // ✅ PEDIR PERMISOS ANTES DE DESCARGAR
   async exportExcel(): Promise<void> {
-    // Pedir permisos primero
     const hasPermissions = await this.permissionsService.requestStoragePermissions();
     if (!hasPermissions) {
       alert('No se pueden descargar archivos sin permisos de almacenamiento');
@@ -163,13 +182,12 @@ export class ReporteFacturas implements OnInit {
 
   // ✅ EXPORTAR PDF - Adaptado
   async exportPDF(): Promise<void> {
-
-    // Pedir permisos primero
     const hasPermissions = await this.permissionsService.requestStoragePermissions();
     if (!hasPermissions) {
       alert('No se pueden descargar archivos sin permisos de almacenamiento');
       return;
     }
+
     try {
       const doc = new jsPDF();
       doc.text('Reporte de Facturas', 14, 10);
@@ -206,14 +224,13 @@ export class ReporteFacturas implements OnInit {
   }
 
   // ✅ DESCARGAR CSV - Adaptado
-  // ✅ PEDIR PERMISOS ANTES DE DESCARGAR
   async downloadCsv(): Promise<void> {
-    // Pedir permisos primero
     const hasPermissions = await this.permissionsService.requestStoragePermissions();
     if (!hasPermissions) {
       alert('No se pueden descargar archivos sin permisos de almacenamiento');
       return;
     }
+
     try {
       const params: any = {
         numero_factura: this.invoiceNumber || undefined,
@@ -247,12 +264,12 @@ export class ReporteFacturas implements OnInit {
 
   // ✅ DESCARGAR GRÁFICO PNG - Adaptado
   async downloadChartPng(id: string, filename: string): Promise<void> {
-    // Pedir permisos primero
     const hasPermissions = await this.permissionsService.requestStoragePermissions();
     if (!hasPermissions) {
       alert('No se pueden descargar archivos sin permisos de almacenamiento');
       return;
     }
+
     try {
       const dataUrl = await this.getChartImageDataUrl(id);
       if (!dataUrl) {
@@ -260,7 +277,6 @@ export class ReporteFacturas implements OnInit {
         return;
       }
 
-      // Convertir data URL a blob
       const response = await fetch(dataUrl);
       const blob = await response.blob();
       const fileUrl = URL.createObjectURL(blob);
@@ -281,12 +297,12 @@ export class ReporteFacturas implements OnInit {
 
   // ✅ EXPORTAR GRÁFICOS A PDF - Adaptado
   async exportChartsToPDF(): Promise<void> {
-    // Pedir permisos primero
     const hasPermissions = await this.permissionsService.requestStoragePermissions();
     if (!hasPermissions) {
       alert('No se pueden descargar archivos sin permisos de almacenamiento');
       return;
     }
+
     try {
       const doc = new jsPDF('p', 'mm', 'a4');
 
@@ -321,7 +337,7 @@ export class ReporteFacturas implements OnInit {
     }
   }
 
-  // ✅ EXPORTAR REPORTE COMPLETO PDF - Versión más robusta
+  // ✅ EXPORTAR REPORTE COMPLETO PDF - VERSIÓN CORREGIDA
   async exportFullReportPDF(): Promise<void> {
     const hasPermissions = await this.permissionsService.requestStoragePermissions();
     if (!hasPermissions) {
@@ -332,81 +348,30 @@ export class ReporteFacturas implements OnInit {
     try {
       const doc = new jsPDF('p', 'mm', 'a4');
       let y = 10;
-      const title = 'Reporte de Facturas';
+
+      // Título
       doc.setFontSize(16);
-      doc.text(title, 10, y);
+      doc.text('Reporte Completo de Facturas', 10, y);
       y += 8;
 
-      // Agregar gráficos si están disponibles
-      const addImg = async (id: string, title2: string) => {
-        try {
-          const img = await this.getChartImageDataUrl(id);
-          if (!img) return y;
-          doc.setFontSize(12);
-          doc.text(title2, 10, y);
-          y += 5;
-          doc.addImage(img, 'PNG', 10, y, 190, 80);
-          return y + 85;
-        } catch (error) {
-          console.warn(`No se pudo agregar gráfico ${id}:`, error);
-          return y;
-        }
-      };
+      // Información de filtros aplicados
+      doc.setFontSize(10);
+      const filtersInfo = this.getFiltersInfo();
+      doc.text(filtersInfo, 10, y);
+      y += 15;
 
-      y = await addImg('chart-invoices-month', 'Número de facturas por mes');
-      y = await addImg('chart-invoices-status', 'Estado de facturas');
-      y = await addImg('chart-invoices-topclients', 'Top clientes');
+      // Agregar gráficos con manejo robusto de errores
+      y = await this.addChartsToPDF(doc, y);
 
-      // ✅ VERIFICACIONES MÁS ROBUSTAS PARA LOS DATOS
-      const byMonthHeader = [['Mes', 'Total']];
-      let monthBody: any[][] = [];
-      if (this.monthXAxis?.categories && this.monthSeries[0]?.data) {
-        monthBody = this.monthXAxis.categories.map((category: string, i: number) => {
-          const dataValue = this.monthSeries[0].data[i] || 0;
-          return [category, String(dataValue)];
-        });
-      }
+      // Agregar resumen estadístico
+      y = await this.addSummaryToPDF(doc, y);
 
-      const byStatusHeader = [['Estado', 'Total']];
-      let statusBody: any[][] = [];
-      if (this.statusLabels && this.statusSeries) {
-        statusBody = this.statusLabels.map((label, i) => [label, String(this.statusSeries[i] || 0)]);
-      }
-
-      const topHeader = [['Cliente', 'Total']];
-      let topBody: any[][] = [];
-      if (this.topXAxis?.categories && this.topSeries[0]?.data) {
-        topBody = this.topXAxis.categories.map((category: string, i: number) => {
-          const dataValue = this.topSeries[0].data[i] || 0;
-          return [category, String(dataValue)];
-        });
-      }
-
-      doc.setFontSize(12);
-
-      // Agregar tablas solo si tienen datos
-      if (monthBody.length > 0) {
-        autoTable(doc, { startY: y, head: byMonthHeader, body: monthBody });
-        y = (doc as any).lastAutoTable.finalY + 10;
-      }
-
-      if (statusBody.length > 0) {
-        autoTable(doc, { startY: y, head: byStatusHeader, body: statusBody });
-        y = (doc as any).lastAutoTable.finalY + 10;
-      }
-
-      if (topBody.length > 0) {
-        autoTable(doc, { startY: y, head: topHeader, body: topBody });
-      }
-
-      // Si no hay datos en las tablas, mostrar mensaje
-      if (monthBody.length === 0 && statusBody.length === 0 && topBody.length === 0) {
-        doc.text('No hay datos disponibles para mostrar en las tablas', 10, y);
-      }
+      // Agregar tabla de facturas
+      y = await this.addInvoicesTableToPDF(doc, y);
 
       const pdfBlob = doc.output('blob');
       const fileUrl = URL.createObjectURL(pdfBlob);
-      const fileName = `reporte_facturas_${new Date().toISOString().slice(0, 10)}.pdf`;
+      const fileName = `reporte_completo_facturas_${new Date().toISOString().slice(0, 10)}.pdf`;
 
       const success = await this.downloadService.download(fileUrl, fileName);
 
@@ -414,6 +379,8 @@ export class ReporteFacturas implements OnInit {
 
       if (success) {
         console.log('✅ Reporte completo PDF exportado exitosamente');
+      } else {
+        alert('Error al descargar el reporte');
       }
 
     } catch (error) {
@@ -422,15 +389,7 @@ export class ReporteFacturas implements OnInit {
     }
   }
 
-  // ========== MÉTODOS SIN CAMBIOS ==========
-
-  private toNumber(v: any): number {
-    if (v === null || v === undefined) return 0;
-    if (typeof v === 'number') return v;
-    const s = String(v).replace(/,/g, '').trim();
-    const n = Number(s);
-    return isNaN(n) ? 0 : n;
-  }
+  // ========== MÉTODOS PRIVADOS ==========
 
   private loadInvoices(): void {
     const params: any = {
@@ -440,6 +399,7 @@ export class ReporteFacturas implements OnInit {
       hasta: this.fmt(this.endDate) || undefined,
       estado: this.status && this.status !== 'Todos' ? this.status : undefined,
     };
+
     this.loading = true;
     this.invoiceService.getInvoices(params).subscribe({
       next: (data) => {
@@ -465,68 +425,38 @@ export class ReporteFacturas implements OnInit {
         this.loadInvoiceSummary();
         this.loading = false;
       },
-      error: () => { this.loading = false; },
+      error: () => {
+        this.loading = false;
+      },
     });
   }
 
-  statusSeries: number[] = [];
-  statusLabels: string[] = [];
-  statusColors: string[] = ['#10b981', '#f59e0b', '#ef4444'];
-  statusChart: ApexChart = { type: 'pie', height: 280, id: 'chart-invoices-status' };
+  private toNumber(v: any): number {
+    if (v === null || v === undefined) return 0;
+    if (typeof v === 'number') return v;
+    const s = String(v).replace(/,/g, '').replace(/\$/g, '').trim();
+    const n = Number(s);
+    return isNaN(n) ? 0 : n;
+  }
 
-  monthSeries: ApexAxisChartSeries = [{ name: 'Cantidad', data: [] }];
-  monthChart: ApexChart = { type: 'line', height: 280, id: 'chart-invoices-month' };
-  monthXAxis: ApexXAxis = { categories: [] };
-  monthColors: string[] = ['#0891b2'];
-
-  topSeries: ApexAxisChartSeries = [{ name: 'Cantidad', data: [] }];
-  topChart: ApexChart = { type: 'bar', height: 280, id: 'chart-invoices-topclients' };
-  topXAxis: ApexXAxis = { categories: [] };
-  topPlotOptions: ApexPlotOptions = { bar: { horizontal: true } };
-  topColors: string[] = ['#0891b2'];
-
-  @ViewChild('statusChartComp') statusChartComp!: ChartComponent;
-  @ViewChild('monthChartComp') monthChartComp!: ChartComponent;
-  @ViewChild('topChartComp') topChartComp!: ChartComponent;
-
-  private loadInvoiceSummary(): void {
-    const params: any = {
-      desde: this.fmt(this.startDate) || undefined,
-      hasta: this.fmt(this.endDate) || undefined,
-    };
-    this.invoiceService.getInvoiceSummary(params).subscribe({
-      next: (summary) => {
-        const byStatus = summary?.totales_por_estado || {};
-        const byMonth = summary?.cantidad_por_mes || {};
-        const hasStatus = byStatus && Object.keys(byStatus).length > 0;
-        const hasMonth = byMonth && Object.keys(byMonth).length > 0;
-        const monthKeys = Object.keys(byMonth || {}).sort();
-        const topClients = summary?.top_clientes || [];
-        if (hasStatus) {
-          this.statusLabels = Object.keys(byStatus);
-          this.statusSeries = Object.values(byStatus).map((v: any) => Number(v));
-          this.statusColors = this.statusLabels.map((l) => this.colorForEstado(l));
-        }
-        if (hasMonth) {
-          this.monthXAxis = { categories: monthKeys };
-          this.monthSeries = [{ name: 'Cantidad', data: monthKeys.map((k) => Number((byMonth as any)[k])) }];
-        }
-        this.topXAxis = { categories: topClients.map((c: any) => c?.cliente || c?.buyer || '') };
-        this.topSeries = [{ name: 'Cantidad', data: topClients.map((c: any) => Number(c?.cantidad || c?.count || 0)) }];
-      },
-      error: () => { },
-    });
+  private fmt(d: string): string {
+    if (!d) return '';
+    const t = new Date(d);
+    if (isNaN(t.getTime())) return d;
+    return t.toISOString().slice(0, 10);
   }
 
   private updateChartsFromData(): void {
     const byStatus: Record<string, number> = {};
     const byMonth: Record<string, number> = {};
+
     (this.dataSource.data || []).forEach((f) => {
       const e = (f.estado || '').toLowerCase();
       byStatus[e] = (byStatus[e] || 0) + 1;
       const d = (f.fecha || '').slice(0, 7);
       if (d) byMonth[d] = (byMonth[d] || 0) + 1;
     });
+
     const monthKeys = Object.keys(byMonth).sort();
     this.statusLabels = Object.keys(byStatus);
     this.statusSeries = Object.values(byStatus).map((v) => Number(v));
@@ -535,12 +465,37 @@ export class ReporteFacturas implements OnInit {
     this.monthSeries = [{ name: 'Cantidad', data: monthKeys.map((k) => Number(byMonth[k])) }];
   }
 
-  estadoClass(e: string): string {
-    const k = (e || '').toLowerCase();
-    if (k === 'emitida') return 'estado-chip estado-emitida-chip';
-    if (k === 'borrador') return 'estado-chip estado-borrador-chip';
-    if (k === 'anulada') return 'estado-chip estado-anulada-chip';
-    return 'estado-chip';
+  private loadInvoiceSummary(): void {
+    const params: any = {
+      desde: this.fmt(this.startDate) || undefined,
+      hasta: this.fmt(this.endDate) || undefined,
+    };
+
+    this.invoiceService.getInvoiceSummary(params).subscribe({
+      next: (summary) => {
+        const byStatus = summary?.totales_por_estado || {};
+        const byMonth = summary?.cantidad_por_mes || {};
+        const hasStatus = byStatus && Object.keys(byStatus).length > 0;
+        const hasMonth = byMonth && Object.keys(byMonth).length > 0;
+        const monthKeys = Object.keys(byMonth || {}).sort();
+        const topClients = summary?.top_clientes || [];
+
+        if (hasStatus) {
+          this.statusLabels = Object.keys(byStatus);
+          this.statusSeries = Object.values(byStatus).map((v: any) => Number(v));
+          this.statusColors = this.statusLabels.map((l) => this.colorForEstado(l));
+        }
+
+        if (hasMonth) {
+          this.monthXAxis = { categories: monthKeys };
+          this.monthSeries = [{ name: 'Cantidad', data: monthKeys.map((k) => Number((byMonth as any)[k])) }];
+        }
+
+        this.topXAxis = { categories: topClients.map((c: any) => c?.cliente || c?.buyer || '') };
+        this.topSeries = [{ name: 'Cantidad', data: topClients.map((c: any) => Number(c?.cantidad || c?.count || 0)) }];
+      },
+      error: () => { },
+    });
   }
 
   private colorForEstado(e: string): string {
@@ -551,33 +506,226 @@ export class ReporteFacturas implements OnInit {
     return '#0891b2';
   }
 
-  private fmt(d: string): string {
-    if (!d) return '';
-    const t = new Date(d);
-    if (isNaN(t.getTime())) return d;
-    return t.toISOString().slice(0, 10);
-  }
+  // ✅ MÉTODO AUXILIAR PARA AGREGAR GRÁFICOS AL PDF
+  private async addChartsToPDF(doc: jsPDF, startY: number): Promise<number> {
+    let y = startY;
 
-  private async getChartImageDataUrl(id: string): Promise<string | null> {
-    let comp: ChartComponent | undefined;
-    if (id === 'chart-invoices-status') comp = this.statusChartComp;
-    else if (id === 'chart-invoices-month') comp = this.monthChartComp;
-    else if (id === 'chart-invoices-topclients') comp = this.topChartComp;
+    try {
+      const charts = [
+        { id: 'chart-invoices-month', title: 'Facturas por Mes', chartComp: this.monthChartComp },
+        { id: 'chart-invoices-status', title: 'Distribución por Estado', chartComp: this.statusChartComp },
+        { id: 'chart-invoices-topclients', title: 'Top Clientes', chartComp: this.topChartComp }
+      ];
 
-    // Intento con instancia del componente
-    if (comp && comp.chart) {
-      try {
-        const res = await (comp.chart as any).dataURI();
-        return (res?.imgURI as string) || (res?.blobURI as string) || null;
-      } catch { }
+      for (const chart of charts) {
+        const imgData = await this.getChartImageDataUrl(chart.id);
+        if (imgData && y < 250) {
+          doc.setFontSize(12);
+          doc.text(chart.title, 10, y);
+          y += 5;
+
+          try {
+            doc.addImage(imgData, 'PNG', 10, y, 180, 80);
+            y += 85;
+
+            if (y > 250) {
+              doc.addPage();
+              y = 10;
+            }
+          } catch (imgError) {
+            console.warn(`No se pudo agregar imagen del gráfico ${chart.id}:`, imgError);
+            doc.text('(Gráfico no disponible)', 10, y);
+            y += 10;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error agregando gráficos al PDF:', error);
+      doc.text('Error al generar gráficos', 10, y);
+      y += 10;
     }
 
-    // Fallback usando ApexCharts.exec y el id del chart
-    try {
-      const res2 = await (ApexCharts as any).exec(id, 'dataURI');
-      return (res2?.imgURI as string) || (res2?.blobURI as string) || null;
-    } catch { }
+    return y;
+  }
 
-    return null;
+  // ✅ MÉTODO AUXILIAR PARA AGREGAR RESUMEN AL PDF
+  private async addSummaryToPDF(doc: jsPDF, startY: number): Promise<number> {
+    let y = startY;
+
+    try {
+      doc.setFontSize(12);
+      doc.text('Resumen Estadístico', 10, y);
+      y += 8;
+
+      const totalFacturas = this.dataSource.data.length;
+      const totalValor = this.dataSource.data.reduce((sum, factura) => sum + (this.toNumber(factura.total) || 0), 0);
+      const estadosCount = this.countByStatus();
+
+      const summaryData = [
+        ['Total Facturas:', totalFacturas.toString()],
+        ['Valor Total:', `$${totalValor.toLocaleString('es-CO')}`],
+        ['Facturas Emitidas:', (estadosCount['emitida'] || 0).toString()],
+        ['Facturas Borrador:', (estadosCount['borrador'] || 0).toString()],
+        ['Facturas Anuladas:', (estadosCount['anulada'] || 0).toString()],
+      ];
+
+      autoTable(doc, {
+        startY: y,
+        head: [['Métrica', 'Valor']],
+        body: summaryData,
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [66, 139, 202] }
+      });
+
+      y = (doc as any).lastAutoTable.finalY + 10;
+
+    } catch (error) {
+      console.error('Error agregando resumen al PDF:', error);
+      doc.text('Error al generar resumen', 10, y);
+      y += 10;
+    }
+
+    return y;
+  }
+
+  // ✅ MÉTODO AUXILIAR PARA AGREGAR TABLA DE FACTURAS AL PDF
+  private async addInvoicesTableToPDF(doc: jsPDF, startY: number): Promise<number> {
+    let y = startY;
+
+    try {
+      doc.setFontSize(12);
+      doc.text('Detalle de Facturas', 10, y);
+      y += 8;
+
+      if (this.dataSource.data.length === 0) {
+        doc.text('No hay facturas para mostrar', 10, y);
+        return y + 10;
+      }
+
+      const facturasParaMostrar = this.dataSource.data.slice(0, 50);
+
+      const tableBody = facturasParaMostrar.map((factura) => [
+        this.formatDateForPDF(factura.fecha),
+        'Factura',
+        factura.numero || '-',
+        factura.cliente?.substring(0, 20) || '-',
+        factura.cc || '-',
+        `$${this.toNumber(factura.total).toLocaleString('es-CO')}`,
+        factura.estado || '-'
+      ]);
+
+      autoTable(doc, {
+        startY: y,
+        head: [['Fecha', 'Tipo', 'Número', 'Cliente', 'NIT', 'Valor', 'Estado']],
+        body: tableBody,
+        styles: { fontSize: 8, cellPadding: 2 },
+        headStyles: { fillColor: [66, 139, 202] },
+        pageBreak: 'auto'
+      });
+
+      y = (doc as any).lastAutoTable.finalY + 10;
+
+      if (this.dataSource.data.length > 50) {
+        doc.setFontSize(10);
+        doc.text(`* Mostrando 50 de ${this.dataSource.data.length} facturas`, 10, y);
+        y += 5;
+      }
+
+    } catch (error) {
+      console.error('Error agregando tabla al PDF:', error);
+      doc.text('Error al generar tabla de facturas', 10, y);
+      y += 10;
+    }
+
+    return y;
+  }
+
+  // ✅ MÉTODOS AUXILIARES NUEVOS
+  private getFiltersInfo(): string {
+    const filters = [];
+    if (this.startDate) filters.push(`Desde: ${this.startDate}`);
+    if (this.endDate) filters.push(`Hasta: ${this.endDate}`);
+    if (this.status !== 'Todos') filters.push(`Estado: ${this.status}`);
+    if (this.clientName) filters.push(`Cliente: ${this.clientName}`);
+    if (this.invoiceNumber) filters.push(`Factura: ${this.invoiceNumber}`);
+
+    return filters.length > 0
+      ? `Filtros aplicados: ${filters.join(', ')}`
+      : 'Todos los registros';
+  }
+
+  private countByStatus(): { [key: string]: number } {
+    const counts: { [key: string]: number } = {};
+    this.dataSource.data.forEach(factura => {
+      const estado = factura.estado?.toLowerCase() || 'desconocido';
+      counts[estado] = (counts[estado] || 0) + 1;
+    });
+    return counts;
+  }
+
+  private formatDateForPDF(dateString: string): string {
+    if (!dateString) return '-';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('es-CO');
+    } catch {
+      return dateString;
+    }
+  }
+
+  // ✅ MEJORAR EL MÉTODO getChartImageDataUrl EXISTENTE
+  private async getChartImageDataUrl(id: string): Promise<string | null> {
+    try {
+      let comp: ChartComponent | undefined;
+
+      switch (id) {
+        case 'chart-invoices-status':
+          comp = this.statusChartComp;
+          break;
+        case 'chart-invoices-month':
+          comp = this.monthChartComp;
+          break;
+        case 'chart-invoices-topclients':
+          comp = this.topChartComp;
+          break;
+      }
+
+      if (comp?.chart) {
+        try {
+          const res = await (comp.chart as any).dataURI();
+          return res?.imgURI || null;
+        } catch (error) {
+          console.warn(`Error con componente chart ${id}:`, error);
+        }
+      }
+
+      try {
+        if (typeof (ApexCharts as any).exec === 'function') {
+          const res2 = await (ApexCharts as any).exec(id, 'dataURI');
+          return res2?.imgURI || null;
+        }
+      } catch (error) {
+        console.warn(`Error con ApexCharts.exec ${id}:`, error);
+      }
+
+      const canvas = document.querySelector(`#${id} canvas`) as HTMLCanvasElement;
+      if (canvas) {
+        return canvas.toDataURL('image/png');
+      }
+
+      return null;
+
+    } catch (error) {
+      console.error(`Error obteniendo imagen del gráfico ${id}:`, error);
+      return null;
+    }
+  }
+
+  estadoClass(e: string): string {
+    const k = (e || '').toLowerCase();
+    if (k === 'emitida') return 'estado-chip estado-emitida-chip';
+    if (k === 'borrador') return 'estado-chip estado-borrador-chip';
+    if (k === 'anulada') return 'estado-chip estado-anulada-chip';
+    return 'estado-chip';
   }
 }
