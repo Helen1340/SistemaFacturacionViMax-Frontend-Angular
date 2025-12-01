@@ -245,4 +245,8 @@ export class ResolucionesFactura implements OnInit {
   trackByFn(index: number, resolucion: Resolucion): number {
     return resolucion.id;
   }
+
+  goBack(): void {
+    this.router.navigate(['/configuracion']);
+  }
 }

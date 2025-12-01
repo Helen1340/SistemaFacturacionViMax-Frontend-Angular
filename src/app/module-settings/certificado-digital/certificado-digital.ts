@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CertificateService } from './certificate.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-certificado-digital',
@@ -28,7 +29,8 @@ export class CertificadoDigital implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private certificateService: CertificateService
+    private certificateService: CertificateService,
+    private router: Router
   ) {
     this.certificateForm = this.fb.group({
       certificate_name: ['', Validators.required],
@@ -395,5 +397,7 @@ export class CertificadoDigital implements OnInit {
     return new Date(e) < new Date(s);
   }
 
-  
+  goBack(): void {
+    this.router.navigate(['/configuracion']);
+  }
 }

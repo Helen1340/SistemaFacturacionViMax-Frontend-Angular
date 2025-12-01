@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 // Interfaz para un cambio normativo histórico (para la tabla)
 export interface CambioNormativo {
@@ -54,7 +55,9 @@ export class CambiosNormativos implements OnInit {
 
   isLoading: boolean = true;
 
-  constructor() {}
+  constructor(
+    private router: Router
+  ) {}
 
   ngOnInit() {
     // ⭐ AJUSTE CLAVE 2: Se mantiene el filtro por defecto en 'Aplicado'
@@ -200,5 +203,9 @@ export class CambiosNormativos implements OnInit {
   
 ];
 
+  }
+
+  goBack(): void {
+    this.router.navigate(['/configuracion']);
   }
 }

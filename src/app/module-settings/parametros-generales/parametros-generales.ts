@@ -202,4 +202,8 @@ onSubmit() {
     this.notification = { show: true, message, type };
     setTimeout(() => (this.notification.show = false), 4000);
   }
+
+  goBack(): void {
+    this.router.navigate(['/configuracion']);
+  }
 }
