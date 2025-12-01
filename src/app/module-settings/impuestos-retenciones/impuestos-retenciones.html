@@ -1,24 +1,45 @@
 <!-- Contenido principal -->
 <main class="w-full p-4 flex-1 overflow-y-auto overflow-x-visible">
 
-  <div class="-mt-4 mb-4">
-    <h2 class="text-4xl font-semibold mb-6 mt-8">Configurar Impuestos y Retenciones</h2>
-    <p class="text-base text-gray-800 mb-4">Catálogo de impuestos DIAN. Activa o desactiva los que aplica tu empresa para la emisión correcta de la factura electrónica.</p>
+  <div class="flex flex-col sm:flex-row justify-between gap-4 mb-6 mt-4">
+    <div class="flex items-center gap-4">
+      <!-- Botón de volver alineado con título -->
+      <button (click)="goBack()"
+        class="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors duration-200 group">
+        <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform duration-200" fill="none"
+          stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        <span class="text-sm font-medium hidden sm:inline">Volver</span>
+      </button>
+
+      <div class="flex-1">
+        <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800">
+          Configurar Impuestos y Retenciones
+        </h2>
+      </div>
+    </div>
   </div>
 
   <div class="border-b-2 border-gray-300 w-full mb-8"></div>
+  
+  <div class="-mt-4 mb-4">
+    <p class="text-base text-gray-800 mb-4">Catálogo de impuestos DIAN. Activa o desactiva los que aplica tu empresa
+      para la emisión correcta de la factura electrónica.</p>
+  </div>
+
 
   <!-- CONTENEDOR DEL FILTRO + BUSCADOR -->
-  <div class="bg-white p-6 rounded-2xl border border-gray-200 mb-6 flex flex-col md:flex-row flex-wrap items-center justify-between gap-4 w-full mx-auto">
+  <div
+    class="bg-white p-6 rounded-2xl border border-gray-200 mb-6 flex flex-col md:flex-row flex-wrap items-center justify-between gap-4 w-full mx-auto">
     <!-- Buscador -->
     <div class="flex items-center border border-gray-300 rounded-2xl px-4 py-2 w-full md:w-[70%]">
       <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round"
           d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" />
       </svg>
-      <input type="text" placeholder="Buscar por nombre, descripción o tipo (IVA, ICA, ReteFuente)" 
-        [(ngModel)]="searchTerm"
-        (input)="onSearch()" 
+      <input type="text" placeholder="Buscar por nombre, descripción o tipo (IVA, ICA, ReteFuente)"
+        [(ngModel)]="searchTerm" (input)="onSearch()"
         class="w-full border-none outline-none text-gray-700 placeholder-gray-400" />
     </div>
 
@@ -44,7 +65,8 @@
   <!-- CONTENEDOR DE LA TABLA CON SCROLL FIJO -->
   <div class="bg-white rounded-2xl shadow overflow-hidden">
     <!-- Tabla completa con scroll -->
-    <div class="overflow-x-auto overflow-y-auto max-h-[500px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+    <div
+      class="overflow-x-auto overflow-y-auto max-h-[500px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
       <table class="w-full table-fixed">
         <thead class="bg-gray-100 text-black sticky top-0 z-10">
           <tr>
@@ -60,45 +82,44 @@
           <!-- Usar paginatedImpuestos -->
           <tr *ngFor="let impuesto of paginatedImpuestos; trackBy: trackByFn; let i = index"
             class="border-t border-t-gray-200 hover:bg-gray-50 transition-colors">
-            
+
             <td class="w-[250px] px-4 py-3 text-left">
               <div class="flex items-center gap-2">
                 <span class="font-medium text-gray-900 truncate">{{ impuesto.nombre }}</span>
-                <span *ngIf="!impuesto.enBaseDatos" 
-                  class="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">
+                <span *ngIf="!impuesto.enBaseDatos" class="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">
                   No activo
                 </span>
               </div>
             </td>
-            
+
             <td class="w-[350px] px-4 py-3 text-left">
               <div class="text-sm text-gray-600 truncate">{{ impuesto.descripcion }}</div>
             </td>
-            
+
             <td class="w-[120px] px-4 py-3 text-center">
               <div class="flex justify-center">
-                <span [ngClass]="getTipoClass(impuesto.tipo)" 
+                <span [ngClass]="getTipoClass(impuesto.tipo)"
                   class="text-xs px-2 py-1 rounded-full inline-block text-center font-medium">
                   {{ impuesto.tipo }}
                 </span>
               </div>
             </td>
-            
+
             <td class="w-[100px] px-4 py-3 text-center">
               <div class="text-sm font-medium text-gray-900">{{ impuesto.porcentaje }}%</div>
             </td>
-            
+
             <td class="w-[100px] px-4 py-3 text-center">
               <div class="flex justify-center">
-                <span [ngClass]="getStatusClass(impuesto.estado || 'Inactivo')" 
+                <span [ngClass]="getStatusClass(impuesto.estado || 'Inactivo')"
                   class="text-xs px-2 py-1 rounded-full inline-block w-16 text-center font-medium">
                   {{ impuesto.estado || 'Inactivo' }}
                 </span>
               </div>
             </td>
-            
+
             <td class="w-[90px] px-4 py-3 text-center relative" style="overflow: visible;">
-              <button (click)="toggleDropdown($event, impuesto.codigo)" 
+              <button (click)="toggleDropdown($event, impuesto.codigo)"
                 class="p-2 rounded hover:bg-gray-100 transition-colors">
                 <svg width="19" height="19" viewBox="0 0 22 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -112,25 +133,21 @@
                     fill="black" />
                 </svg>
               </button>
-              
+
               <!-- Dropdown con posicionamiento inteligente -->
-              <div *ngIf="openDropdownId === impuesto.codigo" 
-                [ngClass]="{
+              <div *ngIf="openDropdownId === impuesto.codigo" [ngClass]="{
                   'bottom-full mb-1': shouldShowDropdownUp(i),
                   'top-full mt-1': !shouldShowDropdownUp(i)
-                }" 
-                class="absolute right-0 w-40 bg-white border border-gray-300 rounded-2xl shadow-lg z-[999]">
-                
+                }" class="absolute right-0 w-40 bg-white border border-gray-300 rounded-2xl shadow-lg z-[999]">
+
                 <!-- Mostrar Activar para impuestos inactivos -->
-                <button *ngIf="impuesto.estado !== 'Activo'" 
-                  (click)="activarImpuesto(impuesto)"
+                <button *ngIf="impuesto.estado !== 'Activo'" (click)="activarImpuesto(impuesto)"
                   class="block w-full text-left px-4 py-2 text-sm hover:bg-green-100 text-green-600 rounded-t-2xl transition-colors">
                   ✓ Activar
                 </button>
-                
+
                 <!-- Mostrar Desactivar para impuestos activos -->
-                <button *ngIf="impuesto.estado === 'Activo'" 
-                  (click)="desactivarImpuesto(impuesto)"
+                <button *ngIf="impuesto.estado === 'Activo'" (click)="desactivarImpuesto(impuesto)"
                   class="block w-full text-left px-4 py-2 text-sm hover:bg-red-100 text-red-600 rounded-b-2xl transition-colors">
                   ✕ Desactivar
                 </button>
@@ -150,14 +167,13 @@
   </div>
 
   <!-- PAGINACIÓN -->
-  <div *ngIf="totalImpuestos > 0" 
+  <div *ngIf="totalImpuestos > 0"
     class="bg-white p-4 rounded-2xl shadow mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
     <div class="text-xs sm:text-sm text-gray-600 w-full sm:w-auto text-center sm:text-left">
       Mostrando {{ startItem }} - {{ endItem }} de {{ totalImpuestos }} impuestos
     </div>
     <div class="flex items-center gap-2 w-full sm:w-auto justify-center sm:flex-nowrap flex-wrap">
-      <button (click)="previousPage()" 
-        [disabled]="currentPage === 1"
+      <button (click)="previousPage()" [disabled]="currentPage === 1"
         [ngClass]="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
         class="px-3 py-1 h-8 border border-gray-300 rounded-lg text-xs sm:text-sm flex-shrink-0 transition-colors">
         Anterior
@@ -165,8 +181,7 @@
       <span class="px-3 py-1 bg-cyan-600 text-white rounded-lg font-medium">
         {{ currentPage }} / {{ totalPages }}
       </span>
-      <button (click)="nextPage()" 
-        [disabled]="currentPage === totalPages"
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages"
         [ngClass]="currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
         class="px-3 py-1 h-8 border border-gray-300 rounded-lg text-xs sm:text-sm flex-shrink-0 transition-colors">
         Siguiente

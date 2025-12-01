@@ -377,4 +377,8 @@ export class ImpuestosRetencionesComponent implements OnInit, OnDestroy {
   navigateToNewImpuestos(): void {
     this.router.navigate(['/nuevo-impuesto']);
   }
+
+  goBack(): void {
+    this.router.navigate(['/configuracion']);
+  }
 }

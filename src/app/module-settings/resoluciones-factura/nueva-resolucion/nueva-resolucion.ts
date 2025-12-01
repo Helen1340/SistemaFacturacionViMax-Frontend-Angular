@@ -3,6 +3,7 @@ import { finalize, catchError, throwError } from 'rxjs';
 import { FormsModule } from '@angular/forms'; // Asegúrate de tener esto si es standalone
 import { ResolutionService } from '../services/resolution.Service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 // Define la estructura de datos que se enviará. company_id es opcional aquí.
 interface ResolutionData {
@@ -52,7 +53,9 @@ export class NuevaResolucion implements OnInit {
   resolutionFile: File | null = null;
   isSaving: boolean = false; 
 
-  constructor(private resolutionService: ResolutionService) {}
+  constructor(private resolutionService: ResolutionService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.calculateAvailable();
@@ -152,6 +155,11 @@ export class NuevaResolucion implements OnInit {
   }
 
   cancel(): void {
-    console.log("Acción de cancelar ejecutada.");
+    this.router.navigate(['/resolucion-facturas']);
   }
+
+   goBack(): void {
+    this.router.navigate(['/resolucion-facturas']);
+  }
+
 }

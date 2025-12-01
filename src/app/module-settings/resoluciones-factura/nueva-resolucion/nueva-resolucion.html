@@ -1,91 +1,122 @@
 <main class="w-full md:ml-0 p-4 flex-1 overflow-auto">
-    <div class="-mt-4 mb-2">
-        <h2 class="text-4xl font-semibold mb-10 mt-4">
-            Agregar resolución
-        </h2>
+
+    <div class="flex flex-col sm:flex-row justify-between gap-4 mb-6 mt-4">
+        <div class="flex items-center gap-4">
+            <!-- Botón de volver alineado con título -->
+            <button (click)="goBack()"
+                class="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors duration-200 group">
+                <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform duration-200" fill="none"
+                    stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                <span class="text-sm font-medium hidden sm:inline">Volver</span>
+            </button>
+
+            <div class="flex-1">
+                <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800">
+                    Agregar resolución
+                </h2>
+            </div>
+        </div>
     </div>
 
     <div class="border-b-2 w-full mb-8 border-gray-300"></div>
 
     <div class="bg-gray-50 rounded-2xl shadow overflow-hidden">
-        <div class="overflow-y-auto max-h-[600px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-        
+        <div
+            class="overflow-y-auto max-h-[600px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+
             <form (ngSubmit)="saveResolution()" #resolutionForm="ngForm" class="p-8 w-full max-w-5xl mx-auto">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                     <div>
-                        <label class="block text-base font-medium mb-1">Prefijo <span class="text-red-500">*</span></label>
-                        <input type="text" name="prefix" [(ngModel)]="resolutionData.prefix" 
-                            #prefixInput="ngModel"
+                        <label class="block text-base font-medium mb-1">Prefijo <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" name="prefix" [(ngModel)]="resolutionData.prefix" #prefixInput="ngModel"
                             class="w-full border border-gray-300 rounded-xl px-4 py-3" maxlength="10"
                             placeholder="Prefijo" required />
-                        <div *ngIf="prefixInput.invalid && (prefixInput.dirty || prefixInput.touched)" class="text-red-500 text-sm mt-1">
+                        <div *ngIf="prefixInput.invalid && (prefixInput.dirty || prefixInput.touched)"
+                            class="text-red-500 text-sm mt-1">
                             El prefijo es obligatorio.
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium mb-1">Número de resolución DIAN <span class="text-red-500">*</span></label>
-                        <input type="text" name="resolution_number" [(ngModel)]="resolutionData.resolution_number" class="w-full border border-gray-300 rounded-xl px-4 py-3" maxlength="50"
+                        <label class="block text-base font-medium mb-1">Número de resolución DIAN <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" name="resolution_number" [(ngModel)]="resolutionData.resolution_number"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3" maxlength="50"
                             placeholder="Número de resolución" required />
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium mb-1">Tipo de documento <span class="text-red-500">*</span></label>
-                        <select name="document_type" [(ngModel)]="resolutionData.document_type" class="w-full border border-gray-300 rounded-xl px-4 py-3"
-                            required>
+                        <label class="block text-base font-medium mb-1">Tipo de documento <span
+                                class="text-red-500">*</span></label>
+                        <select name="document_type" [(ngModel)]="resolutionData.document_type"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3" required>
                             <option value="">Seleccione...</option>
                             <option value="Factura">Factura</option>
-                            <option value="NotaCredito">Nota Crédito</option> <option value="NotaDebito">Nota Débito</option>   </select>
+                            <option value="NotaCredito">Nota Crédito</option>
+                            <option value="NotaDebito">Nota Débito</option>
+                        </select>
                     </div>
 
                     <div>
                         <label class="block text-base font-medium mb-1">Código tipo documento</label>
-                        <input type="text" name="document_type_code" [(ngModel)]="resolutionData.document_type_code" class="w-full border border-gray-300 rounded-xl px-4 py-3" maxlength="10"
+                        <input type="text" name="document_type_code" [(ngModel)]="resolutionData.document_type_code"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3" maxlength="10"
                             placeholder="Código" />
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium mb-1">Fecha de resolución <span class="text-red-500">*</span></label>
+                        <label class="block text-base font-medium mb-1">Fecha de resolución <span
+                                class="text-red-500">*</span></label>
                         <input type="date" name="resolution_date" [(ngModel)]="resolutionData.resolution_date"
                             class="w-full border border-gray-300 rounded-xl px-4 py-3" required />
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium mb-1">Fecha de inicio de vigencia <span class="text-red-500">*</span></label>
+                        <label class="block text-base font-medium mb-1">Fecha de inicio de vigencia <span
+                                class="text-red-500">*</span></label>
                         <input type="date" name="validity_start_date" [(ngModel)]="resolutionData.validity_start_date"
                             class="w-full border border-gray-300 rounded-xl px-4 py-3" required />
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium mb-1">Fecha de fin de vigencia <span class="text-red-500">*</span></label>
+                        <label class="block text-base font-medium mb-1">Fecha de fin de vigencia <span
+                                class="text-red-500">*</span></label>
                         <input type="date" name="validity_end_date" [(ngModel)]="resolutionData.validity_end_date"
                             class="w-full border border-gray-300 rounded-xl px-4 py-3" required />
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium mb-1">Rango inicial (Desde) <span class="text-red-500">*</span></label>
+                        <label class="block text-base font-medium mb-1">Rango inicial (Desde) <span
+                                class="text-red-500">*</span></label>
                         <input type="number" name="start_number" [(ngModel)]="resolutionData.start_number"
-                            (ngModelChange)="calculateAvailable()" class="w-full border border-gray-300 rounded-xl px-4 py-3"
-                            placeholder="Rango inicial" required />
+                            (ngModelChange)="calculateAvailable()"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3" placeholder="Rango inicial"
+                            required />
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium mb-1">Rango final (Hasta) <span class="text-red-500">*</span></label>
+                        <label class="block text-base font-medium mb-1">Rango final (Hasta) <span
+                                class="text-red-500">*</span></label>
                         <input type="number" name="end_number" [(ngModel)]="resolutionData.end_number"
-                            (ngModelChange)="calculateAvailable()" class="w-full border border-gray-300 rounded-xl px-4 py-3"
-                            placeholder="Rango final" required />
+                            (ngModelChange)="calculateAvailable()"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3" placeholder="Rango final"
+                            required />
                     </div>
 
                     <div class="md:col-span-2">
                         <label class="block text-base font-medium mb-1">Cantidad disponible (automática)</label>
-                        <input type="text" [value]="availableAmount" class="w-full border border-gray-300 rounded-xl px-4 py-3 bg-gray-100"
-                            readonly />
+                        <input type="text" [value]="availableAmount"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-3 bg-gray-100" readonly />
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="block text-base font-medium mb-1">Estado actual <span class="text-red-500">*</span></label>
+                        <label class="block text-base font-medium mb-1">Estado actual <span
+                                class="text-red-500">*</span></label>
                         <select name="current_status" [(ngModel)]="resolutionData.current_status"
                             class="w-full border border-gray-300 rounded-xl px-4 py-3" required>
                             <option value="Activo">Activo</option>
@@ -94,11 +125,13 @@
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="block text-base font-medium mb-1">Ambiente <span class="text-red-500">*</span></label>
+                        <label class="block text-base font-medium mb-1">Ambiente <span
+                                class="text-red-500">*</span></label>
                         <select name="environment" [(ngModel)]="resolutionData.environment"
                             class="w-full border border-gray-300 rounded-xl px-4 py-3" required>
                             <option value="Pruebas">Pruebas</option>
-                            <option value="Produccion">Producción</option> </select>
+                            <option value="Produccion">Producción</option>
+                        </select>
                     </div>
 
                     <div class="md:col-span-2">
@@ -123,7 +156,8 @@
                         Guardar resolución
                     </button>
 
-                    <button type="button" (click)="cancel()" class="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500">
+                    <button type="button" (click)="cancel()"
+                        class="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500">
                         Cancelar
                     </button>
                 </div>

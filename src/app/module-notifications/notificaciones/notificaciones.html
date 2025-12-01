@@ -23,9 +23,9 @@
   </div>
 
   <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-4 mb-4">
-    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-5 gap-4">
       <!-- Buscar -->
-      <div class="lg:col-span-2">
+      <div class="md:col-span-2 2xl:col-span-2">
         <label class="block text-sm font-medium text-gray-700 mb-2">Buscar</label>
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -35,16 +35,16 @@
             </svg>
           </div>
           <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()"
-            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
             placeholder="Buscar...">
         </div>
       </div>
 
       <!-- Tipo -->
-      <div>
+      <div class="md:col-span-1 2xl:col-span-1">
         <label class="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
         <select [(ngModel)]="filterValue" (change)="onFilter()"
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm">
           <option value="">Todos</option>
           <option value="sistema">Sistema</option>
           <option value="dian_operativa">DIAN Operativa</option>
@@ -54,30 +54,30 @@
       </div>
 
       <!-- Fechas agrupadas -->
-      <div class="lg:col-span-2 xl:col-span-1">
-        <div class="grid grid-cols-2 gap-3">
+      <div class="md:col-span-1 2xl:col-span-1">
+        <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Desde</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2 text-xs 2xl:text-sm">Desde</label>
             <input type="date" [(ngModel)]="fechaDesde" (change)="onFilter()"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm">
+              class="w-full border border-gray-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-xs 2xl:text-sm">
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Hasta</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2 text-xs 2xl:text-sm">Hasta</label>
             <input type="date" [(ngModel)]="fechaHasta" (change)="onFilter()"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm">
+              class="w-full border border-gray-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-xs 2xl:text-sm">
           </div>
         </div>
       </div>
 
       <!-- Límite y botón -->
-      <div class="lg:col-span-2 xl:col-span-1">
+      <div class="md:col-span-2 2xl:col-span-1">
         <label class="block text-sm font-medium text-gray-700 mb-2">Límite</label>
         <div class="flex gap-2">
           <input type="number" min="1" [(ngModel)]="limitValue"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm min-w-0"
             placeholder="100">
           <button (click)="refresh()"
-            class="px-4 py-2 text-sm bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 whitespace-nowrap flex-shrink-0">
+            class="px-3 py-2 text-sm bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 whitespace-nowrap flex-shrink-0">
             Refrescar
           </button>
         </div>
@@ -85,34 +85,42 @@
     </div>
   </div>
 
-  <div class="bg-white rounded-2xl shadow-lg border border-gray-200">
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
     <div
       class="overflow-x-auto overflow-y-auto max-h-[360px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-      <table class="w-full min-w-[600px] table-fixed text-xs sm:text-sm">
+      <table class="w-full min-w-[650px] text-xs sm:text-sm">
         <thead class="bg-gray-100 text-black text-left sticky top-0 z-10">
           <tr>
-            <th class="px-4 py-3 font-semibold min-w-[120px] rounded-tl-2xl">Fecha / Hora</th>
-            <th class="px-4 py-3 font-semibold min-w-[150px]">Tipo de notificación</th>
-            <th class="px-4 py-3 font-semibold min-w-[200px]">Descripción</th>
-            <th class="px-4 py-3 font-semibold min-w-[120px]">Estado</th>
+            <th class="px-3 py-3 font-semibold w-[130px] min-w-[110px] rounded-tl-2xl">Fecha / Hora</th>
+            <th class="px-3 py-3 font-semibold w-[140px] min-w-[120px]">Tipo de notificación</th>
+            <th class="px-3 py-3 font-semibold w-[220px] min-w-[180px]">Descripción</th>
+            <!--<th class="px-3 py-3 font-semibold w-[100px] min-w-[80px]">Estado</th>-->
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let notification of paginatedNotifications" class="border-t border-gray-200 hover:bg-gray-50">
-            <td class="px-4 py-3 text-gray-600 text-sm min-w-[120px]">{{ notification.fecha_hora | date:'short' }}
+            <td class="px-3 py-3 text-gray-600 text-sm w-[130px] min-w-[110px] break-words">
+              {{ notification.fecha_hora | date:'short' }}
             </td>
-            <td class="px-4 py-3 text-gray-600 text-sm min-w-[150px]">{{ notification.tipo }}</td>
-            <td class="px-4 py-3 text-gray-600 text-sm min-w-[200px]">{{ notification.descripcion }}</td>
-            <td class="px-4 py-3 text-gray-600 text-sm min-w-[120px]">
+            <td class="px-3 py-3 text-gray-600 text-sm w-[140px] min-w-[120px] break-words">
+              {{ notification.tipo }}
+            </td>
+            <td class="px-3 py-3 text-gray-600 text-sm w-[220px] min-w-[180px] break-words">
+              {{ notification.descripcion }}
+            </td>
+            <!--
+            <td class="px-3 py-3 text-gray-600 text-sm w-[100px] min-w-[80px]">
               <span
                 [ngClass]="notification.estado === 'Leído' ? 'bg-gray-200 text-gray-800' : 'bg-blue-100 text-blue-800'"
-                class="text-xs px-2 py-1 rounded-full">{{ notification.estado }}</span>
+                class="text-xs px-2 py-1 rounded-full whitespace-nowrap inline-block max-w-full truncate">
+                {{ notification.estado }}
+              </span>
             </td>
-
+          -->
           </tr>
 
           <tr *ngIf="paginatedNotifications.length === 0">
-            <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+            <td colspan="4" class="px-4 py-8 text-center text-gray-500">
               {{ isLoading ? 'Cargando...' : 'No se encontraron notificaciones.' }}
             </td>
           </tr>

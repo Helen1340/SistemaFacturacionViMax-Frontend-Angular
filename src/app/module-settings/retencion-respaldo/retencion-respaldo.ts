@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { saveAs } from 'file-saver';
 import { BackupService, BackupItem, BackupPayload } from './services/backup.service';
+import { Router } from '@angular/router';
 
 export interface RetencionRespaldoPolicy {
   retentionPeriod: number;
@@ -45,7 +46,9 @@ export class RetencionRespaldo implements OnInit {
   // Nueva propiedad para controlar el estado del servicio
   isBackupServiceAvailable = true;
 
-  constructor(private backupService: BackupService) {}
+  constructor(private backupService: BackupService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.loadPolicy();
@@ -330,5 +333,9 @@ Contacta al administrador del sistema para que instale la extensión ZipArchive.
   clearMessages() {
     this.errorMessage = '';
     this.uploadMessage = '';
+  }
+
+  goBack(): void {
+    this.router.navigate(['/configuracion']);
   }
 }
