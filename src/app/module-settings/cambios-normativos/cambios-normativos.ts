@@ -162,17 +162,10 @@ export class CambiosNormativos implements OnInit {
   getMockChanges(): CambioNormativo[] {
     // Se ajusta el primer registro para que la fecha coincida con el mensaje verde
     return [
-  {
-    id: 1,
-    fecha: new Date('2025-04-01'),
-    cambio: 'Ingreso del nuevo requisito de Código Postal en facturas y notas.',
-    fuente: 'Circular DIAN 000008',
-    estado: 'Aplicado',
-    responsable: 'Sistema'
-  },
+  
   {
     id: 2,
-    fecha: new Date('2025-05-05'),
+    fecha: new Date('2025-08-05'),
     cambio: 'Implementación del Documento Soporte con validación previa.',
     fuente: 'Resolución DIAN 000167',
     estado: 'Aplicado',
@@ -190,7 +183,7 @@ export class CambiosNormativos implements OnInit {
   },
   {
     id:4,
-    fecha: new Date('2025-09-25'),
+    fecha: new Date('2025-10-25'),
     cambio: 'Optimización de la firma digital en documentos electrónicos.',
     fuente: 'DIAN',
     estado: 'Aplicado',

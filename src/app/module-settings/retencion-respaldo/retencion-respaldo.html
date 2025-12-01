@@ -13,135 +13,148 @@
     <h3 class="text-2xl font-semibold mb-6">Configuración de la Política General</h3>
 
     @if (isLoading) {
-      <div class="text-center py-20 text-gray-500 text-lg">Cargando política de respaldo...</div>
+    <div class="text-center py-20 text-gray-500 text-lg">Cargando política de respaldo...</div>
     }
 
     @if (!isLoading) {
-      <form (ngSubmit)="savePolicy()" #policyForm="ngForm">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          <div>
-            <label class="block text-base font-medium text-gray-700 mb-2">Período Mínimo de Retención (años)</label>
-            <select [(ngModel)]="policy.retentionPeriod" name="retentionPeriod" required
-              class="block w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-cyan-500">
-              <option [ngValue]="5">5 años</option>
-              <option [ngValue]="10">10 años</option>
-              <option [ngValue]="15">15 años</option>
-            </select>
-          </div>
+    <form (ngSubmit)="savePolicy()" #policyForm="ngForm">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          <div>
-            <label class="block text-base font-medium text-gray-700 mb-2">Frecuencia de Respaldo</label>
-            <select [(ngModel)]="policy.backupFrequency" name="backupFrequency" required
-              class="block w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-cyan-500">
-              <option value="Diaria">Diaria</option>
-              <option value="Semanal">Semanal</option>
-              <option value="Mensual">Mensual</option>
-              <option value="Trimestral">Trimestral</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="mt-6">
-          <label class="block text-base font-medium text-gray-700 mb-2">Ubicación de Respaldo</label>
-          <select [(ngModel)]="policy.backupLocation" name="backupLocation" required
+        <div>
+          <label class="block text-base font-medium text-gray-700 mb-2">Período Mínimo de Retención (años)</label>
+          <select [(ngModel)]="policy.retentionPeriod" name="retentionPeriod" required
             class="block w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-cyan-500">
-            <option value="local"> Guardar en el equipo local</option>
-            <option value="google-drive"> Google Drive</option>
+            <option [ngValue]="5">5 años</option>
+            <option [ngValue]="10">10 años</option>
+            <option [ngValue]="15">15 años</option>
           </select>
-          <p class="mt-2 text-sm text-gray-500">
-            Local descarga el ZIP. Google Drive requiere configuración y actualmente se simula.
-          </p>
         </div>
 
-        <div class="mt-6">
-          <label class="block text-base font-medium text-gray-700 mb-2">Tipos de Archivos a Respaldar</label>
-          <div class="flex flex-wrap gap-4">
-            <label class="flex items-center">
-              <input type="checkbox" [(ngModel)]="policy.backupTypes.xml" name="backupXML"
-                class="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500">
-              <span class="ml-2 text-sm font-medium text-gray-700">XML (Obligatorio DIAN)</span>
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" [(ngModel)]="policy.backupTypes.pdf" name="backupPDF"
-                class="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500">
-              <span class="ml-2 text-sm font-medium text-gray-700">PDF</span>
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" [(ngModel)]="policy.backupTypes.database" name="backupDB"
-                class="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500">
-              <span class="ml-2 text-sm font-medium text-gray-700">Base de Datos</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="mt-8 flex flex-wrap sm:flex-nowrap items-center justify-end gap-2 sm:gap-3">
-          <button type="button" (click)="runBackup()" [disabled]="isSaving"
-            class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-2xl text-xs sm:text-sm w-full sm:w-auto">
-            Generar respaldo
-          </button>
-          <button type="button" (click)="downloadBackup()" [disabled]="!zipPath"
-            class="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-2xl text-xs sm:text-sm w-full sm:w-auto">
-            Descargar respaldo
-          </button>
-          <button type="submit" [disabled]="isSaving || !policyForm.valid"
-            class="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-400 text-white font-semibold px-5 sm:px-8 py-2 sm:py-3 rounded-2xl text-xs sm:text-sm w-full sm:w-auto">
-            @if (isSaving) { Guardando... } @else { Guardar Cambios }
-          </button>
-        </div>
-      </form>
-
-      @if (uploadMessage) {
-        <div class="mt-6 text-center text-gray-700 font-medium">
-          {{ uploadMessage }}
-        </div>
-      }
-      @if (lastDbIncluded !== null) {
-        <div class="mt-2 text-center text-gray-600">
-          BD incluida: {{ lastDbIncluded ? 'Sí' : 'No' }}
-        </div>
-      }
-      @if (errorMessage) {
-        <div class="mt-4 text-center text-red-600 font-medium">
-          {{ errorMessage }}
-        </div>
-      }
-
-      <div class="mt-8">
-        <h4 class="text-xl font-semibold mb-4">Histórico de respaldos</h4>
-        <div class="bg-white rounded-2xl border border-gray-200 overflow-x-auto">
-          <table class="w-full min-w-[600px] table-fixed text-xs sm:text-sm">
-            <thead class="bg-gray-100 text-gray-700">
-              <tr>
-                <th class="px-4 py-3 text-left">Ruta</th>
-                <th class="px-4 py-3 text-left">Tamaño</th>
-                <th class="px-4 py-3 text-left">Modificado</th>
-                <th class="px-4 py-3 text-center">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of items; track item.path) {
-                <tr class="border-t border-gray-200">
-                  <td class="px-4 py-3 text-black break-all leading-normal">{{ item.path }}</td>
-                  <td class="px-4 py-3 text-black whitespace-nowrap leading-normal">{{ item.size | number }}</td>
-                  <td class="px-4 py-3 text-black whitespace-nowrap leading-normal">{{ item.modified_at | date:'short':'America/Bogota' }}</td>
-                  <td class="px-4 py-3 text-center">
-                    <button (click)="downloadBackup(item.path)"
-                      class="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-xl">
-                      Descargar
-                    </button>
-                  </td>
-                </tr>
-              }
-              @if (!items || items.length === 0) {
-                <tr class="border-t border-gray-200">
-                  <td colspan="4" class="px-4 py-6 text-center text-gray-500">No hay respaldos disponibles</td>
-                </tr>
-              }
-            </tbody>
-          </table>
+        <div>
+          <label class="block text-base font-medium text-gray-700 mb-2">Frecuencia de Respaldo</label>
+          <select [(ngModel)]="policy.backupFrequency" name="backupFrequency" required
+            class="block w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-cyan-500">
+            <option value="Diaria">Diaria</option>
+            <option value="Semanal">Semanal</option>
+            <option value="Mensual">Mensual</option>
+            <option value="Trimestral">Trimestral</option>
+          </select>
         </div>
       </div>
+
+      <div class="mt-6">
+        <label class="block text-base font-medium text-gray-700 mb-2">Ubicación de Respaldo</label>
+        <select [(ngModel)]="policy.backupLocation" name="backupLocation" required
+          class="block w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-cyan-500">
+          <option value="local"> Guardar en el equipo local</option>
+          <option value="google-drive"> Google Drive</option>
+        </select>
+        <p class="mt-2 text-sm text-gray-500">
+          Local descarga el ZIP. Google Drive requiere configuración y actualmente se simula.
+        </p>
+      </div>
+
+      <div class="mt-6">
+        <label class="block text-base font-medium text-gray-700 mb-2">Tipos de Archivos a Respaldar</label>
+        <div class="flex flex-wrap gap-4">
+          <label class="flex items-center">
+            <input type="checkbox" [(ngModel)]="policy.backupTypes.xml" name="backupXML"
+              class="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500">
+            <span class="ml-2 text-sm font-medium text-gray-700">XML (Obligatorio DIAN)</span>
+          </label>
+          <label class="flex items-center">
+            <input type="checkbox" [(ngModel)]="policy.backupTypes.pdf" name="backupPDF"
+              class="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500">
+            <span class="ml-2 text-sm font-medium text-gray-700">PDF</span>
+          </label>
+          <label class="flex items-center">
+            <input type="checkbox" [(ngModel)]="policy.backupTypes.database" name="backupDB"
+              class="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500">
+            <span class="ml-2 text-sm font-medium text-gray-700">Base de Datos</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="mt-8 flex flex-wrap sm:flex-nowrap items-center justify-end gap-2 sm:gap-3">
+        <button type="button" (click)="runBackup()" [disabled]="isSaving"
+          class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-2xl text-xs sm:text-sm w-full sm:w-auto">
+          Generar respaldo
+        </button>
+        <button type="button" (click)="downloadBackup()" [disabled]="!zipPath"
+          class="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-2xl text-xs sm:text-sm w-full sm:w-auto">
+          Descargar respaldo
+        </button>
+        <button type="submit" [disabled]="isSaving || !policyForm.valid"
+          class="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-400 text-white font-semibold px-5 sm:px-8 py-2 sm:py-3 rounded-2xl text-xs sm:text-sm w-full sm:w-auto">
+          @if (isSaving) { Guardando... } @else { Guardar Cambios }
+        </button>
+      </div>
+    </form>
+
+    <!-- Agregar después de los botones existentes -->
+    <div *ngIf="!isBackupServiceAvailable" class="alert alert-warning">
+      <strong>⚠️ Servicio No Disponible</strong>
+      <p>El servicio de respaldos automáticos no está disponible temporalmente.</p>
+      <button (click)="showServiceStatus()" class="btn btn-info btn-sm">
+        Más información
+      </button>
+      <button (click)="simulateLocalBackup()" class="btn btn-secondary btn-sm">
+        Respaldo (Demo)
+      </button>
+    </div>
+
+    @if (uploadMessage) {
+    <div class="mt-6 text-center text-gray-700 font-medium">
+      {{ uploadMessage }}
+    </div>
+    }
+    @if (lastDbIncluded !== null) {
+    <div class="mt-2 text-center text-gray-600">
+      BD incluida: {{ lastDbIncluded ? 'Sí' : 'No' }}
+    </div>
+    }
+    @if (errorMessage) {
+    <div class="mt-4 text-center text-red-600 font-medium">
+      {{ errorMessage }}
+    </div>
+    }
+
+    <div class="mt-8">
+      <h4 class="text-xl font-semibold mb-4">Histórico de respaldos</h4>
+      <div class="bg-white rounded-2xl border border-gray-200 overflow-x-auto">
+        <table class="w-full min-w-[600px] table-fixed text-xs sm:text-sm">
+          <thead class="bg-gray-100 text-gray-700">
+            <tr>
+              <th class="px-4 py-3 text-left">Ruta</th>
+              <th class="px-4 py-3 text-left">Tamaño</th>
+              <th class="px-4 py-3 text-left">Modificado</th>
+              <th class="px-4 py-3 text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of items; track item.path) {
+            <tr class="border-t border-gray-200">
+              <td class="px-4 py-3 text-black break-all leading-normal">{{ item.path }}</td>
+              <td class="px-4 py-3 text-black whitespace-nowrap leading-normal">{{ item.size | number }}</td>
+              <td class="px-4 py-3 text-black whitespace-nowrap leading-normal">{{ item.modified_at |
+                date:'short':'America/Bogota' }}</td>
+              <td class="px-4 py-3 text-center">
+                <button (click)="downloadBackup(item.path)"
+                  class="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-xl">
+                  Descargar
+                </button>
+              </td>
+            </tr>
+            }
+            @if (!items || items.length === 0) {
+            <tr class="border-t border-gray-200">
+              <td colspan="4" class="px-4 py-6 text-center text-gray-500">No hay respaldos disponibles</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
     }
   </div>
 </main>

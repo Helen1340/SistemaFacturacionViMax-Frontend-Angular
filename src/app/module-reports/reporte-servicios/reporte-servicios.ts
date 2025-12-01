@@ -12,12 +12,19 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { saveAs } from 'file-saver';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+
 import { ReportServices, ServicioItem, ResumenServicios } from '../services/report.service';
 import { InvoiceService, Invoice } from '../../module-invoices-notes/services/invoice.service';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { FileDownloadService } from '../services/file-download.service';
+import { PermissionsService } from '../services/permissions.service';
 
 @Component({
   selector: 'app-reporte-servicios',
@@ -33,6 +40,9 @@ import { catchError } from 'rxjs/operators';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   templateUrl: './reporte-servicios.html',
 })
@@ -43,7 +53,7 @@ export class ReporteServicios implements OnInit {
   hasta = '';
 
   dataSource = new MatTableDataSource<ServicioItem>([]);
-  displayedColumns: string[] = ['codigo','nombre','unidad','cantidad_vendida','subtotal','impuestos','total','precio_promedio'];
+  displayedColumns: string[] = ['codigo', 'nombre', 'unidad', 'cantidad_vendida', 'subtotal', 'impuestos', 'total', 'precio_promedio'];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -59,11 +69,30 @@ export class ReporteServicios implements OnInit {
   hasTopNonZero = false;
   aggregated: ServicioItem[] = [];
 
-  constructor(private reports: ReportServices, private invoiceService: InvoiceService) {}
+  loading = false;
+
+  // Opciones para selects
+  estadoOptions = ['Todos', 'emitido', 'anulado'];
+
+  constructor(
+    private reports: ReportServices,
+    private invoiceService: InvoiceService,
+    private downloadService: FileDownloadService,
+    private permissionsService: PermissionsService
+  ) { }
 
   ngOnInit(): void {
     this.load();
     this.loadResumen();
+    this.permissionsService.checkPermissions();
+  }
+
+  // ✅ VERIFICAR PERMISOS AL INICIAR
+  async checkStoragePermissions(): Promise<void> {
+    const hasPermissions = await this.permissionsService.checkPermissions();
+    if (!hasPermissions) {
+      console.log('⚠️ No hay permisos de almacenamiento');
+    }
   }
 
   apply(): void {
@@ -80,24 +109,310 @@ export class ReporteServicios implements OnInit {
     this.loadResumen();
   }
 
-  downloadCsv(): void {
-    const params: any = { texto: this.texto || undefined, estado: this.estado || undefined, desde: this.desde || undefined, hasta: this.hasta || undefined };
-    this.reports.downloadServiciosCsv(params).subscribe((blob) => {
-      saveAs(blob, `servicios_${new Date().toISOString().slice(0,10)}.csv`);
-    });
+  // ✅ DESCARGAR CSV - Adaptado
+  async downloadCsv(): Promise<void> {
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+
+    try {
+      const params: any = {
+        texto: this.texto || undefined,
+        estado: this.estado && this.estado !== 'Todos' ? this.estado : undefined,
+        desde: this.desde || undefined,
+        hasta: this.hasta || undefined
+      };
+
+      this.reports.downloadServiciosCsv(params).subscribe(async (blob) => {
+        const fileUrl = URL.createObjectURL(blob);
+        const fileName = `servicios_${new Date().toISOString().slice(0, 10)}.csv`;
+
+        const success = await this.downloadService.download(fileUrl, fileName);
+
+        URL.revokeObjectURL(fileUrl);
+
+        if (success) {
+          console.log('✅ CSV descargado exitosamente');
+        }
+      }, (error) => {
+        console.error('❌ Error descargando CSV:', error);
+        alert('Error al descargar CSV');
+      });
+
+    } catch (error) {
+      console.error('❌ Error en downloadCsv:', error);
+      alert('Error al descargar CSV');
+    }
   }
 
+  // ✅ EXPORTAR EXCEL - Adaptado
+  async exportExcel(): Promise<void> {
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+
+    try {
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.dataSource.data);
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Servicios');
+
+      const excelBuffer: any = XLSX.write(wb, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
+
+      const data: Blob = new Blob([excelBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+
+      const fileUrl = URL.createObjectURL(data);
+      const fileName = `Reporte_Servicios_${Date.now()}.xlsx`;
+
+      const success = await this.downloadService.download(fileUrl, fileName);
+
+      URL.revokeObjectURL(fileUrl);
+
+      if (success) {
+        console.log('✅ Excel exportado exitosamente');
+      }
+
+    } catch (error) {
+      console.error('❌ Error exportando Excel:', error);
+      alert('Error al exportar Excel');
+    }
+  }
+
+  // ✅ EXPORTAR PDF - Adaptado
+  async exportPDF(): Promise<void> {
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+
+    try {
+      const doc = new jsPDF();
+      doc.text('Reporte de Servicios', 14, 10);
+
+      autoTable(doc, {
+        head: [['Código', 'Nombre', 'Unidad', 'Cantidad Vendida', 'Subtotal', 'Impuestos', 'Total', 'Precio Promedio']],
+        body: this.dataSource.data.map((s) => [
+          s.codigo,
+          s.nombre,
+          s.unidad,
+          s.cantidad_vendida?.toString() || '0',
+          s.subtotal?.toString() || '0',
+          s.impuestos?.toString() || '0',
+          s.total?.toString() || '0',
+          s.precio_promedio?.toString() || '0',
+        ]),
+      });
+
+      const pdfBlob = doc.output('blob');
+      const fileUrl = URL.createObjectURL(pdfBlob);
+      const fileName = `Reporte_Servicios_${Date.now()}.pdf`;
+
+      const success = await this.downloadService.download(fileUrl, fileName);
+
+      URL.revokeObjectURL(fileUrl);
+
+      if (success) {
+        console.log('✅ PDF exportado exitosamente');
+      }
+
+    } catch (error) {
+      console.error('❌ Error exportando PDF:', error);
+      alert('Error al exportar PDF');
+    }
+  }
+
+  // ✅ DESCARGAR GRÁFICO PNG - Adaptado
+  async downloadChartPng(chartId: string, filename: string): Promise<void> {
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+
+    try {
+      const dataUrl = await this.getChartImageDataUrl(chartId);
+      if (!dataUrl) {
+        alert('No se pudo obtener la imagen del gráfico');
+        return;
+      }
+
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const fileUrl = URL.createObjectURL(blob);
+
+      const success = await this.downloadService.download(fileUrl, filename);
+
+      URL.revokeObjectURL(fileUrl);
+
+      if (success) {
+        console.log('✅ Gráfico PNG descargado exitosamente');
+      }
+
+    } catch (error) {
+      console.error('❌ Error descargando gráfico PNG:', error);
+      alert('Error al descargar gráfico');
+    }
+  }
+
+  // ✅ EXPORTAR GRÁFICOS A PDF - Adaptado
+  async exportChartsToPDF(): Promise<void> {
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+
+    try {
+      const doc = new jsPDF('p', 'mm', 'a4');
+      let y = 10;
+
+      const addImg = async (id: string, title: string) => {
+        const img = await this.getChartImageDataUrl(id);
+        if (!img) return y;
+        doc.text(title, 10, y);
+        doc.addImage(img, 'PNG', 10, y + 5, 190, 90);
+        return y + 100;
+      };
+
+      y = await addImg('servicesTopChart', 'Top 5 Servicios por Unidades Vendidas');
+      y = await addImg('servicesMonthChart', 'Ventas de Servicios por Mes');
+
+      const pdfBlob = doc.output('blob');
+      const fileUrl = URL.createObjectURL(pdfBlob);
+      const fileName = `graficos_servicios_${new Date().toISOString().slice(0, 10)}.pdf`;
+
+      const success = await this.downloadService.download(fileUrl, fileName);
+
+      URL.revokeObjectURL(fileUrl);
+
+      if (success) {
+        console.log('✅ Gráficos PDF exportados exitosamente');
+      }
+
+    } catch (error) {
+      console.error('❌ Error exportando gráficos a PDF:', error);
+      alert('Error al exportar gráficos a PDF');
+    }
+  }
+
+  // ✅ EXPORTAR REPORTE COMPLETO PDF - Adaptado
+  async exportFullReportPDF(): Promise<void> {
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+
+    try {
+      const doc = new jsPDF('p', 'mm', 'a4');
+      let y = 10;
+      const title = 'Reporte Completo de Servicios';
+      doc.setFontSize(16);
+      doc.text(title, 10, y);
+      y += 8;
+
+      // Agregar gráficos
+      const addImg = async (id: string, title2: string) => {
+        const img = await this.getChartImageDataUrl(id);
+        if (!img) return y;
+        doc.setFontSize(12);
+        doc.text(title2, 10, y);
+        y += 5;
+        doc.addImage(img, 'PNG', 10, y, 190, 80);
+        return y + 85;
+      };
+
+      y = await addImg('servicesMonthChart', 'Ventas por Mes');
+      y = await addImg('servicesTopChart', 'Top Servicios por Unidades Vendidas');
+
+      // Agregar tabla de top servicios
+      doc.setFontSize(12);
+      doc.text('Resumen de Top Servicios', 10, y);
+      y += 5;
+
+      const topServices = [...this.dataSource.data]
+        .sort((a, b) => (b.cantidad_vendida || 0) - (a.cantidad_vendida || 0))
+        .slice(0, 10);
+
+      const topHeader = [['Servicio', 'Unidades Vendidas', 'Total Vendido']];
+      const topBody = topServices.map(s => [
+        s.nombre,
+        String(s.cantidad_vendida || 0),
+        `$${(s.total || 0).toLocaleString()}`
+      ]);
+
+      autoTable(doc, { startY: y, head: topHeader, body: topBody });
+      const afterTop = (doc as any).lastAutoTable.finalY || y + 10;
+
+      // Agregar tabla completa de servicios
+      doc.setFontSize(12);
+      doc.text('Lista Completa de Servicios', 10, afterTop + 6);
+
+      autoTable(doc, {
+        startY: afterTop + 12,
+        head: [['Código', 'Nombre', 'Unidad', 'Cantidad', 'Subtotal', 'Impuestos', 'Total']],
+        body: this.dataSource.data.map((s) => [
+          s.codigo,
+          s.nombre,
+          s.unidad,
+          s.cantidad_vendida?.toString() || '0',
+          `$${(s.subtotal || 0).toLocaleString()}`,
+          `$${(s.impuestos || 0).toLocaleString()}`,
+          `$${(s.total || 0).toLocaleString()}`,
+        ]),
+      });
+
+      const pdfBlob = doc.output('blob');
+      const fileUrl = URL.createObjectURL(pdfBlob);
+      const fileName = `reporte_completo_servicios_${new Date().toISOString().slice(0, 10)}.pdf`;
+
+      const success = await this.downloadService.download(fileUrl, fileName);
+
+      URL.revokeObjectURL(fileUrl);
+
+      if (success) {
+        console.log('✅ Reporte completo PDF exportado exitosamente');
+      }
+
+    } catch (error) {
+      console.error('❌ Error exportando reporte completo:', error);
+      alert('Error al exportar reporte completo');
+    }
+  }
+
+  // ========== MÉTODOS EXISTENTES (CON ALGUNAS MEJORAS) ==========
+
   private load(): void {
+    this.loading = true;
+
     const estadoMap: Record<string, string> = { emitido: 'issued', anulado: 'cancelled' };
     const filters: any = {
-      internal_status: estadoMap[(this.estado || '').toLowerCase()] || undefined,
+      internal_status: this.estado && this.estado !== 'Todos' ? estadoMap[this.estado.toLowerCase()] : undefined,
       date_from: this.fmt(this.desde) || undefined,
       date_to: this.fmt(this.hasta) || undefined,
       per_page: 500,
     };
+
     this.invoiceService.getInvoices(filters).pipe(catchError(() => of([]))).subscribe((invoices: Invoice[]) => {
       if (!invoices || invoices.length === 0) {
-        const params: any = { texto: this.texto || undefined, estado: this.estado || undefined, desde: this.fmt(this.desde) || undefined, hasta: this.fmt(this.hasta) || undefined, page: 1, perPage: 50 };
+        const params: any = {
+          texto: this.texto || undefined,
+          estado: this.estado && this.estado !== 'Todos' ? this.estado : undefined,
+          desde: this.fmt(this.desde) || undefined,
+          hasta: this.fmt(this.hasta) || undefined,
+          page: 1,
+          perPage: 50
+        };
+
         this.reports.getServicios(params).pipe(catchError(() => of({ data: [] as ServicioItem[], total: 0 }))).subscribe(({ data }) => {
           const mapped: ServicioItem[] = (data || []).map((item: any) => ({
             codigo: item.codigo || item.code || item.service_code || '',
@@ -113,10 +428,15 @@ export class ReporteServicios implements OnInit {
           this.aggregated = mapped;
           if (this.paginator) this.dataSource.paginator = this.paginator;
           if (this.sort) this.dataSource.sort = this.sort;
+          this.loading = false;
         });
         return;
       }
-      const detailRequests = invoices.map((inv: any) => this.invoiceService.getInvoice(inv.id).pipe(catchError(() => of(null))));
+
+      const detailRequests = invoices.map((inv: any) =>
+        this.invoiceService.getInvoice(inv.id).pipe(catchError(() => of(null)))
+      );
+
       forkJoin(detailRequests).subscribe((fulls) => {
         const grouped = new Map<string, ServicioItem>();
         for (const inv of fulls.filter(Boolean) as Invoice[]) {
@@ -133,6 +453,7 @@ export class ReporteServicios implements OnInit {
             const subtotal = Number(d?.line_extension_amount || 0);
             const impuestos = Number(d?.tax_amount || 0);
             const total = Number(d?.total_line_amount || 0);
+
             if (!prev) {
               grouped.set(key, {
                 codigo: code,
@@ -149,7 +470,14 @@ export class ReporteServicios implements OnInit {
               const ns = (prev.subtotal || 0) + subtotal;
               const ni = (prev.impuestos || 0) + impuestos;
               const nt = (prev.total || 0) + total;
-              grouped.set(key, { ...prev, cantidad_vendida: nc, subtotal: ns, impuestos: ni, total: nt, precio_promedio: nc > 0 ? nt / nc : prev.precio_promedio });
+              grouped.set(key, {
+                ...prev,
+                cantidad_vendida: nc,
+                subtotal: ns,
+                impuestos: ni,
+                total: nt,
+                precio_promedio: nc > 0 ? nt / nc : prev.precio_promedio
+              });
             }
           }
         }
@@ -158,26 +486,34 @@ export class ReporteServicios implements OnInit {
         this.dataSource.data = arr;
         if (this.paginator) this.dataSource.paginator = this.paginator;
         if (this.sort) this.dataSource.sort = this.sort;
+
         const tops = [...arr].sort((a, b) => (b.cantidad_vendida || 0) - (a.cantidad_vendida || 0)).slice(0, 5);
         const vals = tops.map(t => Number(t.cantidad_vendida || 0));
         this.topXAxis = { categories: tops.map(t => t.nombre) };
         this.topSeries = [{ name: 'Top por unidades', data: vals }];
         this.hasTopData = vals.length > 0;
         this.hasTopNonZero = vals.some(v => v > 0);
+        this.loading = false;
       });
     });
   }
 
   private loadResumen(): void {
-    const params: any = { desde: this.fmt(this.desde) || undefined, hasta: this.fmt(this.hasta) || undefined };
+    const params: any = {
+      desde: this.fmt(this.desde) || undefined,
+      hasta: this.fmt(this.hasta) || undefined
+    };
+
     this.reports.getResumenServicios(params).subscribe((r: ResumenServicios) => {
       const byMonth = r?.total_por_mes || {};
       const keys = Object.keys(byMonth).sort();
       this.lineXAxis = { categories: keys };
       this.lineSeries = [{ name: 'Total vendido', data: keys.map(k => Number((byMonth as any)[k])) }];
+
       const tops = r?.top_por_unidades || [];
       this.topXAxis = { categories: tops.map((t: any) => t.servicio) };
       const vals = tops.map((t: any) => Number(t.unidades || t.cantidad || 0));
+
       if (vals.some(v => v > 0)) {
         this.topSeries = [{ name: 'Top por unidades', data: vals }];
         this.hasTopData = vals.length > 0;
@@ -193,33 +529,22 @@ export class ReporteServicios implements OnInit {
     });
   }
 
+  // ========== MÉTODOS AUXILIARES ==========
+
+  private async getChartImageDataUrl(id: string): Promise<string | null> {
+    try {
+      const res = await (ApexCharts as any).exec(id, 'dataURI');
+      return (res?.imgURI as string) || (res?.blobURI as string) || null;
+    } catch (error) {
+      console.error('Error obteniendo imagen del gráfico:', error);
+      return null;
+    }
+  }
+
   private fmt(d: string): string {
     if (!d) return '';
     const t = new Date(d);
     if (isNaN(t.getTime())) return d;
     return t.toISOString().slice(0, 10);
-  }
-
-  downloadChartPng(chartId: string, filename: string): void {
-    ApexCharts.exec(chartId, 'dataURI').then((data: any) => {
-      const url = data?.imgURI;
-      if (!url) return;
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      link.click();
-    });
-  }
-
-  exportChartsToPDF(): void {
-    const doc = new jsPDF('p', 'mm', 'a4');
-    ApexCharts.exec('servicesTopChart', 'dataURI').then((t: any) => {
-      const img2 = t?.imgURI;
-      if (img2) {
-        doc.text('Top 5 servicios', 10, 10);
-        doc.addImage(img2, 'PNG', 10, 15, 190, 80);
-      }
-      doc.save(`graficos_servicios_${new Date().toISOString().slice(0,10)}.pdf`);
-    });
   }
 }

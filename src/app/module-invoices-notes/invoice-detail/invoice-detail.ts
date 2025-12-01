@@ -5,6 +5,8 @@ import { InvoiceService, Invoice } from '../services/invoice.service';
 import { Html5Qrcode } from 'html5-qrcode';
 import { FormsModule } from '@angular/forms';
 import { saveAs } from 'file-saver';
+import { FileDownloadService } from '../../module-reports/services/file-download.service';
+import { PermissionsService } from '../../module-reports/services/permissions.service';
 
 @Component({
   selector: 'app-invoice-detail',
@@ -24,7 +26,7 @@ export class InvoiceDetail implements OnInit, OnDestroy {
   scanResult: string | null = null;
   html5QrCode: Html5Qrcode | null = null;
   qrData: string = '';
-  
+
   async generateLocalQR(text: string): Promise<void> {
     const qr = await import('qrcode');
     const fn: any = (qr as any).toDataURL || (qr as any).default?.toDataURL;
@@ -35,8 +37,10 @@ export class InvoiceDetail implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private invoiceService: InvoiceService
-  ) {}
+    private invoiceService: InvoiceService,
+    private downloadService: FileDownloadService,
+    private permissionsService: PermissionsService
+  ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -54,14 +58,14 @@ export class InvoiceDetail implements OnInit, OnDestroy {
   loadInvoice(id: number): void {
     this.loading = true;
     this.error = null;
-    
+
     this.invoiceService.getInvoice(id).subscribe({
       next: (invoice) => {
         // Asegurar que invoiceDetails sea un array
         if (invoice && !Array.isArray(invoice.invoiceDetails)) {
           invoice.invoiceDetails = invoice.invoiceDetails ? [invoice.invoiceDetails] : [];
         }
-        
+
         this.invoice = invoice;
         this.setSimulatedQR();
         this.loading = false;
@@ -122,7 +126,7 @@ export class InvoiceDetail implements OnInit, OnDestroy {
 
   sendToDian(): void {
     if (!this.invoiceId) return;
-    
+
     if (confirm('¿Está seguro de enviar esta factura a la DIAN?')) {
       this.invoiceService.sendToDian(this.invoiceId).subscribe({
         next: () => {
@@ -138,7 +142,7 @@ export class InvoiceDetail implements OnInit, OnDestroy {
 
   cancelInvoice(): void {
     if (!this.invoiceId) return;
-    
+
     if (confirm('¿Está seguro de anular esta factura?')) {
       this.invoiceService.cancelInvoice(this.invoiceId).subscribe({
         next: () => {
@@ -192,9 +196,9 @@ export class InvoiceDetail implements OnInit, OnDestroy {
   }
 
   getCompanyName(): string {
-    return this.invoice?.user?.company?.business_name || 
-           this.invoice?.user?.company?.trade_name || 
-           'Empresa';
+    return this.invoice?.user?.company?.business_name ||
+      this.invoice?.user?.company?.trade_name ||
+      'Empresa';
   }
 
   getCompanyNit(): string {
@@ -204,53 +208,101 @@ export class InvoiceDetail implements OnInit, OnDestroy {
   getCompanyAddress(): string {
     const company = this.invoice?.user?.company;
     if (!company) return '';
-    
+
     const parts = [
       company.address,
       company.city,
       company.department,
       company.country
     ].filter(Boolean);
-    
+
     return parts.join(', ');
   }
 
-  downloadPDF(): void {
+  // ✅ DESCARGAR PDF - Adaptado para Android
+  async downloadPDF(): Promise<void> {
     if (!this.invoiceId) return;
-    this.invoiceService.downloadPDFRes(this.invoiceId).subscribe({
-      next: res => {
+
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+
+    try {
+      this.invoiceService.downloadPDFRes(this.invoiceId).subscribe(async (res) => {
         const contentType = res.headers.get('Content-Type') || res.headers.get('content-type') || '';
         const blob = res.body as Blob;
+
         if (blob && (contentType.includes('application/pdf') || blob.size > 0)) {
-          saveAs(blob, `factura_${this.invoiceId}.pdf`);
+          const fileUrl = URL.createObjectURL(blob);
+          const fileName = `factura_${this.invoiceId}.pdf`;
+
+          const success = await this.downloadService.download(fileUrl, fileName);
+
+          URL.revokeObjectURL(fileUrl);
+
+          if (success) {
+            console.log('✅ PDF descargado exitosamente');
+          } else {
+            alert('Error al descargar el PDF');
+          }
         } else {
           alert('No se pudo descargar el PDF: respuesta inválida.');
         }
-      },
-      error: (err) => {
-        const msg = err.error?.message || err.message || 'Error desconocido al descargar PDF';
+      }, (error) => {
+        const msg = error.error?.message || error.message || 'Error desconocido al descargar PDF';
+        console.error('❌ Error descargando PDF:', error);
         alert(msg);
-      }
-    });
+      });
+
+    } catch (error) {
+      console.error('❌ Error en downloadPDF:', error);
+      alert('Error al descargar PDF');
+    }
   }
 
-  downloadXML(): void {
+  // ✅ DESCARGAR XML - Adaptado para Android
+  async downloadXML(): Promise<void> {
     if (!this.invoiceId) return;
-    this.invoiceService.downloadXMLRes(this.invoiceId).subscribe({
-      next: res => {
+
+    const hasPermissions = await this.permissionsService.requestStoragePermissions();
+    if (!hasPermissions) {
+      alert('No se pueden descargar archivos sin permisos de almacenamiento');
+      return;
+    }
+
+    try {
+      this.invoiceService.downloadXMLRes(this.invoiceId).subscribe(async (res) => {
         const contentType = res.headers.get('Content-Type') || res.headers.get('content-type') || '';
         const blob = res.body as Blob;
+
         if (blob && (contentType.includes('application/xml') || contentType.includes('text/xml') || blob.size > 0)) {
-          saveAs(blob, `factura_${this.invoiceId}.xml`);
+          const fileUrl = URL.createObjectURL(blob);
+          const fileName = `factura_${this.invoiceId}.xml`;
+
+          const success = await this.downloadService.download(fileUrl, fileName);
+
+          URL.revokeObjectURL(fileUrl);
+
+          if (success) {
+            console.log('✅ XML descargado exitosamente');
+          } else {
+            alert('Error al descargar el XML');
+          }
         } else {
           alert('No se pudo descargar el XML: respuesta inválida.');
         }
-      },
-      error: (err) => {
-        const msg = err.error?.message || err.message || 'Error desconocido al descargar XML';
+      }, (error) => {
+        const msg = error.error?.message || error.message || 'Error desconocido al descargar XML';
+        console.error('❌ Error descargando XML:', error);
         alert(msg);
-      }
-    });
+      });
+
+    } catch (error) {
+      console.error('❌ Error en downloadXML:', error);
+      alert('Error al descargar XML');
+    }
   }
 
   navigateToNotes(): void {
@@ -260,19 +312,19 @@ export class InvoiceDetail implements OnInit, OnDestroy {
 
   getStatusBadgeClass(status: string, type: 'internal' | 'dian'): string {
     if (type === 'internal') {
-      return status === 'draft' 
-        ? 'bg-gray-200 text-gray-800' 
-        : status === 'issued' 
-        ? 'bg-blue-100 text-blue-700' 
-        : 'bg-red-100 text-red-700';
+      return status === 'draft'
+        ? 'bg-gray-200 text-gray-800'
+        : status === 'issued'
+          ? 'bg-blue-100 text-blue-700'
+          : 'bg-red-100 text-red-700';
     } else {
       return status === 'pending'
         ? 'bg-yellow-100 text-yellow-700'
         : status === 'accepted'
-        ? 'bg-green-100 text-green-700'
-        : status === 'rejected'
-        ? 'bg-red-100 text-red-700'
-        : 'bg-gray-100 text-gray-700';
+          ? 'bg-green-100 text-green-700'
+          : status === 'rejected'
+            ? 'bg-red-100 text-red-700'
+            : 'bg-gray-100 text-gray-700';
     }
   }
 
@@ -304,7 +356,7 @@ export class InvoiceDetail implements OnInit, OnDestroy {
   async startQRScanner(): Promise<void> {
     try {
       this.html5QrCode = new Html5Qrcode("qr-reader");
-      
+
       const config = {
         fps: 10,
         qrbox: { width: 250, height: 250 },
@@ -319,7 +371,7 @@ export class InvoiceDetail implements OnInit, OnDestroy {
           this.scanResult = decodedText;
           this.html5QrCode?.stop();
           this.showQRScanner = false;
-          
+
           // Opcional: validar si el QR corresponde a esta factura
           if (this.invoice?.uuid && decodedText.includes(this.invoice.uuid)) {
             alert('✅ El código QR corresponde a esta factura');

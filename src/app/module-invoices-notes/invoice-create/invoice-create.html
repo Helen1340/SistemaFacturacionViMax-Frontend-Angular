@@ -1,4 +1,4 @@
-<main class="w-full px-4 pb-4 flex-1 overflow-y-auto overflow-x-visible">
+<main class="w-full px-4 pb-4 flex-1 overflow-y-auto overflow-x-hidden">
     <!-- Título -->
     <div>
         <h2 class="text-4xl font-semibold mb-6 mt-2">Crear Nueva Factura</h2>
@@ -141,36 +141,36 @@
                 </div>
 
                 <div
-                    class="overflow-x-auto overflow-y-auto max-h-[360px] md:max-h-[400px] mb-6 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-                    <table class="w-full min-w-[520px] sm:min-w-[600px] table-fixed text-xs sm:text-sm bg-white rounded-lg overflow-hidden">
+                    class="hidden">
+                    <table class="w-full table-auto text-xs sm:text-sm bg-white rounded-lg overflow-hidden">
                         <thead class="bg-gray-100">
                             <tr>
                                 <th
-                                    class="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     Tipo</th>
                                 <th
-                                    class="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-[280px]">
+                                    class="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap w-[280px]">
                                     Descripción</th>
                                 <th
-                                    class="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     Cantidad</th>
                                 <th
-                                    class="px-3 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     Precio Unit.</th>
                                 <th
-                                    class="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     Descuento</th>
                                 <th
-                                    class="px-3 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     Subtotal</th>
                                 <th
-                                    class="px-3 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     Impuestos</th>
                                 <th
-                                    class="px-3 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     Total</th>
                                 <th
-                                    class="px-3 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap w-[64px]">
                                 </th>
                             </tr>
                         </thead>
@@ -236,30 +236,85 @@
                     </table>
                 </div>
 
+                <!-- Lista compacta con scroll -->
+                <div class="mb-6 max-h-[360px] md:max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+                    <div class="hidden sm:block sticky top-0 z-10 bg-gray-50 border-b border-gray-200 px-4 py-2 text-[11px] text-gray-600">
+                        <div class="flex items-center gap-3">
+                            <div class="w-20 shrink-0">Tipo</div>
+                            <div class="flex-1 min-w-0">Descripción</div>
+                            <div class="w-16 text-center shrink-0">Cant.</div>
+                            <div class="w-24 text-center shrink-0">Desc.</div>
+                            <div class="w-24 text-right shrink-0">Unit.</div>
+                            <div class="w-24 text-right shrink-0">Subt.</div>
+                            <div class="w-24 text-right shrink-0">Imp.</div>
+                            <div class="w-28 text-right shrink-0">Total</div>
+                            <div class="w-8 shrink-0"></div>
+                        </div>
+                    </div>
+                    <ul class="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-200">
+                        <li *ngFor="let item of selectedItems; let i = index" class="px-4 py-3">
+                            <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
+                                <span class="inline-block px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide shrink-0"
+                                      [class.bg-blue-100]="item.type === 'product'"
+                                      [class.text-blue-800]="item.type === 'product'"
+                                      [class.bg-purple-100]="item.type === 'service'"
+                                      [class.text-purple-800]="item.type === 'service'">
+                                    {{ item.type === 'product' ? 'Producto' : 'Servicio' }}
+                                </span>
+
+                                <div class="flex-1 min-w-0 text-xs sm:text-sm leading-tight font-medium text-gray-900 truncate" [title]="getItemDisplay(item.item)">
+                                    {{ getItemDisplay(item.item) }}
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <input type="number" class="w-14 sm:w-16 px-1 sm:px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded-xl text-center focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                                           [value]="item.quantity"
+                                           (change)="updateItemQuantity(i, +$any($event.target).value)"
+                                           (blur)="updateItemQuantity(i, +$any($event.target).value)" min="1" step="1">
+                                    <input type="number" class="w-20 sm:w-24 px-1 sm:px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded-xl text-center focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                                           [value]="item.discount"
+                                           (change)="updateItemDiscount(i, +$any($event.target).value)"
+                                           (blur)="updateItemDiscount(i, +$any($event.target).value)" min="0" step="0.01"
+                                           [max]="item.item.unit_price * item.quantity">
+                                </div>
+
+                                <div class="hidden sm:block text-right text-[11px] sm:text-xs text-gray-700 w-20 sm:w-24 shrink-0">{{ formatCurrency(item.item.unit_price) }}</div>
+                                <div class="hidden sm:block text-right text-[11px] sm:text-xs text-gray-700 w-20 sm:w-24 shrink-0">{{ formatCurrency(item.subtotal) }}</div>
+                                <div class="hidden sm:block text-right text-[11px] sm:text-xs w-20 sm:w-24 shrink-0" [class.text-red-600]="item.taxes < 0" [class.text-gray-700]="item.taxes >= 0">{{ formatCurrency(item.taxes) }}</div>
+                                <div class="text-right text-xs sm:text-sm font-semibold text-gray-900 w-24 sm:w-28 shrink-0">{{ formatCurrency(item.total) }}</div>
+
+                                <button type="button" class="w-8 h-8 flex items-center justify-center bg-red-50 text-red-600 border border-red-200 rounded hover:bg-red-100"
+                                        (click)="removeItem(i)" title="Eliminar">✕</button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-x-3 gap-y-1 w-full text-[10px] text-gray-700 mt-2 sm:hidden">
+                                <div class="flex justify-between"><span>Unit.</span><span class="font-medium">{{ formatCurrency(item.item.unit_price) }}</span></div>
+                                <div class="flex justify-between"><span>Subt.</span><span class="font-medium">{{ formatCurrency(item.subtotal) }}</span></div>
+                                <div class="flex justify-between"><span>Imp.</span><span class="font-medium" [class.text-red-600]="item.taxes < 0" [class.text-gray-700]="item.taxes >= 0">{{ formatCurrency(item.taxes) }}</span></div>
+                                <div class="flex justify-between"><span>Total</span><span class="font-semibold text-gray-900">{{ formatCurrency(item.total) }}</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
                 <!-- Totales -->
                 <div class="bg-white p-6 rounded-2xl border-2 border-gray-200">
                     <div class="flex flex-col gap-3">
-                        <div class="flex justify-between items-center py-2">
-                            <span class="text-gray-600">Subtotal (sin impuestos):</span>
-                            <span class="font-medium text-gray-900">{{ formatCurrency(subtotal) }}</span>
+                        <div class="grid grid-cols-2 gap-2 py-2">
+                            <span class="text-sm sm:text-base text-gray-600 leading-tight break-words pr-2">Subtotal (sin impuestos):</span>
+                            <span class="text-sm sm:text-base font-medium text-gray-900 text-right">{{ formatCurrency(subtotal) }}</span>
                         </div>
-                        <div class="flex justify-between items-center py-2" *ngIf="totalDiscount > 0">
-                            <span class="text-gray-600">Descuentos aplicados:</span>
-                            <span class="font-medium text-red-600">- {{ formatCurrency(totalDiscount) }}</span>
+                        <div class="grid grid-cols-2 gap-2 py-2" *ngIf="totalDiscount > 0">
+                            <span class="text-sm sm:text-base text-gray-600 leading-tight break-words pr-2">Descuentos aplicados:</span>
+                            <span class="text-sm sm:text-base font-medium text-red-600 text-right">- {{ formatCurrency(totalDiscount) }}</span>
                         </div>
-                        <div class="flex justify-between items-center py-2">
-                            <span class="text-gray-600">Impuestos:</span>
-                            <span class="font-medium" [class.text-gray-900]="totalTaxes >= 0"
-                                [class.text-red-600]="totalTaxes < 0">
-                                {{ formatCurrency(totalTaxes) }}
-                            </span>
+                        <div class="grid grid-cols-2 gap-2 py-2">
+                            <span class="text-sm sm:text-base text-gray-600 leading-tight break-words pr-2">Impuestos:</span>
+                            <span class="text-sm sm:text-base font-medium text-right" [class.text-gray-900]="totalTaxes >= 0"
+                                [class.text-red-600]="totalTaxes < 0">{{ formatCurrency(totalTaxes) }}</span>
                         </div>
-                        <div class="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-200">
-                            <span class="text-lg font-semibold text-gray-900">Total a Pagar:</span>
-                            <span class="text-xl font-bold" [class.text-blue-600]="total >= 0"
-                                [class.text-red-600]="total < 0">
-                                {{ formatCurrency(total) }}
-                            </span>
+                        <div class="grid grid-cols-2 gap-2 pt-4 mt-2 border-t-2 border-gray-200">
+                            <span class="text-base sm:text-lg font-semibold text-gray-900">Total a Pagar:</span>
+                            <span class="text-lg sm:text-xl font-bold text-right break-words" [class.text-blue-600]="total >= 0" [class.text-red-600]="total < 0">{{ formatCurrency(total) }}</span>
                         </div>
                         <div class="mt-2 text-xs text-gray-500 text-right">
                             {{ selectedItems.length }} item(s) en la factura

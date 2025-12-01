@@ -49,50 +49,53 @@
 
   <!-- CONTENEDOR DE LA TABLA CON SCROLL FIJO -->
   <div class="bg-white rounded-2xl shadow overflow-hidden">
-    <!-- Contenedor del cuerpo con scroll -->
     <div
       class="overflow-x-auto overflow-y-auto max-h-[375px] relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-      <table class="w-full min-w-[600px] table-fixed text-xs sm:text-sm">
+      <table class="w-full min-w-[768px] table-auto text-xs sm:text-sm">
 
-        <!-- Encabezados fijos -->
         <thead class="bg-gray-100 text-gray-800 text-left sticky top-0 z-10">
           <tr>
-            <th class="px-4 py-3 font-semibold text-sm sm:w-[22%]">Nombre</th>
-            <th class="px-4 py-3 font-semibold text-sm sm:w-[18%]">Documento</th>
-            <th class="px-4 py-3 font-semibold text-sm sm:w-[20%]">Correo Electrónico</th>
-            <th class="px-4 py-3 font-semibold text-sm sm:w-[10%]">Teléfono</th>
-            <th class="px-4 py-3 font-semibold text-sm sm:w-[20%]">Rol</th>
-            <th class="px-4 py-3 font-semibold text-sm sm:w-[8%]">Estado</th>
-            <th class="px-4 py-3 text-center font-semibold text-sm sm:w-[8%]">Acciones</th>
+            <th class="px-4 py-3 font-semibold text-sm min-w-[150px]">Nombre</th>
+            <th class="px-4 py-3 font-semibold text-sm w-[150px]">Documento</th>
+            <th class="px-4 py-3 font-semibold text-sm min-w-[150px]">Correo Electrónico</th>
+            <th class="px-4 py-3 font-semibold text-sm w-[100px]">Teléfono</th>
+            <th class="px-4 py-3 font-semibold text-sm w-[120px]">Rol</th>
+            <th class="px-4 py-3 font-semibold text-sm w-[90px]">Estado</th>
+            <th class="px-4 py-3 text-center font-semibold text-sm w-[70px]">Acciones</th>
           </tr>
         </thead>
 
         <tbody>
-          <!-- CAMBIO PRINCIPAL: Usar paginatedUsers en lugar de filteredUsers -->
           <tr *ngFor="let user of paginatedUsers; trackBy: trackByFn; let i = index"
             class="border-t border-t-gray-200 hover:bg-gray-50">
-            <td class="px-4 py-3 min-w-[22%]">
-              <div class="font-medium text-gray-900">{{ user.first_name }}</div>
+            <td class="px-4 py-3">
+              <div class="font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">{{ user.first_name
+                }}</div>
             </td>
-            <td class="px-4 py-3 sm:w-[18%]">
-              <div class="text-sm">
+
+            <td class="px-4 py-3">
+              <div class="text-sm whitespace-nowrap">
                 <span [ngClass]="getDocumentTypeClass(user.document_type)" class="text-xs px-2 py-1 rounded">{{
                   user.document_type }}</span>
                 <div class="mt-1 text-gray-600">{{ user.document_number }}</div>
               </div>
             </td>
-            <td class="px-4 py-3 break-words sm:w-[20%]">{{ user.email }}</td>
-            <td class="px-4 py-3 break-words sm:w-[10%]">{{ user.phone }}</td>
-            <td class="px-4 py-3 min-w-[20%]">
-              <!-- CORRECCIÓN: Usar getRoleName() para obtener el nombre del rol -->
+
+            <td class="px-4 py-3 break-words">{{ user.email }}</td>
+
+            <td class="px-4 py-3 whitespace-nowrap">{{ user.phone }}</td>
+
+            <td class="px-4 py-3 whitespace-nowrap">
               <span [ngClass]="getRoleClass(getRoleName(user.role_id))" class="text-xs px-2 py-1 rounded-full">{{
                 getRoleName(user.role_id) }}</span>
             </td>
-            <td class="px-4 py-3 min-w-[8%]">
+
+            <td class="px-4 py-3 text-center whitespace-nowrap">
               <span [ngClass]="getStatusClass(user.status)" class="text-xs px-2 py-1 rounded-full">{{
                 translateUserStatus(user.status) }}</span>
             </td>
-            <td class="px-4 py-3 text-center relative min-w-[8%]">
+
+            <td class="px-4 py-3 text-center relative whitespace-nowrap">
               <button (click)="toggleDropdown($event, user.id)" class="p-2 rounded hover:bg-gray-100">
                 <svg width="19" height="19" viewBox="0 0 22 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -106,21 +109,18 @@
                     fill="black" />
                 </svg>
               </button>
-              <!-- Dropdown con posicionamiento fijo -->
-              <div *ngIf="openDropdownId === user.id" 
-                   class="fixed w-40 bg-white border border-gray-300 rounded-2xl shadow-lg z-[9999]"
-                   [style.top.px]="dropdownTop" 
-                   [style.left.px]="dropdownLeft">
+              <div *ngIf="openDropdownId === user.id"
+                class="fixed w-40 bg-white border border-gray-300 rounded-2xl shadow-lg z-[9999]"
+                [style.top.px]="dropdownTop" [style.left.px]="dropdownLeft">
                 <button (click)="viewUser(user)"
                   class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100 rounded-t-2xl">
                   Ver Detalles
                 </button>
-                <button (click)="editUser(user)"
-                  class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100">
+                <button (click)="editUser(user)" class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-100">
                   Editar
                 </button>
                 <button (click)="UpdateUserStatus(user)"
-                  class="block w-full text-left px-4 py-2 text-sm rounded-b-2xl hover:bg-red-100 transition" 
+                  class="block w-full text-left px-4 py-2 text-sm rounded-b-2xl hover:bg-red-100 transition"
                   [ngClass]="user.status === 'Active' ? 'text-red-600' : 'text-green-600'">
                   {{ user.status === 'Active' ? 'Desactivar' : 'Activar' }}
                 </button>
@@ -128,9 +128,8 @@
             </td>
           </tr>
 
-          <!-- Mensaje cuando no hay usuarios -->
           <tr *ngIf="paginatedUsers.length === 0" class="border-t border-gray-200">
-            <td colspan="9" class="px-4 py-8 text-center text-gray-500">
+            <td colspan="7" class="px-4 py-8 text-center text-gray-500">
               {{ isLoading ? 'Cargando usuarios...' : 'No se encontraron usuarios' }}
             </td>
           </tr>
